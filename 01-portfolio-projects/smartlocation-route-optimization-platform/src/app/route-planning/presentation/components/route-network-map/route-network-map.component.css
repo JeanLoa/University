@@ -1,0 +1,255 @@
+:host {
+  display: block;
+  height: 100%;
+  min-height: 0;
+}
+
+.network-map {
+  display: grid;
+  grid-template-rows: auto minmax(18rem, 1fr) auto;
+  gap: 0.8rem;
+  height: 100%;
+  min-height: 0;
+}
+
+.map-toolbar,
+.map-footer {
+  align-items: center;
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  min-width: 0;
+}
+
+.map-toolbar span,
+.map-footer {
+  color: #8d998f;
+  font-size: 0.76rem;
+}
+
+.map-toolbar strong {
+  color: #f4f7f1;
+  display: block;
+  font-size: 1rem;
+  margin-top: 0.15rem;
+}
+
+.map-toolbar small {
+  color: #69746c;
+  display: block;
+  font-size: 0.72rem;
+  margin-top: 0.18rem;
+}
+
+.map-legend {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: flex-end;
+}
+
+.map-legend span {
+  align-items: center;
+  display: inline-flex;
+  gap: 0.35rem;
+  white-space: nowrap;
+}
+
+.map-legend i {
+  border-radius: 999px;
+  display: inline-block;
+  height: 0.5rem;
+  width: 0.5rem;
+}
+
+.legend-route {
+  background: #4ee6c1;
+}
+
+.legend-origin {
+  background: #4ee6c1;
+}
+
+.legend-destination {
+  background: #f6c85f;
+}
+
+.map-viewport {
+  position: relative;
+  min-height: 18rem;
+  overflow: hidden;
+}
+
+.maplibre-canvas,
+.map-canvas {
+  inset: 0;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.maplibre-canvas {
+  background: #f5f3ea;
+  cursor: crosshair;
+  opacity: 0;
+  transition: opacity 260ms ease;
+}
+
+.maplibre-canvas.is-ready {
+  opacity: 1;
+}
+
+.map-canvas,
+.map-viewport {
+  min-height: 18rem;
+  border: 1px solid rgba(197, 214, 199, 0.12);
+  border-radius: 8px;
+  background:
+    radial-gradient(circle at 18% 18%, rgba(78, 230, 193, 0.16), transparent 22rem),
+    radial-gradient(circle at 78% 44%, rgba(246, 200, 95, 0.12), transparent 20rem),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.65), transparent 38%), #f5f3ea;
+}
+
+.map-canvas {
+  border: 0;
+  border-radius: 0;
+  cursor: crosshair;
+}
+
+.map-renderer-chip {
+  position: absolute;
+  left: 0.8rem;
+  bottom: 0.8rem;
+  z-index: 2;
+  padding: 0.38rem 0.55rem;
+  border: 1px solid rgba(78, 230, 193, 0.28);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.82);
+  color: #17443c;
+  font-size: 0.72rem;
+}
+
+.coastline,
+.city-ridge {
+  fill: none;
+  stroke: rgba(55, 75, 67, 0.18);
+  stroke-dasharray: 8 13;
+  stroke-linecap: round;
+  stroke-width: 2;
+}
+
+.city-ridge {
+  stroke: rgba(95, 89, 136, 0.18);
+}
+
+.city-ridge--east {
+  stroke: rgba(154, 115, 41, 0.18);
+}
+
+.urban-block {
+  fill: #5d776c;
+  rx: 3;
+  stroke: rgba(43, 67, 57, 0.16);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.district-bounds {
+  fill: rgba(78, 230, 193, 0.08);
+  stroke: rgba(14, 143, 121, 0.72);
+  stroke-dasharray: 12 12;
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke;
+}
+
+.route-glow,
+.route-line {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.route-glow {
+  opacity: 0.48;
+  stroke: #19a98f;
+  stroke-width: 14;
+}
+
+.route-line {
+  animation: route-flow 1.2s linear infinite;
+  stroke: #063f39;
+  stroke-dasharray: 16 12;
+  stroke-width: 5;
+}
+
+.route-name-label {
+  fill: rgba(7, 60, 55, 0.9);
+  font-size: 14px;
+  font-weight: 650;
+  letter-spacing: 0;
+  paint-order: stroke;
+  pointer-events: none;
+  stroke: rgba(255, 255, 255, 0.95);
+  stroke-width: 4px;
+  text-anchor: middle;
+}
+
+.free-point-marker {
+  pointer-events: none;
+}
+
+.free-point-marker__halo {
+  fill: rgba(255, 255, 255, 0.86);
+  stroke-width: 2;
+}
+
+.free-point-marker__dot {
+  stroke: #ffffff;
+  stroke-width: 2;
+}
+
+.free-point-marker__label {
+  fill: #0d2f2b;
+  font-size: 19px;
+  paint-order: stroke;
+  stroke: rgba(255, 255, 255, 0.95);
+  stroke-width: 4px;
+}
+
+.free-point-marker.is-origin .free-point-marker__halo {
+  fill: rgba(78, 230, 193, 0.18);
+  stroke: #4ee6c1;
+}
+
+.free-point-marker.is-origin .free-point-marker__dot {
+  fill: #4ee6c1;
+}
+
+.free-point-marker.is-destination .free-point-marker__halo {
+  fill: rgba(246, 200, 95, 0.18);
+  stroke: #f6c85f;
+}
+
+.free-point-marker.is-destination .free-point-marker__dot {
+  fill: #f6c85f;
+}
+
+@keyframes route-flow {
+  to {
+    stroke-dashoffset: -28;
+  }
+}
+
+@media (max-width: 720px) {
+  .map-toolbar,
+  .map-footer {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .map-legend {
+    justify-content: flex-start;
+  }
+}

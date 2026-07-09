@@ -1,0 +1,49 @@
+@startuml
+title LowCortisol Platform - Support Backend Interfaces REST Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Support / Interfaces REST" {
+  package "Controllers" {
+    class "SupportController" as Backend_support_SupportController <<REST Controller>> {
+      + CreateTicket(resource, cancellationToken)
+      + UpdateTicket(ticketId, resource, cancellationToken)
+      + SendMessage(ticketId, resource, cancellationToken)
+      + GetTickets(userId, cancellationToken)
+      + GetAgents(cancellationToken)
+      + GetKnowledgeArticles(cancellationToken)
+      + GetConversations(cancellationToken)
+      + GetConversationByTicket(ticketId, cancellationToken)
+      + GetSummary(cancellationToken)
+    }
+  }
+
+  package "Resources" {
+    class "SupportTicketResource" as Backend_support_SupportTicketResource <<Resource>>
+    class "SupportMessageResource" as Backend_support_SupportMessageResource <<Resource>>
+    class "SupportConversationResource" as Backend_support_SupportConversationResource <<Resource>>
+    class "SupportAgentResource" as Backend_support_SupportAgentResource <<Resource>>
+    class "KnowledgeArticleResource" as Backend_support_KnowledgeArticleResource <<Resource>>
+    class "SupportSummaryResource" as Backend_support_SupportSummaryResource <<Resource>>
+    class "CreateSupportTicketResource" as Backend_support_CreateSupportTicketResource <<Resource>>
+    class "UpdateSupportTicketResource" as Backend_support_UpdateSupportTicketResource <<Resource>>
+    class "SendSupportMessageResource" as Backend_support_SendSupportMessageResource <<Resource>>
+  }
+
+  package "Transform" {
+    class "SupportAssemblers" as Backend_support_SupportAssemblers <<Assemblers>>
+    class "SupportActionResultAssembler" as Backend_support_SupportActionResultAssembler <<Assembler>>
+  }
+}
+
+Backend_support_SupportController ..> Backend_support_ISupportCommandService
+Backend_support_SupportController ..> Backend_support_ISupportQueryService
+Backend_support_SupportAssemblers ..> Backend_support_SupportTicketResource
+Backend_support_SupportAssemblers ..> Backend_support_SupportMessageResource
+Backend_support_SupportAssemblers ..> Backend_support_SupportConversationResource
+Backend_support_SupportAssemblers ..> Backend_support_KnowledgeArticleResource
+
+@enduml

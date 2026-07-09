@@ -1,0 +1,48 @@
+@startuml
+title LowCortisol Platform - Shared Backend Application Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Shared / Application" {
+  package "Application / Events" {
+    interface "DomainEventPublisher" as Backend_shared_DomainEventPublisher <<interface>> {
+    }
+  }
+  package "Application / Results" {
+    class "Result" as Backend_shared_Result <<Class>> {
+      - success: TSuccess
+      - failure: TFailure
+      - successful: boolean
+      - Result(TSuccess success, TFailure failure, boolean successful)
+      + success(TSuccess value) : <TSuccess, TFailure> Result<TSuccess, TFailure>
+      + failure(TFailure value) : <TSuccess, TFailure> Result<TSuccess, TFailure>
+      + isSuccess() : boolean
+      + isFailure() : boolean
+      + success() : TSuccess
+      + failure() : TFailure
+    }
+  }
+  package "Application / Services" {
+    class "DateTimeService" as Backend_shared_DateTimeService <<Application Service>> {
+      + today() : LocalDate
+      + now() : LocalDateTime
+    }
+    class "StringNormalizerService" as Backend_shared_StringNormalizerService <<Application Service>> {
+      + normalizeText(String value) : String
+      + normalizeEmail(String email) : String
+    }
+  }
+}
+
+
+
+' Layer relationship completion: every declared type participates in this layer diagram.
+Backend_shared_DateTimeService ..> Backend_shared_DomainEventPublisher
+Backend_shared_DateTimeService ..> Backend_shared_Result
+Backend_shared_DateTimeService ..> Backend_shared_DomainEventPublisher
+Backend_shared_DateTimeService ..> Backend_shared_StringNormalizerService
+
+@enduml

@@ -1,0 +1,63 @@
+@startuml
+title ElectroCorp Web App - IAM Frontend Domain Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "IAM / Domain" {
+  package "Domain / Model" {
+    class "AccessProfile" as Frontend_iam_AccessProfile <<Entity>> {
+      - _name: AccessProfileName
+      - _description: string
+      - _permissions: AccessPermission[]
+      + get name() : AccessProfileName
+      + get description() : string
+      + get permissions() : AccessPermission[]
+      + get isOwner() : boolean
+      + get isAdmin() : boolean
+      + get isMember() : boolean
+      + get isGuest() : boolean
+    }
+    class "User" as Frontend_iam_User <<Entity>> {
+      - _fullName: string
+      - _email: string
+      - _accessProfileId: number
+      - _accessProfileName: string
+      - _status: string
+      - _createdAt: string
+      + get fullName() : string
+      + get email() : string
+      + get accessProfileId() : number
+      + get accessProfileName() : string
+      + get status() : string
+      + get createdAt() : string
+      + get initials() : string
+    }
+    class "AccessPermission" as Frontend_iam_AccessPermission <<type>> {
+      + VIEW_HOME
+      + CONTROL_DEVICES
+      + MANAGE_DEVICES
+      + MANAGE_ROUTINES
+      + MANAGE_SPACES
+      + VIEW_ENERGY
+      + VIEW_REPORTS
+      + MANAGE_ALERTS
+      + MANAGE_SUPPORT
+      + MANAGE_ACCESS
+    }
+    class "AccessProfileName" as Frontend_iam_AccessProfileName <<type>> {
+      + OWNER
+      + ADMIN
+      + MEMBER
+      + GUEST
+    }
+  }
+}
+
+Frontend_iam_AccessProfile ..> Frontend_iam_AccessProfileName
+Frontend_iam_AccessProfile ..> Frontend_iam_AccessPermission
+Frontend_iam_User ..> Frontend_iam_AccessProfileName
+
+@enduml

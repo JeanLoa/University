@@ -1,0 +1,54 @@
+@startuml
+title LowCortisol WebApp - Support Frontend Infrastructure Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Support / Infrastructure" {
+  package "API" {
+    class "SupportApiService" as Frontend_support_SupportApiService <<API Service>> {
+      + getTickets()
+      + createTicket(payload)
+      + updateTicket(payload)
+      + sendMessage(payload)
+      + getAgents()
+      + getArticles()
+      + getConversations()
+      + getConversationByTicket(ticketId)
+      + getSummary()
+    }
+
+    class "SupportTicketsApiEndpoint" as Frontend_support_SupportTicketsApiEndpoint <<Endpoint>> {
+      + basePath: /support/tickets
+    }
+  }
+
+  package "Assemblers" {
+    class "SupportTicketAssembler" as Frontend_support_SupportTicketAssembler <<Assembler>>
+    class "SupportMessageAssembler" as Frontend_support_SupportMessageAssembler <<Assembler>>
+    class "SupportConversationAssembler" as Frontend_support_SupportConversationAssembler <<Assembler>>
+    class "SupportAgentAssembler" as Frontend_support_SupportAgentAssembler <<Assembler>>
+    class "KnowledgeArticleAssembler" as Frontend_support_KnowledgeArticleAssembler <<Assembler>>
+  }
+
+  package "Resources and Responses" {
+    class "SupportTicketResource" as Frontend_support_SupportTicketResource <<Resource>>
+    class "SupportMessageResource" as Frontend_support_SupportMessageResource <<Resource>>
+    class "SupportConversationResource" as Frontend_support_SupportConversationResource <<Resource>>
+    class "SupportAgentResource" as Frontend_support_SupportAgentResource <<Resource>>
+    class "KnowledgeArticleResource" as Frontend_support_KnowledgeArticleResource <<Resource>>
+    class "SupportTicketsResponse" as Frontend_support_SupportTicketsResponse <<Response>>
+    class "KnowledgeArticlesResponse" as Frontend_support_KnowledgeArticlesResponse <<Response>>
+  }
+}
+
+Frontend_support_SupportApiService --> Frontend_support_SupportTicketsApiEndpoint
+Frontend_support_SupportApiService ..> Frontend_support_SupportTicketAssembler
+Frontend_support_SupportApiService ..> Frontend_support_SupportMessageAssembler
+Frontend_support_SupportApiService ..> Frontend_support_SupportConversationAssembler
+Frontend_support_SupportApiService ..> Frontend_support_SupportAgentAssembler
+Frontend_support_SupportApiService ..> Frontend_support_KnowledgeArticleAssembler
+
+@enduml

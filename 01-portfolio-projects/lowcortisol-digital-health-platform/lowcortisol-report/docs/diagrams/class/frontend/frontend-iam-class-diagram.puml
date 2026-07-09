@@ -1,0 +1,26 @@
+@startuml
+title LowCortisol WebApp - IAM Frontend Bounded Context Layers
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "IAM Frontend Bounded Context" {
+  class "Domain" as Frontend_iam_Domain <<layer>>
+  class "Application" as Frontend_iam_Application <<layer>>
+  class "Infrastructure" as Frontend_iam_Infrastructure <<layer>>
+  class "Presentation" as Frontend_iam_Presentation <<layer>>
+}
+
+Frontend_iam_Presentation ..> Frontend_iam_Application : user actions / state
+Frontend_iam_Application ..> Frontend_iam_Domain : models and rules
+Frontend_iam_Application ..> Frontend_iam_Infrastructure : API services / adapters
+Frontend_iam_Infrastructure ..> Frontend_iam_Domain : resources and mappers
+Frontend_iam_Presentation ..> Frontend_iam_Domain : view models
+
+note bottom of Frontend_iam_Application
+Detailed class diagrams for each layer are available in docs/diagrams/class/frontend/layers/iam.
+end note
+
+@enduml

@@ -1,0 +1,55 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+skinparam wrapWidth 135
+skinparam maxMessageSize 70
+skinparam nodesep 35
+skinparam ranksep 45
+skinparam ArrowColor #8A8A8A
+skinparam ArrowFontColor #666666
+skinparam ArrowFontStyle bold
+skinparam ArrowThickness 1
+skinparam rectangleRoundCorner 0
+skinparam rectangleBorderThickness 0
+skinparam rectangleFontColor #FFFFFF
+skinparam rectangleFontStyle plain
+skinparam rectangle {
+  BorderThickness 0
+  MinimumWidth 155
+  Padding 8
+}
+hide stereotype
+top to bottom direction
+
+title ElectroCorp - C4 Context Diagram
+
+rectangle "<b>ElectroCorp User</b>\n<i>[Person]</i>\n\nHomeowner or business owner who manages energy, devices, reports, support and billing." as User #0B5593
+
+rectangle "<b>ElectroCorp System</b>\n<i>[Software System]</i>\n\nPlatform for energy monitoring, automation, billing, notifications, reporting and service management." as System #0B6FB3
+
+rectangle "<b>Payment Provider</b>\n<i>[External System]</i>\n\nProcesses subscriptions and checkout status." as Payment #7F8C8D
+rectangle "<b>Email Provider</b>\n<i>[External System]</i>\n\nDelivers alerts, reports and support messages." as Mail #7F8C8D
+rectangle "<b>Cloud Hosting</b>\n<i>[External Platform]</i>\n\nHosts public site, SPA and backend services." as Hosting #7F8C8D
+
+User --> System : uses\n[Browser]
+System --> Payment : payments\n[HTTPS / API]
+System --> Mail : notifications\n[HTTPS / API]
+System --> Hosting : deployed on\n[Cloud]
+Payment --> User : payment status
+Mail --> User : emails
+
+Payment -[hidden]right- Mail
+Mail -[hidden]right- Hosting
+User -[hidden]down- System
+System -[hidden]down- Mail
+
+legend right
+  <b>Legend</b>
+  |<#0B5593> person |
+  |<#0B6FB3> system |
+  |<#7F8C8D> external system |
+endlegend
+
+@enduml

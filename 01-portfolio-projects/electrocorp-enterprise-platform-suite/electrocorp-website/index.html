@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Domotics made accessible for Peruvian homes. Control your appliances and save on your electricity bill with our plug-and-play smart plugs.">
+    <meta name="keywords" content="energy saving, home automation Peru, smart plugs, IoT home, electrical efficiency, ElectroCorp">
+    <meta name="author" content="ElectroCorp Team">
+    <meta name="copyright" content="© ElectroCorp.Web, 2026">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="ElectroCorp | Smart Energy Management">
+    <meta property="og:description" content="Domotics made accessible for Peruvian homes. Control your appliances and save on your electricity bill with our plug-and-play smart plugs.">
+    <meta property="og:image" content="img/logo.png">
+    <meta property="og:url" content="https://upc-pre-202610-1asi0729-11896-ecorp.github.io/electrocorp-website/">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="ElectroCorp | Smart Energy Management">
+    <meta name="twitter:description" content="Domotics made accessible for Peruvian homes. Control your appliances and save on your electricity bill.">
+    <meta name="twitter:image" content="img/logo.png">
+    <title>ElectroCorp | Smart Energy Management</title>
+    <link rel="icon" type="image/x-icon" href="img/favicon.ico">
+    <link rel="icon" type="image/png" href="img/electrocorp-tab-icon.png">
+    <link rel="apple-touch-icon" href="img/electrocorp-tab-icon.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<div id="contenido-web">
+    <header class="site-header">
+        <div class="header-shell">
+            <div class="header-brand">
+                <a href="#hero" class="header-brand-link" aria-label="ElectroCorp.Web - Inicio">
+          <span class="header-logo-wrap">
+            <img src="img/logo.png" alt="" class="header-site-logo" width="44" height="44">
+          </span>
+                    <span class="brand-copy">
+            <strong>ElectroCorp</strong><small>.Web</small>
+          </span>
+                </a>
+            </div>
+
+            <nav class="header-nav" aria-label="Navegación principal">
+                <ul class="header-nav-list">
+                    <li><a href="#hero" class="header-nav-link" data-i18n="nav_home">Inicio</a></li>
+                    <li><a href="#service" class="header-nav-link" data-i18n="nav_plans">Planes</a></li>
+                    <li><a href="#que_frequents" class="header-nav-link" data-i18n="nav_que_frequents">Preguntas</a></li>
+                    <li><a href="#reviews" class="header-nav-link" data-i18n="nav_reviews">Testimonios</a></li>
+                    <li><a href="#description" class="header-nav-link" data-i18n="nav_proposal">Propuesta</a></li>
+                    <li><a href="#about" class="header-nav-link" data-i18n="nav_about">Nosotros</a></li>
+                    <li><a href="#direction" class="header-nav-link" data-i18n="nav_direction">Dirección</a></li>
+                    <li><a href="#contact" class="header-nav-link" data-i18n="nav_support">Soporte</a></li>
+                </ul>
+            </nav>
+
+            <div class="header-actions">
+                <a href="https://electrocorp-webapp.onrender.com" class="header-btn header-btn-outline" data-i18n="nav_login">Iniciar sesión</a>
+                <a href="https://electrocorp-webapp.onrender.com" class="header-btn header-btn-primary" data-i18n="nav_register">Registrarse</a>
+                <div class="lang-selector" aria-label="Selector de idioma">
+                    <button type="button" onclick="setLanguage('en')" class="lang-btn" id="btn-lang-en">EN</button>
+                    <button type="button" onclick="setLanguage('es')" class="lang-btn active" id="btn-lang-es">ES</button>
+                    <button type="button" onclick="setLanguage('pt')" class="lang-btn" id="btn-lang-pt">PT</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section id="hero" class="hero search-target">
+            <div class="hero-background" style="background-image: url('img/FondoPantalla2.png');" aria-hidden="true"></div>
+            <div class="hero-grid-pattern" aria-hidden="true"></div>
+            <div class="hero-orb hero-orb--one" aria-hidden="true"></div>
+            <div class="hero-orb hero-orb--two" aria-hidden="true"></div>
+
+            <div class="hero-shell">
+                <div class="hero-main">
+                    <div class="hero-copy" data-reveal>
+            <span class="section-kicker hero-kicker">
+              <i class="fa fa-bolt" aria-hidden="true"></i>
+              <span data-i18n="hero_eyebrow">Energía inteligente para hogares peruanos</span>
+            </span>
+
+                        <h1>
+                            <span data-i18n="hero_title">Domina el consumo eléctrico de tu hogar.</span>
+                            <span class="hero-title-accent" data-i18n="hero_title2">Ahorra hasta un 20% sin complicaciones.</span>
+                        </h1>
+
+                        <p class="hero-lead" data-i18n="hero_lead">
+                            Visualiza tu consumo, recibe alertas y toma mejores decisiones desde una plataforma clara, moderna y fácil de usar.
+                        </p>
+
+                        <div class="hero-actions">
+                            <a href="https://electrocorp-webapp.onrender.com" class="btn btn-primary hero-dashboard-btn">
+                                <span data-i18n="hero_dashboard">Ir al dashboard</span>
+                                <i class="fa fa-arrow-right" aria-hidden="true"></i>
+                            </a>
+                            <a href="#service" class="btn btn-secondary hero-plans-btn">
+                                <span data-i18n="hero_view_plans">Ver planes</span>
+                            </a>
+                        </div>
+
+                        <div class="hero-offer">
+                            <span class="hero-offer-icon"><i class="fa fa-gift" aria-hidden="true"></i></span>
+                            <span data-i18n="hero_subtitle">15% de descuento por 3 meses para los primeros 50 nuevos usuarios</span>
+                        </div>
+
+                        <div class="hero-stats" aria-label="Beneficios principales">
+                            <article class="hero-stat">
+                                <strong>20%</strong>
+                                <span data-i18n="hero_stat_saving">de ahorro estimado</span>
+                            </article>
+                            <article class="hero-stat">
+                                <i class="fa fa-line-chart" aria-hidden="true"></i>
+                                <span data-i18n="hero_stat_realtime">Monitoreo en tiempo real</span>
+                            </article>
+                            <article class="hero-stat">
+                                <i class="fa fa-home" aria-hidden="true"></i>
+                                <span data-i18n="hero_stat_simple">Instalación sin obras</span>
+                            </article>
+                        </div>
+                    </div>
+
+                    <div class="hero-visual" data-reveal style="--reveal-delay: 140ms;">
+                        <div class="hero-visual-frame">
+                            <div class="hero-visual-halo" aria-hidden="true"></div>
+                            <img src="img/superlogo.png" alt="Mascota eléctrica de ElectroCorp" class="hero-character">
+                            <div class="hero-scan" aria-hidden="true"></div>
+                        </div>
+
+                        <div class="floating-card floating-card--saving">
+                            <span class="floating-icon"><i class="fa fa-leaf" aria-hidden="true"></i></span>
+                            <div>
+                                <small data-i18n="hero_float_saving_label">Ahorro potencial</small>
+                                <strong data-i18n="hero_float_saving_value">Hasta 20%</strong>
+                            </div>
+                        </div>
+
+                        <div class="floating-card floating-card--status">
+                            <span class="status-dot" aria-hidden="true"></span>
+                            <div>
+                                <small data-i18n="hero_float_status_label">Estado del sistema</small>
+                                <strong data-i18n="hero_float_status_value">Conectado</strong>
+                            </div>
+                        </div>
+
+                        <div class="floating-card floating-card--alert">
+                            <span class="floating-icon"><i class="fa fa-bell" aria-hidden="true"></i></span>
+                            <div>
+                                <small data-i18n="hero_float_alert_label">Alertas</small>
+                                <strong data-i18n="hero_float_alert_value">Consumo bajo control</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="site-search" data-search-ignore role="search" data-i18n-aria="search_region_label" aria-label="Buscador del sitio ElectroCorp" data-reveal style="--reveal-delay: 220ms;">
+                    <div class="search-heading">
+                        <span><i class="fa fa-compass" aria-hidden="true"></i> <span data-i18n="search_heading">Encuentra lo que necesitas</span></span>
+                        <small data-i18n="search_heading_hint">Explora planes, ahorro, preguntas y soporte</small>
+                    </div>
+
+                    <label class="sr-only" for="searchInput" data-i18n="search_label">Buscar en el sitio de ElectroCorp</label>
+
+                    <div class="search-container" id="searchContainer">
+                        <i class="fa fa-search search-leading-icon" aria-hidden="true"></i>
+                        <input
+                                type="search"
+                                id="searchInput"
+                                placeholder="Busca planes, ahorro, preguntas o soporte"
+                                data-i18n-placeholder="search_placeholder"
+                                autocomplete="off"
+                                spellcheck="false"
+                                aria-autocomplete="list"
+                                aria-controls="searchResults"
+                                aria-expanded="false"
+                                aria-describedby="searchHint searchStatus"
+                        >
+                        <button
+                                type="button"
+                                id="btn-clear-search"
+                                class="search-clear-button"
+                                data-i18n-aria="search_clear"
+                                aria-label="Limpiar búsqueda"
+                                hidden
+                        >
+                            <i class="fa fa-times" aria-hidden="true"></i>
+                        </button>
+                        <button
+                                type="button"
+                                id="btn-buscar"
+                                class="search-submit-button"
+                                data-i18n-aria="search_button"
+                                aria-label="Buscar"
+                        >
+                            <i class="fa fa-arrow-right" aria-hidden="true"></i>
+                        </button>
+                    </div>
+
+                    <div id="searchResults" class="search-results" role="listbox" data-i18n-aria="search_results_label" aria-label="Resultados de búsqueda" hidden></div>
+
+                    <div class="search-helper" id="searchHint">
+                        <span data-i18n="search_try">Prueba:</span>
+                        <button type="button" class="search-chip" data-i18n="search_chip_plans">Planes</button>
+                        <button type="button" class="search-chip" data-i18n="search_chip_saving">Ahorro de energía</button>
+                        <button type="button" class="search-chip" data-i18n="search_chip_questions">Preguntas</button>
+                        <button type="button" class="search-chip" data-i18n="search_chip_support">Soporte</button>
+                    </div>
+
+                    <p id="searchStatus" class="search-status" aria-live="polite" aria-atomic="true"></p>
+                </div>
+            </div>
+        </section>
+
+        <section id="service" class="service-section section-surface search-target">
+            <div class="section-shell">
+                <header class="section-heading" data-reveal>
+                    <span class="section-kicker"><i class="fa fa-tags" aria-hidden="true"></i><span data-i18n="plans_kicker">Planes flexibles</span></span>
+                    <h2 class="title" data-i18n="plans_title">Nuestros Planes</h2>
+                    <p data-i18n="plans_subtitle">Elige el plan que mejor se adapte a tu consumo y tamaño de infraestructura.</p>
+                </header>
+
+                <div class="service-grid">
+                    <article class="service-card search-target" id="plan-starter" data-reveal>
+                        <div class="plan-topline">
+                            <span class="plan-icon"><i class="fa fa-home" aria-hidden="true"></i></span>
+                            <span class="plan-type" data-i18n="plan_starter_type">Para comenzar</span>
+                        </div>
+                        <h3 data-i18n="plan_starter_name">Plan Inicial</h3>
+                        <h4 class="plan-price" data-i18n="normal_plan_price">S/ 18.90 <span><s>S/25.90</s></span></h4>
+                        <p data-i18n="normal_plan_desc">Gestión básica de energía para hogares pequeños.</p>
+                        <ul>
+                            <li data-i18n="normal_plan_li1"><i class="fa fa-check"></i> Hasta 5 dispositivos inteligentes</li>
+                            <li data-i18n="normal_plan_li2"><i class="fa fa-check"></i> Panel de energía básico</li>
+                            <li data-i18n="normal_plan_li3"><i class="fa fa-check"></i> Alertas por correo electrónico</li>
+                        </ul>
+                        <a href="https://electrocorp-webapp.onrender.com" class="btn btn-secondary plan-btn" data-i18n="btn_start">Comprar Servicio</a>
+                    </article>
+
+                    <article class="service-card service-card--featured search-target" id="plan-professional" data-reveal style="--reveal-delay: 100ms;">
+                        <span class="featured-badge"><i class="fa fa-star" aria-hidden="true"></i><span data-i18n="plan_featured">Más elegido</span></span>
+                        <div class="plan-topline">
+                            <span class="plan-icon"><i class="fa fa-line-chart" aria-hidden="true"></i></span>
+                            <span class="plan-type" data-i18n="plan_professional_type">Para crecer</span>
+                        </div>
+                        <h3 data-i18n="plan_professional_name">Plan Profesional</h3>
+                        <h4 class="plan-price" data-i18n="pro_plan_price">S/ 48.90 <span><s>S/52.90</s></span></h4>
+                        <p data-i18n="pro_plan_desc">Control avanzado para hogares y pequeños negocios.</p>
+                        <ul>
+                            <li data-i18n="pro_plan_li1"><i class="fa fa-check"></i> Hasta 20 dispositivos inteligentes</li>
+                            <li data-i18n="pro_plan_li2"><i class="fa fa-check"></i> Análisis avanzado de energía</li>
+                            <li data-i18n="pro_plan_li3"><i class="fa fa-check"></i> Rutinas de automatización</li>
+                            <li data-i18n="pro_plan_li4"><i class="fa fa-check"></i> Reportes mensuales</li>
+                        </ul>
+                        <a href="https://electrocorp-webapp.onrender.com" class="btn btn-primary plan-btn" data-i18n="btn_pro">Comprar Servicio</a>
+                    </article>
+
+                    <article class="service-card search-target" id="plan-enterprise" data-reveal style="--reveal-delay: 200ms;">
+                        <div class="plan-topline">
+                            <span class="plan-icon"><i class="fa fa-building" aria-hidden="true"></i></span>
+                            <span class="plan-type" data-i18n="plan_enterprise_type">Para escalar</span>
+                        </div>
+                        <h3 data-i18n="plan_enterprise_name">Plan Empresarial</h3>
+                        <h4 class="plan-price" data-i18n="plan_ent_price">S/ 128.90 <span><s>S/135.90</s></span></h4>
+                        <p data-i18n="plan_ent_desc">Plataforma completa para múltiples ubicaciones o empresas.</p>
+                        <ul>
+                            <li data-i18n="plan_ent_li1"><i class="fa fa-check"></i> Múltiples ubicaciones comerciales</li>
+                            <li data-i18n="plan_ent_li2"><i class="fa fa-check"></i> Perfiles de acceso para el equipo</li>
+                            <li data-i18n="plan_ent_li3"><i class="fa fa-check"></i> Alertas avanzadas</li>
+                            <li data-i18n="plan_ent_li4"><i class="fa fa-check"></i> Soporte prioritario</li>
+                        </ul>
+                        <a href="https://electrocorp-webapp.onrender.com" class="btn btn-secondary plan-btn" data-i18n="btn_contact">Comprar Servicio</a>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section id="que_frequents" class="que_frequents search-target">
+            <div class="section-shell faq-layout">
+                <div class="faq-intro" data-reveal>
+                    <span class="section-kicker"><i class="fa fa-question-circle" aria-hidden="true"></i><span data-i18n="faq_kicker">Respuestas claras</span></span>
+                    <h2 class="title" data-i18n="faq_title">Preguntas Frecuentes sobre Consumo y Ahorro</h2>
+                    <p class="subtitle" data-i18n="faq_subtitle">Aprende cómo gestionar tu energía de forma inteligente.</p>
+
+                    <div class="faq-highlight">
+                        <span class="faq-highlight-icon"><i class="fa fa-lightbulb-o" aria-hidden="true"></i></span>
+                        <div>
+                            <small data-i18n="faq_highlight_label">Consejo ElectroCorp</small>
+                            <strong data-i18n="faq_highlight_title">Lo que puedes medir, lo puedes mejorar.</strong>
+                            <p data-i18n="faq_highlight_text">Identificar hábitos y consumos innecesarios es el primer paso para reducir el recibo.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-container" data-reveal style="--reveal-delay: 120ms;">
+                    <article class="faq-item search-target" id="faq-high-consumption">
+                        <button class="faq-question faq_q1" type="button" aria-expanded="false" aria-controls="faq-answer-1">
+                            <span class="faq-number">01</span>
+                            <span data-i18n="faq_q1">¿Qué electrodomésticos consumen más electricidad?</span>
+                            <i class="fa fa-plus" aria-hidden="true"></i>
+                        </button>
+                        <div class="faq-answer faq_a1" id="faq-answer-1">
+                            <p data-i18n="faq_a1">Los dispositivos que generan calor o frío son los que más consumen. Esto incluye termas eléctricas, refrigeradoras, planchas y microondas.</p>
+                        </div>
+                    </article>
+
+                    <article class="faq-item search-target" id="faq-realtime-monitoring">
+                        <button class="faq-question faq_q2" type="button" aria-expanded="false" aria-controls="faq-answer-2">
+                            <span class="faq-number">02</span>
+                            <span data-i18n="faq_q2">¿Cómo ayuda el monitoreo en tiempo real a ahorrar energía?</span>
+                            <i class="fa fa-plus" aria-hidden="true"></i>
+                        </button>
+                        <div class="faq-answer faq_a2" id="faq-answer-2">
+                            <p data-i18n="faq_a2">Permite detectar picos de consumo, identificar equipos encendidos innecesariamente y corregir hábitos antes de que eleven el recibo.</p>
+                        </div>
+                    </article>
+
+                    <article class="faq-item search-target" id="faq-standby-consumption">
+                        <button class="faq-question faq_q3" type="button" aria-expanded="false" aria-controls="faq-answer-3">
+                            <span class="faq-number">03</span>
+                            <span data-i18n="faq_q3">¿Qué es el consumo fantasma y cómo evitarlo?</span>
+                            <i class="fa fa-plus" aria-hidden="true"></i>
+                        </button>
+                        <div class="faq-answer faq_a3" id="faq-answer-3">
+                            <p data-i18n="faq_a3">Es la energía que usan los aparatos en modo de espera. Puedes reducirla apagando equipos que no utilizas, creando horarios y configurando alertas de consumo.</p>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section id="reviews" class="reviews section-testimonials search-target">
+            <div class="section-shell">
+                <header class="section-heading" data-reveal>
+                    <span class="section-kicker"><i class="fa fa-comments" aria-hidden="true"></i><span data-i18n="testimonials_kicker">Experiencias reales</span></span>
+                    <h2 class="title" data-i18n="testimonials_sectionTitle">Lo que dicen nuestros clientes</h2>
+                    <p data-i18n="testimonials_subtitle">Personas que ahora entienden mejor cómo se mueve la energía en sus hogares y negocios.</p>
+                </header>
+
+                <div class="testimonial-slider-outer" data-reveal style="--reveal-delay: 100ms;">
+                    <button type="button" class="testimonial-nav testimonial-nav--prev" data-i18n-aria="meta.sliderPrev" aria-label="Comentarios anteriores">
+                        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                    </button>
+                    <div class="testimonial-slider" id="testimonialSlider" data-i18n-aria="meta.testimonialsSlider" aria-label="Carrusel de opiniones de clientes" tabindex="0">
+                        <article class="card card-testimonial">
+                            <div class="testimonial-image-wrap">
+                                <img class="testimonial-avatar" src="https://www.infobae.com/resizer/v2/CPGKD5EXLZEO7OSWENSND5OVTY.jpg?auth=8306f0fc4fae2e4732d6c494ba9c1b392066bcceee750fc18bac160e24c62897&amp;smart=true&amp;width=992&amp;height=558&amp;quality=85" alt="Valentino Cruz">
+                                <span class="testimonial-quote-mark">“</span>
+                            </div>
+                            <div class="testimonial-rating" aria-label="5 estrellas"><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i></div>
+                            <h3>Valentino Cruz</h3>
+                            <p class="testimonial-role" data-i18n="testimonials_rolePremium">Cliente Premium</p>
+                            <p class="testimonial-quote" data-i18n="testimonials_q1">ElectroCorp.Web me muestra qué electrodoméstico gasta de verdad en nuestro hogar.</p>
+                        </article>
+
+                        <article class="card card-testimonial">
+                            <div class="testimonial-image-wrap">
+                                <img class="testimonial-avatar" src="https://i.pinimg.com/736x/46/91/97/46919703baafce4552b2fa913bdf6544.jpg" alt="Thiago Medina">
+                                <span class="testimonial-quote-mark">“</span>
+                            </div>
+                            <div class="testimonial-rating" aria-label="5 estrellas"><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i></div>
+                            <h3>Thiago Medina</h3>
+                            <p class="testimonial-role" data-i18n="testimonials_roleFree">Usuario gratuito</p>
+                            <p class="testimonial-quote" data-i18n="testimonials_q2">Montamos el sistema en nuestros interruptores y enchufes en una tarde.</p>
+                        </article>
+
+                        <article class="card card-testimonial">
+                            <div class="testimonial-image-wrap">
+                                <img class="testimonial-avatar" src="https://www.latercera.com/resizer/v2/CP57ROPIQRBABHJVPYNOD5T3W4.jpeg?auth=5ddd40fdc5b1cfbd6dd64c417ba58ba4797929451bead5919d0a9a0de16f0524&amp;smart=true&amp;width=800&amp;height=1194&amp;quality=70" alt="Lautaro Reyes">
+                                <span class="testimonial-quote-mark">“</span>
+                            </div>
+                            <div class="testimonial-rating" aria-label="5 estrellas"><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i></div>
+                            <h3>Lautaro Reyes</h3>
+                            <p class="testimonial-role" data-i18n="testimonials_rolePremium">Cliente Premium</p>
+                            <p class="testimonial-quote" data-i18n="testimonials_q3">Programo equipos y veo el consumo al instante.</p>
+                        </article>
+
+                        <article class="card card-testimonial">
+                            <div class="testimonial-image-wrap">
+                                <img class="testimonial-avatar" src="https://lastfm.freetls.fastly.net/i/u/ar0/795e76529611a50bc65374e23f1e6161.jpg" alt="Barbara Cantarero">
+                                <span class="testimonial-quote-mark">“</span>
+                            </div>
+                            <div class="testimonial-rating" aria-label="5 estrellas"><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i></div>
+                            <h3>Barbara Cantarero</h3>
+                            <p class="testimonial-role" data-i18n="testimonials_rolePremium">Cliente Premium</p>
+                            <p class="testimonial-quote" data-i18n="testimonials_q4">La plataforma web se entiende y me permite planificar con datos.</p>
+                        </article>
+
+                        <article class="card card-testimonial">
+                            <div class="testimonial-image-wrap">
+                                <img class="testimonial-avatar" src="https://akamai.sscdn.co/uploadfile/letras/fotos/0/a/1/a/0a1a2368485c5fea7bb5aa9ca3377a27.jpg" alt="Matias Solano">
+                                <span class="testimonial-quote-mark">“</span>
+                            </div>
+                            <div class="testimonial-rating" aria-label="5 estrellas"><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i></div>
+                            <h3>Matias Solano</h3>
+                            <p class="testimonial-role" data-i18n="testimonials_roleFree">Usuario gratuito</p>
+                            <p class="testimonial-quote" data-i18n="testimonials_q5">Lo manejamos todo con ElectroCorp.Web desde una experiencia accesible.</p>
+                        </article>
+                    </div>
+                    <button type="button" class="testimonial-nav testimonial-nav--next" data-i18n-aria="meta.sliderNext" aria-label="Comentarios siguientes">
+                        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <section id="description" class="proposal-section search-target">
+            <div class="proposal-glow" aria-hidden="true"></div>
+            <div class="section-shell proposal-grid">
+                <div class="proposal-copy" data-reveal>
+                    <span class="section-kicker"><i class="fa fa-bolt" aria-hidden="true"></i><span data-i18n="proposal_kicker">Descripción + objetivos</span></span>
+                    <h2 class="title" data-i18n="proposal_title">Una sola propuesta para entender y transformar tu consumo.</h2>
+                    <p class="proposal-lead" data-i18n="desc_text1">ElectroCorp es una startup tecnológica enfocada en democratizar la domótica y la eficiencia energética para los hogares peruanos.</p>
+
+                    <div class="proposal-points">
+                        <article class="proposal-point search-target" id="proposal-problem">
+                            <span class="proposal-point-icon"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i></span>
+                            <div>
+                                <small data-i18n="proposal_problem_label">El problema</small>
+                                <h3 data-i18n="proposal_problem_title">La energía inteligente todavía se siente costosa y complicada.</h3>
+                                <p data-i18n="desc_text2">Convertir una casa en inteligente suele requerir cables, técnicos y aplicaciones difíciles de entender, mientras el costo de la electricidad continúa creciendo.</p>
+                            </div>
+                        </article>
+
+                        <article class="proposal-point search-target" id="proposal-solution">
+                            <span class="proposal-point-icon"><i class="fa fa-cogs" aria-hidden="true"></i></span>
+                            <div>
+                                <small data-i18n="proposal_solution_label">Nuestra solución</small>
+                                <h3 data-i18n="proposal_solution_title">Un ecosistema conectado, claro y fácil de adoptar.</h3>
+                                <p data-i18n="desc_text3">Integramos control remoto, monitoreo en tiempo real y automatización sobre una plataforma sencilla, sin obras complejas en el hogar.</p>
+                            </div>
+                        </article>
+
+                        <article class="proposal-point search-target" id="proposal-goal">
+                            <span class="proposal-point-icon"><i class="fa fa-bullseye" aria-hidden="true"></i></span>
+                            <div>
+                                <small data-i18n="proposal_goal_label">Nuestro objetivo</small>
+                                <h3 data-i18n="proposal_goal_title">Que cada decisión energética sea más económica y sostenible.</h3>
+                                <p data-i18n="goals_text">Buscamos que familias y nuevos negocios en el Perú gestionen su consumo eléctrico de forma eficiente, reduzcan gastos y adopten hábitos sostenibles desde una app y una plataforma web.</p>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+
+                <div class="ecosystem-gallery" data-reveal style="--reveal-delay: 140ms;" aria-label="Ecosistema visual de ElectroCorp">
+                    <figure class="ecosystem-card ecosystem-card--main">
+                        <img src="img/sensorLuz.png" alt="Control de iluminación desde un teléfono">
+                        <figcaption><i class="fa fa-wifi" aria-hidden="true"></i><span data-i18n="ecosystem_lighting">Control conectado</span></figcaption>
+                    </figure>
+
+                    <figure class="ecosystem-card ecosystem-card--app">
+                        <img src="img/AppImage.jpg" alt="Aplicación móvil mostrando el consumo de una lámpara">
+                        <figcaption><i class="fa fa-mobile" aria-hidden="true"></i><span data-i18n="ecosystem_monitoring">Monitoreo desde la app</span></figcaption>
+                    </figure>
+
+                    <figure class="ecosystem-card ecosystem-card--device-one">
+                        <img src="img/EnchufeInteligente1.jpg" alt="Dispositivo conectado monitoreando una cafetera">
+                        <figcaption><i class="fa fa-bar-chart" aria-hidden="true"></i><span data-i18n="ecosystem_measurement">Medición doméstica</span></figcaption>
+                    </figure>
+
+                    <figure class="ecosystem-card ecosystem-card--device-two">
+                        <img src="img/EnchufeInteligente2.jpg" alt="Dispositivo conectado instalado en el hogar">
+                        <figcaption><i class="fa fa-home" aria-hidden="true"></i><span data-i18n="ecosystem_integration">Integración en el hogar</span></figcaption>
+                    </figure>
+
+                    <div class="ecosystem-live-badge">
+                        <span class="status-dot"></span>
+                        <span data-i18n="ecosystem_live">Ecosistema en tiempo real</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="about" class="section-about search-target">
+            <div class="section-shell container-about">
+                <header class="section-heading" data-reveal>
+                    <span class="section-kicker"><i class="fa fa-users" aria-hidden="true"></i><span data-i18n="about_kicker">El equipo detrás de la idea</span></span>
+                    <h2 class="title about-title" data-i18n="about_title">Nosotros</h2>
+                    <p class="about-lead" data-i18n="about_lead">Estudiantes de Ingeniería de Software de la UPC impulsando ElectroCorp.Web.</p>
+                </header>
+
+                <div class="container-team-div">
+                    <article class="card card-team" data-reveal>
+                        <div class="team-card-top"><img class="team-upc-badge" src="https://upload.wikimedia.org/wikipedia/commons/f/fc/UPC_logo_transparente.png" alt="UPC"><span>01</span></div>
+                        <h3>Diego Alexander Cabrejos Chocco</h3>
+                        <p class="team-role" data-i18n="about_role_diego">Lógica y enfoque backend</p>
+                        <p class="team-bio" data-i18n="about_bio_diego">Estudiante de Ingeniería de Software en UPC. Aporta estructura backend y APIs en ElectroCorp.Web.</p>
+                    </article>
+
+                    <article class="card card-team" data-reveal style="--reveal-delay: 70ms;">
+                        <div class="team-card-top"><img class="team-upc-badge" src="https://upload.wikimedia.org/wikipedia/commons/f/fc/UPC_logo_transparente.png" alt="UPC"><span>02</span></div>
+                        <h3>Sebastian Oswaldo Tavara Correa</h3>
+                        <p class="team-role" data-i18n="about_role_seb">Datos y monitoreo</p>
+                        <p class="team-bio" data-i18n="about_bio_seb">Flujos de datos, métricas y vistas de consumo en la plataforma.</p>
+                    </article>
+
+                    <article class="card card-team" data-reveal style="--reveal-delay: 140ms;">
+                        <div class="team-card-top"><img class="team-upc-badge" src="https://upload.wikimedia.org/wikipedia/commons/f/fc/UPC_logo_transparente.png" alt="UPC"><span>03</span></div>
+                        <h3>Jean Franck Loa Rojas</h3>
+                        <p class="team-role" data-i18n="about_role_gho">Lógica e integración</p>
+                        <p class="team-bio" data-i18n="about_bio_gho">Conecta servicios y piezas de punta a punta.</p>
+                    </article>
+
+                    <article class="card card-team" data-reveal style="--reveal-delay: 210ms;">
+                        <div class="team-card-top"><img class="team-upc-badge" src="https://upload.wikimedia.org/wikipedia/commons/f/fc/UPC_logo_transparente.png" alt="UPC"><span>04</span></div>
+                        <h3>Jairo Mathias Santiago Atanacio</h3>
+                        <p class="team-role" data-i18n="about_role_alex">UI / UX y frontend</p>
+                        <p class="team-bio" data-i18n="about_bio_alex">Diseño e interfaz de la plataforma ElectroCorp.Web y la app.</p>
+                    </article>
+
+                    <article class="card card-team" data-reveal style="--reveal-delay: 280ms;">
+                        <div class="team-card-top"><img class="team-upc-badge" src="https://upload.wikimedia.org/wikipedia/commons/f/fc/UPC_logo_transparente.png" alt="UPC"><span>05</span></div>
+                        <h3>Carolina Celeste Navarro Aldoradin</h3>
+                        <p class="team-role" data-i18n="about_role_ronal">Lógica y calidad</p>
+                        <p class="team-bio" data-i18n="about_bio_ronal">Calidad de código, pruebas y entregas estables entre funcionalidades.</p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section id="direction" class="direction search-target">
+            <div class="section-shell">
+                <header class="section-heading" data-reveal>
+                    <span class="section-kicker"><i class="fa fa-map-marker" aria-hidden="true"></i><span data-i18n="direction_kicker">Dónde encontrarnos</span></span>
+                    <h2 class="title" data-i18n="direction_title">Nuestra Dirección</h2>
+                    <p class="subtitle" data-i18n="direction_subtitle">¿Quieres visitarnos o saber desde dónde operamos?</p>
+                </header>
+
+                <div class="direction-container">
+                    <div class="direction-info" data-reveal>
+                        <div class="direction-icon"><i class="fa fa-building" aria-hidden="true"></i></div>
+                        <h3 data-i18n="direction_hq">Sede Central ElectroCorp</h3>
+                        <p><i class="fa fa-map-marker"></i><span data-i18n="direction_address">Av. Prolongación Primavera 2390, Monterrico, Surco, Lima - Perú (Sede UPC)</span></p>
+                        <p><i class="fa fa-envelope"></i><span>contacto@electrocorp.web.pe</span></p>
+                        <p><i class="fa fa-phone"></i><span>+51 987 654 321</span></p>
+                        <p><i class="fa fa-clock-o"></i><span data-i18n="direction_hours">Horario: Lunes a Viernes de 9:00 AM a 6:00 PM</span></p>
+                    </div>
+
+                    <div class="direction-map" data-reveal style="--reveal-delay: 120ms;">
+                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3901.326229569429!2d-76.96639892404097!3d-12.106596488151241!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9105c7143fbd6d5b%3A0xc34a5d3f2fcab96e!2sUniversidad%20Peruana%20de%20Ciencias%20Aplicadas%20(UPC)!5e0!3m2!1ses!2spe!4v1700000000000!5m2!1ses!2spe" width="100%" height="100%" style="border:0;" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Mapa de la sede de ElectroCorp"></iframe>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="contact search-target">
+            <div class="section-shell">
+                <div class="contact-card" data-reveal>
+                    <div class="contact-copy">
+                        <span class="section-kicker"><i class="fa fa-paper-plane" aria-hidden="true"></i><span data-i18n="contact_kicker">Mantente conectado</span></span>
+                        <h2 class="title" data-i18n="contact_title">Únete a la Revolución Eléctrica</h2>
+                        <p data-i18n="contact_subtitle">Recibe consejos de ahorro, novedades de la plataforma y recursos para gestionar mejor tu energía.</p>
+                    </div>
+
+                    <div class="contact-form-wrap">
+                        <form id="form-suscripcion">
+                            <label class="sr-only" for="email-boletin" data-i18n="newsletter_label">Correo electrónico</label>
+                            <i class="fa fa-envelope-o form-icon" aria-hidden="true"></i>
+                            <input type="email" id="email-boletin" placeholder="Tu mejor correo electrónico" data-i18n-placeholder="newsletter_placeholder" required>
+                            <button type="submit" class="btn btn-primary" data-i18n="btn_send">Enviar</button>
+                        </form>
+                        <p id="mensaje-suscripcion" class="subscription-message" aria-live="polite"></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-videos">
+            <div class="footer-video-card">
+                <h3>About The Team</h3>
+                <div class="footer-video-frame">
+                    <iframe
+                            src="https://www.youtube.com/embed/zALarkP7iTo"
+                            title="About The Team - ElectroCorp"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen>
+                    </iframe>
+                </div>
+            </div>
+
+            <div class="footer-video-card">
+                <h3>About The Product</h3>
+                <div class="footer-video-frame">
+                    <iframe
+                            src="https://www.youtube.com/embed/gOa7swmUcqU"
+                            title="About The Product - ElectroCorp"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen>
+                    </iframe>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-shell">
+            <div class="footer-brand">
+                <img src="img/logo.png" alt="" width="42" height="42">
+                <div>
+                    <strong>ElectroCorp.Web</strong>
+                    <span data-i18n="footer_tagline">Energía clara. Decisiones inteligentes.</span>
+                </div>
+            </div>
+
+            <ul class="footer-socials" aria-label="Redes sociales">
+                <li><a href="#" aria-label="GitHub"><i class="fa fa-github"></i></a></li>
+                <li><a href="#" aria-label="Facebook"><i class="fa fa-facebook"></i></a></li>
+                <li><a href="#" aria-label="LinkedIn"><i class="fa fa-linkedin"></i></a></li>
+            </ul>
+
+            <div class="footer-legal">
+                <p>© 2026 ElectroCorp.Web</p>
+                <p data-i18n="footer_rights">Todos los derechos reservados.</p>
+                <p>
+                    <a href="terms.html" class="footer-terms-link" data-i18n="footer_terms">
+                        Terms and Conditions
+                    </a>
+                </p>
+            </div>
+        </div>
+
+        <button
+                id="btn-audio"
+                class="audio-toggle"
+                type="button"
+                data-i18n-aria="audio_toggle"
+                aria-label="Activar o desactivar música"
+        >
+            <i class="fa fa-volume-off" id="icono-audio" aria-hidden="true"></i>
+        </button>
+    </footer>
+</div>
+
+<audio id="musica-fondo" loop>
+    <source src="audio/ElectroCorp.mp3" type="audio/mp3">
+</audio>
+
+<script src="js/i18n.js"></script>
+<script src="js/search.js"></script>
+<script src="js/newsletter.js"></script>
+<script src="js/testimonials.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/faq_question.js"></script>
+<script src="js/reveal.js"></script>
+</body>
+</html>

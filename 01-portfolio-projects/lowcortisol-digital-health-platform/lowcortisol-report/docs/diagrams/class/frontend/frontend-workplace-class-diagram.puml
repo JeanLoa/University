@@ -1,0 +1,26 @@
+@startuml
+title LowCortisol WebApp - Workplace Frontend Bounded Context Layers
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Workplace Frontend Bounded Context" {
+  class "Domain" as Frontend_workplace_Domain <<layer>>
+  class "Application" as Frontend_workplace_Application <<layer>>
+  class "Infrastructure" as Frontend_workplace_Infrastructure <<layer>>
+  class "Presentation" as Frontend_workplace_Presentation <<layer>>
+}
+
+Frontend_workplace_Presentation ..> Frontend_workplace_Application : user actions / state
+Frontend_workplace_Application ..> Frontend_workplace_Domain : models and rules
+Frontend_workplace_Application ..> Frontend_workplace_Infrastructure : API services / adapters
+Frontend_workplace_Infrastructure ..> Frontend_workplace_Domain : resources and mappers
+Frontend_workplace_Presentation ..> Frontend_workplace_Domain : view models
+
+note bottom of Frontend_workplace_Application
+Detailed class diagrams for each layer are available in docs/diagrams/class/frontend/layers/workplace.
+end note
+
+@enduml

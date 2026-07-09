@@ -1,0 +1,50 @@
+@startuml
+title ElectroCorp Platform - Reporting Backend Infrastructure Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Reporting / Infrastructure" {
+  package "Infrastructure / Export" {
+    class "ConsumptionReportCsvExporter" as Backend_reporting_ConsumptionReportCsvExporter <<Class>> {
+      + export(List<ConsumptionReport> reports) : byte[]
+    }
+    class "EnergyGoalCsvExporter" as Backend_reporting_EnergyGoalCsvExporter <<Class>> {
+      + export(List<EnergyGoal> goals) : byte[]
+      - sanitize(String value) : String
+    }
+  }
+  package "Infrastructure / JPA" {
+    class "ReportingJpaTableNames" as Backend_reporting_ReportingJpaTableNames <<Class>> {
+      + CONSUMPTION_REPORTS: String
+      + ENERGY_GOALS: String
+      - ReportingJpaTableNames()
+    }
+    class "ReportingQueryHints" as Backend_reporting_ReportingQueryHints <<Class>> {
+      + FIND_REPORTS_BY_USER: String
+      + FIND_GOALS_BY_USER: String
+      + FIND_ACTIVE_GOALS: String
+      - ReportingQueryHints()
+    }
+  }
+  package "Infrastructure / JPA Repositories" {
+    interface "JpaConsumptionReportRepository" as Backend_reporting_JpaConsumptionReportRepository <<interface>> {
+    }
+    interface "JpaEnergyGoalRepository" as Backend_reporting_JpaEnergyGoalRepository <<interface>> {
+    }
+  }
+}
+
+
+
+' Layer relationship completion: every declared type participates in this layer diagram.
+Backend_reporting_JpaConsumptionReportRepository ..> Backend_reporting_ConsumptionReportCsvExporter
+Backend_reporting_JpaConsumptionReportRepository ..> Backend_reporting_EnergyGoalCsvExporter
+Backend_reporting_JpaConsumptionReportRepository ..> Backend_reporting_ReportingJpaTableNames
+Backend_reporting_JpaConsumptionReportRepository ..> Backend_reporting_ReportingQueryHints
+Backend_reporting_JpaConsumptionReportRepository ..> Backend_reporting_ConsumptionReportCsvExporter
+Backend_reporting_JpaConsumptionReportRepository ..> Backend_reporting_JpaEnergyGoalRepository
+
+@enduml

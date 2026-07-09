@@ -1,0 +1,88 @@
+*   b801b9b (HEAD -> develop, origin/develop) merge: sync main into develop after release
+|\  
+| *   389127f (origin/main, origin/HEAD, main) merge: integrate release into main
+| |\  
+| | * 0f55919 (origin/release, release) merge: prepare release from develop
+| |/| 
+| |/  
+|/|   
+* |   cef53ad merge: integrate group landing review feature
+|\ \  
+| * | 2ef0074 (origin/feature/group-landing-review, feature/group-landing-review) docs: add group landing review evidence
+| |/  
+* |   7139842 merge: integrate Msa_ware technical review feature
+|\ \  
+| * | f22b793 (origin/feature/msa-technical-review, feature/msa-technical-review) docs: check deployment documentation consistency
+| * | e7ad469 docs: review file organization
+| * | c4ed852 docs: check architecture consistency
+| * | 017b46b docs: review technical structure
+| * | 3af09da docs: add Msa_ware contribution evidence
+| |/  
+* |   bccc17a merge: integrate HiApple content review feature
+|\ \  
+| * | 6df3a2d (origin/feature/hiapple-content-review, feature/hiapple-content-review) docs: review UI language consistency
+| * | 104e1e3 docs: validate pricing descriptions
+| * | 8c85fc2 docs: check support content wording
+| * | 8d9416b docs: review FAQ content
+| * | e6136cb docs: add HiApple contribution evidence
+| |/  
+* |   65ca849 merge: integrate contribution evidence feature
+|\ \  
+| |/  
+|/|   
+| * 974d11f (origin/feature/contribution-evidence, feature/contribution-evidence) docs: check final website consistency
+| * 8143bc0 docs: review visual hierarchy
+| * 6d8f11d docs: validate navigation flow and report alignment
+| * 5079a71 docs: review landing page section order
+| * 4ae8fe7 docs: add Sebastian contribution evidence
+|/  
+* 6ea9cfd (origin/feature/responsive-design, origin/feature/pricing-and-plans, origin/feature/i18n-language, origin/feature/header-and-navigation, origin/feature/faq-and-support, origin/feature/auth-pages, origin/feature/assets-and-images, feature/responsive-design, feature/pricing-and-plans, feature/i18n-language, feature/header-and-navigation, feature/faq-and-support, feature/auth-pages, feature/assets-and-images) chore: normalize contributor identities with mailmap
+* cb2292e Delete files txt
+* 061777d (origin/backup/main-before-gitflow-authorship, backup/main-before-gitflow-authorship) Fix style in pricing
+* 7e23b30 fix: fix sections.css
+* 401b53e fix: fix sections.css
+* 8d33ad6 Update from Jean
+* fd29c25 fix(sections.css): fix service
+* 48f73c2 fix: fix idiom boton
+* c738a6d feat: feat idiom pt
+* 7defcde feat: feat pro plan
+* c885153 Flujo de compra simplificado y estilo adecuado a la webapp
+* ef6051d Update from Jean: delete html files as dashboard, login, register and added refs to webapp
+* cd36375 Update index.html
+* d3a07f3 Rename faq_questions.js to faq_question.js
+* 9d2ab52 Update index.html
+* 40051b1 feat: feat and fix i18n.js
+* 179cf42 feat: feat faq_questions.js and all code
+* b12d294 feat: feat faq_qx and faq_ax
+* 017dd55 fix: fix html, add que_frequents, add direction and add promos
+* ad80ce5 fix: fix code and price of the service
+* a12995c feat: add superlogo.png
+* 626266e fix: fix styles.css
+* c0905a9 feat: add testimonials.css
+* 8ac5cf7 feat: add sections.css
+* 2332a9b feat: add responsive.css
+* bce75f4 feat: add hero.css
+* 86d00f9 feat: add header.css
+* f37a01a feat: add base.css
+* e51878f feat: add auth.css
+* cc903a4 feat: add about.css
+* ddb6de0 feat: add search.js and testimonials.js
+* 43e4942 feat: add newsletter.js
+* 147f150 feat: add i18n.js code
+* 6262106 feat: add audio.js
+* 1619d70 feat: add login.html, register.html and index.html
+* b3353e5 feat: add login.html
+* cfb0aa6 fix: fix index.html
+* 2cd7263 feat: Add file css and file js
+* a4d0ef1 feat: add file js and file css
+* 3f6e317 fix index.html
+* af077bc Add files via upload
+* c1e023c fix(Main) fix index.html
+* e26b50b fix(Main) fix styles.css
+* b0e3e62 add(Main) add scripts.js
+* 8efadb5 Create add(Main) add scripts.js
+* be2e670 Delete ElectroCorp-WebSite.zip
+* dcbadb4 styles(plataform): add styles to plataform section
+* 1e6161c feat(plataform): add plataform section
+* 8a9f5b9 Add files via upload
+* ff0e741 Initial commit

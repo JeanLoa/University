@@ -1,0 +1,26 @@
+@startuml
+title ElectroCorp Platform - Notifications Backend Bounded Context Layers
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Notifications Backend Bounded Context" {
+  class "Application" as Backend_notifications_Application <<layer>>
+  class "Domain" as Backend_notifications_Domain <<layer>>
+  class "Infrastructure" as Backend_notifications_Infrastructure <<layer>>
+  class "Interfaces REST" as Backend_notifications_Interfaces_REST <<layer>>
+}
+
+Backend_notifications_Interfaces_REST ..> Backend_notifications_Application : commands / queries
+Backend_notifications_Application ..> Backend_notifications_Domain : model and policies
+Backend_notifications_Application ..> Backend_notifications_Infrastructure : repository ports / adapters
+Backend_notifications_Infrastructure ..> Backend_notifications_Domain : persistence mapping
+Backend_notifications_Interfaces_REST ..> Backend_notifications_Domain : resources from aggregates
+
+note bottom of Backend_notifications_Application
+Detailed class diagrams for each layer are available in docs/diagrams/class/backend/layers/notifications.
+end note
+
+@enduml

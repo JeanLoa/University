@@ -1,0 +1,68 @@
+<main class="route-planner-page">
+  <header class="topbar">
+    <div class="brand-lockup">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <div>
+        <strong>SmartLocation</strong>
+        <span>Route Intelligence Console</span>
+      </div>
+    </div>
+
+    <div class="topbar__status">
+      <app-status-badge label="Mapa real" tone="ready" />
+      <app-status-badge [label]="facade.originPlace()?.district ?? 'Origen'" tone="accent" />
+      <app-status-badge [label]="facade.destinationPlace()?.district ?? 'Destino'" tone="alert" />
+    </div>
+  </header>
+
+  <section class="console-grid">
+    <aside class="surface surface--control">
+      <app-route-control-panel
+        [pickerMode]="facade.pickerMode()"
+        [selectedAlgorithm]="facade.selectedAlgorithm()"
+        [autoCalculateRoute]="facade.autoCalculateRoute()"
+        [algorithmOptions]="facade.algorithmOptions"
+        [provinceOptions]="facade.provinceOptions()"
+        [districtOptions]="facade.districtOptions()"
+        [selectedProvinceId]="facade.selectedProvinceId()"
+        [selectedDistrictId]="facade.selectedDistrictId()"
+        [freeOriginPoint]="facade.freeOriginPoint()"
+        [freeDestinationPoint]="facade.freeDestinationPoint()"
+        [originPlace]="facade.originPlace()"
+        [destinationPlace]="facade.destinationPlace()"
+        [originPlaceStatus]="facade.originPlaceStatus()"
+        [destinationPlaceStatus]="facade.destinationPlaceStatus()"
+        [roadRouteStatus]="facade.roadRouteStatus()"
+        [roadRouteError]="facade.roadRouteError()"
+        (provinceChanged)="facade.selectProvince($event)"
+        (districtChanged)="facade.selectDistrict($event)"
+        (algorithmChanged)="facade.selectAlgorithm($event)"
+        (autoCalculateChanged)="facade.setAutoCalculateRoute($event)"
+        (pickerModeChanged)="facade.setPickerMode($event)"
+        (routeRequested)="facade.refreshRoadRoute()"
+      />
+    </aside>
+
+    <section class="surface surface--map">
+      <app-route-network-map
+        [pickerMode]="facade.pickerMode()"
+        [selectedTerritory]="facade.selectedMapTerritory()"
+        [focusTerritories]="facade.focusMapTerritories()"
+        [territoryTrail]="facade.selectedMapTrail()"
+        [freeOriginPoint]="facade.freeOriginPoint()"
+        [freeDestinationPoint]="facade.freeDestinationPoint()"
+        [roadRoute]="facade.roadRoute()"
+        [roadRouteStatus]="facade.roadRouteStatus()"
+        [geoJsonLayers]="facade.mapLayerViewModel()"
+        (mapPointSelected)="facade.selectMapPoint($event)"
+      />
+    </section>
+
+    <aside class="surface surface--metrics">
+      <app-route-metrics-panel
+        [roadRoute]="facade.roadRoute()"
+        [roadRouteStatus]="facade.roadRouteStatus()"
+      />
+    </aside>
+  </section>
+</main>

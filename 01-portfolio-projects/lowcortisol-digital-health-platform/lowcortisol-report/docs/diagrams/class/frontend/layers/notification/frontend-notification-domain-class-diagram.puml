@@ -1,0 +1,183 @@
+@startuml
+title LowCortisol WebApp - Notification Frontend Domain Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Notification / Domain" {
+  package "Domain / Model" {
+    class "Alert" as Frontend_notification_Alert <<Entity>> {
+      - _userId: number
+      - _title: string
+      - _message: string
+      - _level: AlertLevel
+      - _sourceType: AlertSourceType
+      - _sourceId: string | null
+      - _sourceLabel: string | null
+      - _eventType: AlertEventType
+      - _threadKey: string
+      - _evidence: string | null
+      - _explanation: string | null
+      - _recommendedAction: string | null
+      - _severityScore: number
+      - _repeatCount: number
+      - _active: boolean
+      - _resolved: boolean
+      - _read: boolean
+      - _createdAt: string
+    }
+    class "AlertEventType" as Frontend_notification_AlertEventType <<type>> {
+    }
+    class "AlertLevel" as Frontend_notification_AlertLevel <<type>> {
+      + 'STABLE' | 'INFO' | 'WARNING' | 'CRITICAL' | 'SUCCESS'
+    }
+    class "AlertRule" as Frontend_notification_AlertRule <<Entity>> {
+      - _userId: number
+      - _name: string
+      - _metric: AlertRuleMetric
+      - _condition: AlertRuleCondition
+      - _threshold: number
+      - _level: AlertLevel
+      - _scopeType: RuleScopeType
+      - _scopeId: string | null
+      - _evaluatorType: RuleEvaluatorType
+      - _weight: number
+      - _profileName: string
+      - _enabled: boolean
+      - _createdAt: string
+      + constructor: (props:
+      + get: userId(): number
+      + get: name(): string
+      + get: metric(): AlertRuleMetric
+      + get: condition(): AlertRuleCondition
+    }
+    class "AlertRuleCondition" as Frontend_notification_AlertRuleCondition <<type>> {
+      + 'GREATER_THAN' | 'GREATER_OR_EQUAL_THAN'
+    }
+    class "AlertRuleMetric" as Frontend_notification_AlertRuleMetric <<type>> {
+      + 'WATTS' | 'HIGH_READING_COUNT' | 'AVERAGE_WATTS'
+    }
+    class "AlertRuleProfile" as Frontend_notification_AlertRuleProfile <<Entity>> {
+      + constructor: (
+      + props
+      + userId: number
+      + name: string
+      + description: string
+      + scopeType: RuleScopeType
+      + scopeId: string | null
+      + mode: RuleProfileMode
+      + sensitivity: RuleSensitivity
+      + active: boolean
+    }
+    class "AlertSourceType" as Frontend_notification_AlertSourceType <<type>> {
+      + | 'DEVICE' | 'GROUP' | 'ROOM' | 'WORKPLACE' | 'ROUTINE' | 'GOAL' | 'REPORT' | 'SYSTEM' | 'RULE' | 'MODE'
+    }
+    interface "NotificationClassificationPolicy" as Frontend_notification_NotificationClassificationPolicy <<interface>> {
+      + stableMax: number
+      + neutralMax: number
+      + warningMax: number
+    }
+    class "NotificationDeliveryMode" as Frontend_notification_NotificationDeliveryMode <<type>> {
+      + 'BANNER' | 'QUIET' | 'INBOX_ONLY' | 'MUTED'
+    }
+    class "NotificationPreference" as Frontend_notification_NotificationPreference <<Entity>> {
+      - _userId: number
+      - _emailEnabled: boolean
+      - _pushEnabled: boolean
+      - _inAppEnabled: boolean
+      - _toastEnabled: boolean
+      - _dashboardEnabled: boolean
+      - _criticalOnly: boolean
+      - _minimumLevel: AlertLevel
+      - _scopeType: NotificationPreferenceScope
+      - _scopeId: string | null
+      - _allowedLevels: AlertLevel[]
+      - _allowedSourceTypes: AlertSourceType[]
+      - _quietHoursEnabled: boolean
+      - _quietHoursStart: string
+      - _quietHoursEnd: string
+      - _criticalBreaksQuietHours: boolean
+      - _groupSimilarAlerts: boolean
+      - _remindersEnabled: boolean
+    }
+    class "NotificationPreferenceScope" as Frontend_notification_NotificationPreferenceScope <<type>> {
+      + 'USER' | 'WORKPLACE'
+    }
+    interface "NotificationSeverityBand" as Frontend_notification_NotificationSeverityBand <<interface>> {
+      + level: AlertLevel
+      + label: string
+      + from: number
+      + to: number
+      + tone: 'stable' | 'info' | 'warning' | 'critical'
+      + description: string
+    }
+    interface "RuleEvaluationResult" as Frontend_notification_RuleEvaluationResult <<interface>> {
+      + userId: number
+      + scopeType: RuleScopeType
+      + scopeId: string | null
+      + level: AlertLevel
+      + severityScore: number
+      + evidence: string
+      + explanation: string
+      + recommendedAction: string
+      + sourceType: AlertSourceType
+      + sourceId: string | null
+      + eventType: AlertEventType
+      + threadKey: string
+      + activeEvaluatorCount: number
+      + totalWeight: number
+    }
+    class "RuleEvaluatorType" as Frontend_notification_RuleEvaluatorType <<type>> {
+    }
+    class "RuleProfileMode" as Frontend_notification_RuleProfileMode <<type>> {
+      + 'BALANCED' | 'SAVINGS' | 'PROTECTION'
+    }
+    class "RuleScopeType" as Frontend_notification_RuleScopeType <<type>> {
+      + 'GENERAL' | 'WORKPLACE' | 'ROOM' | 'DEVICE' | 'GROUP' | 'ROUTINE' | 'GOAL'
+    }
+    class "RuleSensitivity" as Frontend_notification_RuleSensitivity <<type>> {
+      + 'LOW' | 'NORMAL' | 'HIGH' | 'STRICT'
+    }
+  }
+  package "Domain / Services" {
+    class "AlertPriorityService" as Frontend_notification_AlertPriorityService <<Domain Service>> {
+      - priority: Record<AlertLevel, number>
+      + sortByPriority(alerts: Alert[]) : Alert[]
+      + getPriorityValue(level: AlertLevel) : number
+    }
+    class "NotificationChannelPolicyService" as Frontend_notification_NotificationChannelPolicyService <<Domain Service>> {
+      + canNotify(preference: NotificationPreference | null, level: AlertLevel) : boolean
+      - isLevelAllowed(level: AlertLevel, minimumLevel: AlertLevel) : boolean
+    }
+  }
+}
+
+Frontend_notification_AlertPriorityService ..> Frontend_notification_Alert
+Frontend_notification_AlertPriorityService ..> Frontend_notification_AlertLevel
+Frontend_notification_AlertRule ..> Frontend_notification_AlertLevel
+Frontend_notification_AlertRuleCondition ..> Frontend_notification_AlertLevel
+Frontend_notification_AlertRuleMetric ..> Frontend_notification_AlertLevel
+Frontend_notification_AlertRuleProfile ..> Frontend_notification_RuleScopeType
+Frontend_notification_NotificationChannelPolicyService ..> Frontend_notification_AlertLevel
+Frontend_notification_NotificationChannelPolicyService ..> Frontend_notification_NotificationPreference
+Frontend_notification_NotificationClassificationPolicy ..> Frontend_notification_AlertLevel
+Frontend_notification_NotificationDeliveryMode ..> Frontend_notification_AlertLevel
+Frontend_notification_NotificationDeliveryMode ..> Frontend_notification_AlertSourceType
+Frontend_notification_NotificationPreference ..> Frontend_notification_AlertLevel
+Frontend_notification_NotificationPreference ..> Frontend_notification_AlertSourceType
+Frontend_notification_NotificationPreferenceScope ..> Frontend_notification_AlertLevel
+Frontend_notification_NotificationPreferenceScope ..> Frontend_notification_AlertSourceType
+Frontend_notification_NotificationSeverityBand ..> Frontend_notification_AlertLevel
+Frontend_notification_RuleEvaluationResult ..> Frontend_notification_AlertEventType
+Frontend_notification_RuleEvaluationResult ..> Frontend_notification_AlertLevel
+Frontend_notification_RuleEvaluationResult ..> Frontend_notification_AlertSourceType
+Frontend_notification_RuleEvaluationResult ..> Frontend_notification_RuleScopeType
+Frontend_notification_RuleEvaluatorType ..> Frontend_notification_AlertLevel
+Frontend_notification_RuleProfileMode ..> Frontend_notification_RuleScopeType
+Frontend_notification_RuleScopeType ..> Frontend_notification_AlertLevel
+Frontend_notification_RuleSensitivity ..> Frontend_notification_RuleScopeType
+
+
+@enduml

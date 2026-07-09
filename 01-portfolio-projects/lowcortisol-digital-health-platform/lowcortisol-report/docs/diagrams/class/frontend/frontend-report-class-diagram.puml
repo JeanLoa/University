@@ -1,0 +1,26 @@
+@startuml
+title LowCortisol WebApp - Report Experience Layers
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Report Experience Feature Area" {
+  class "Domain" as Frontend_report_Domain <<layer>>
+  class "Application" as Frontend_report_Application <<layer>>
+  class "Infrastructure" as Frontend_report_Infrastructure <<layer>>
+  class "Presentation" as Frontend_report_Presentation <<layer>>
+}
+
+Frontend_report_Presentation ..> Frontend_report_Application : user actions / state
+Frontend_report_Application ..> Frontend_report_Domain : models and rules
+Frontend_report_Application ..> Frontend_report_Infrastructure : API services / adapters
+Frontend_report_Infrastructure ..> Frontend_report_Domain : resources and mappers
+Frontend_report_Presentation ..> Frontend_report_Domain : view models
+
+note bottom of Frontend_report_Application
+Detailed class diagrams for each layer are available in docs/diagrams/class/frontend/layers/report.
+end note
+
+@enduml

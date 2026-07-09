@@ -1,0 +1,90 @@
+@startuml
+title ElectroCorp Platform - Service Management Backend Interfaces REST Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Service Management / Interfaces REST" {
+  package "Interfaces / REST Assemblers" {
+    class "CreateMaintenanceTicketCommandFromResourceAssembler" as Backend_servicemanagement_CreateMaintenanceTicketCommandFromResourceAssembler <<Assembler>> {
+      + toCommandFromResource(CreateMaintenanceTicketResource resource, Long userId) : CreateMaintenanceTicketCommand
+    }
+    class "CreateSupportTicketCommandFromResourceAssembler" as Backend_servicemanagement_CreateSupportTicketCommandFromResourceAssembler <<Assembler>> {
+      + toCommandFromResource(CreateSupportTicketResource resource, Long userId) : CreateSupportTicketCommand
+    }
+    class "MaintenanceTicketResourceFromEntityAssembler" as Backend_servicemanagement_MaintenanceTicketResourceFromEntityAssembler <<Assembler>> {
+      + toResourceFromEntity(MaintenanceTicket ticket) : MaintenanceTicketResource
+    }
+    class "SupportTicketResourceFromEntityAssembler" as Backend_servicemanagement_SupportTicketResourceFromEntityAssembler <<Assembler>> {
+      + toResourceFromEntity(SupportTicket ticket) : SupportTicketResource
+    }
+    class "UpdateTicketStatusCommandFromResourceAssembler" as Backend_servicemanagement_UpdateTicketStatusCommandFromResourceAssembler <<Assembler>> {
+      + toCommandFromResource(UpdateTicketStatusResource resource) : UpdateTicketStatusCommand
+    }
+  }
+  package "Interfaces / REST Controllers" {
+    class "ServiceManagementController" as Backend_servicemanagement_ServiceManagementController <<REST Controller>> {
+      - service: ServiceManagementApplicationService
+      - currentUserProvider: CurrentUserProvider
+      + getSupportTickets() : List<SupportTicketResource>
+      + createSupportTicket(CreateSupportTicketResource request) : SupportTicketResource
+      + updateSupportStatus(Long ticketId, UpdateTicketStatusResource request) : SupportTicketResource
+      + deleteSupportTicket(Long ticketId) : void
+      + getMaintenanceTickets() : List<MaintenanceTicketResource>
+      + createMaintenanceTicket(CreateMaintenanceTicketResource request) : MaintenanceTicketResource
+      + updateMaintenanceStatus(Long ticketId, UpdateTicketStatusResource request) : MaintenanceTicketResource
+      + deleteMaintenanceTicket(Long ticketId) : void
+    }
+  }
+  package "Interfaces / REST Resources" {
+    class "CreateMaintenanceTicketResource" as Backend_servicemanagement_CreateMaintenanceTicketResource <<record>> {
+      + Long deviceId
+      + String deviceName
+      + String type
+      + String description
+      + LocalDate scheduledDate
+    }
+    class "CreateSupportTicketResource" as Backend_servicemanagement_CreateSupportTicketResource <<record>> {
+      + String subject
+      + String description
+      + String priority
+    }
+    class "MaintenanceTicketResource" as Backend_servicemanagement_MaintenanceTicketResource <<record>> {
+      + Long id
+      + Long userId
+      + Long deviceId
+      + String deviceName
+      + String type
+      + String description
+      + LocalDate scheduledDate
+      + String status
+      + from(MaintenanceTicket ticket) : MaintenanceTicketResource
+    }
+    class "SupportTicketResource" as Backend_servicemanagement_SupportTicketResource <<record>> {
+      + Long id
+      + Long userId
+      + String subject
+      + String description
+      + String priority
+      + String status
+      + LocalDate createdAt
+      + from(SupportTicket ticket) : SupportTicketResource
+    }
+    class "UpdateTicketStatusResource" as Backend_servicemanagement_UpdateTicketStatusResource <<record>> {
+      + String status
+    }
+  }
+}
+
+Backend_servicemanagement_CreateMaintenanceTicketCommandFromResourceAssembler ..> Backend_servicemanagement_CreateMaintenanceTicketResource
+Backend_servicemanagement_CreateSupportTicketCommandFromResourceAssembler ..> Backend_servicemanagement_CreateSupportTicketResource
+Backend_servicemanagement_MaintenanceTicketResourceFromEntityAssembler ..> Backend_servicemanagement_MaintenanceTicketResource
+Backend_servicemanagement_SupportTicketResourceFromEntityAssembler ..> Backend_servicemanagement_SupportTicketResource
+Backend_servicemanagement_UpdateTicketStatusCommandFromResourceAssembler ..> Backend_servicemanagement_UpdateTicketStatusResource
+
+' Layer relationship completion: every declared type participates in this layer diagram.
+Backend_servicemanagement_CreateMaintenanceTicketResource ..> Backend_servicemanagement_ServiceManagementController
+
+@enduml

@@ -1,0 +1,66 @@
+@startuml
+title LowCortisol Platform - Workplace Database Diagram
+left to right direction
+hide circle
+skinparam linetype ortho
+skinparam shadowing false
+skinparam packageStyle rectangle
+
+package "Workplace" {
+  entity "sites" as sites {
+    PK id : uuid
+    name : varchar(120) <<unique>>
+    address : varchar(240)
+    type : varchar(40)
+    status : varchar(40)
+    created_at : timestamp
+    updated_at : timestamp
+  }
+
+  entity "rooms" as rooms {
+    PK id : uuid
+    FK site_id : uuid
+    name : varchar(120)
+    type : varchar(40)
+    status : varchar(40)
+    created_at : timestamp
+    updated_at : timestamp
+  }
+
+  entity "device_groups" as device_groups {
+    PK id : uuid
+    FK room_id : uuid
+    name : varchar(120)
+    resource_type : varchar(40)
+    status : varchar(40)
+    created_at : timestamp
+    updated_at : timestamp
+  }
+}
+
+package "External References" {
+  entity "devices" as devices <<DeviceControl>> {
+    PK id
+    device_group_id
+  }
+  entity "consumption_readings" as readings <<Monitoring>> {
+    PK id
+    site_id
+    room_id
+    device_group_id
+  }
+  entity "support_tickets" as tickets <<Support>> {
+    PK id
+    site_id
+  }
+}
+
+sites ||--o{ rooms : site_id
+rooms ||--o{ device_groups : room_id
+device_groups ||..o{ devices : device_group_id
+sites ||..o{ readings : site_id
+rooms ||..o{ readings : room_id
+device_groups ||..o{ readings : device_group_id
+sites ||..o{ tickets : site_id
+
+@enduml

@@ -1,0 +1,72 @@
+@startuml
+title LowCortisol Platform - Shared Backend Infrastructure Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Shared / Infrastructure" {
+  package "Infrastructure / Configuration" {
+    class "CorsConfig" as Backend_shared_CorsConfig <<Configuration>> {
+      - allowedOrigins: String[]
+      + CorsConfig(("$app.cors.allowed-origins:http://localhost:4200")
+      + corsConfigurer() : WebMvcConfigurer
+      + addCorsMappings(CorsRegistry registry) : void
+    }
+    class "OpenApiConfig" as Backend_shared_OpenApiConfig <<Configuration>> {
+    }
+  }
+  package "Infrastructure / Events" {
+    class "DomainEventPublisher" as Backend_shared_DomainEventPublisher <<Domain Event>> {
+      - applicationEventPublisher: ApplicationEventPublisher
+      + publish(DomainEvent event) : void
+    }
+  }
+  package "Infrastructure / EF Core" {
+    class "JpaAuditingConfiguration" as Backend_shared_JpaAuditingConfiguration <<Class>> {
+    }
+    class "JpaUnitOfWork" as Backend_shared_JpaUnitOfWork <<Class>> {
+      + execute(Runnable operation) : void
+      + execute(Supplier<T> operation) : <T> T
+    }
+    class "PersistenceConstants" as Backend_shared_PersistenceConstants <<Class>> {
+      + DEFAULT_SCHEMA: String
+      - PersistenceConstants()
+    }
+  }
+  package "Infrastructure / EF Core Strategy" {
+    class "SnakeCasePhysicalNamingStrategy" as Backend_shared_SnakeCasePhysicalNamingStrategy <<Class>> {
+      + toPhysicalCatalogName(Identifier name, JdbcEnvironment context) : Identifier
+      + toPhysicalSchemaName(Identifier name, JdbcEnvironment context) : Identifier
+      + toPhysicalTableName(Identifier name, JdbcEnvironment context) : Identifier
+      + toPhysicalSequenceName(Identifier name, JdbcEnvironment context) : Identifier
+      + toPhysicalColumnName(Identifier name, JdbcEnvironment context) : Identifier
+      - apply(Identifier name) : Identifier
+      - toSnakeCase(String value) : String
+    }
+  }
+  package "Infrastructure / Security" {
+    class "CurrentUserProvider" as Backend_shared_CurrentUserProvider <<Security>> {
+      + getCurrentUserId() : Long
+    }
+    class "SecurityConfig" as Backend_shared_SecurityConfig <<Security>> {
+      + passwordEncoder() : PasswordEncoder
+    }
+  }
+}
+
+
+
+' Layer relationship completion: every declared type participates in this layer diagram.
+Backend_shared_CorsConfig ..> Backend_shared_OpenApiConfig
+Backend_shared_CorsConfig ..> Backend_shared_OpenApiConfig
+Backend_shared_CorsConfig ..> Backend_shared_DomainEventPublisher
+Backend_shared_CorsConfig ..> Backend_shared_JpaAuditingConfiguration
+Backend_shared_CorsConfig ..> Backend_shared_JpaUnitOfWork
+Backend_shared_CorsConfig ..> Backend_shared_PersistenceConstants
+Backend_shared_CorsConfig ..> Backend_shared_SnakeCasePhysicalNamingStrategy
+Backend_shared_CorsConfig ..> Backend_shared_CurrentUserProvider
+Backend_shared_CorsConfig ..> Backend_shared_SecurityConfig
+
+@enduml

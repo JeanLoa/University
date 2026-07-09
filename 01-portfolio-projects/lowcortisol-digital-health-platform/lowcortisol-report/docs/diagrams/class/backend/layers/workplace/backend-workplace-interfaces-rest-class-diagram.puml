@@ -1,0 +1,125 @@
+@startuml
+title LowCortisol Platform - Workplace Backend Interfaces REST Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Workplace / Interfaces REST" {
+  package "Interfaces / REST Assemblers" {
+    class "AssignDeviceCommandFromResourceAssembler" as Backend_workplace_AssignDeviceCommandFromResourceAssembler <<Assembler>> {
+      - AssignDeviceCommandFromResourceAssembler()
+      + toCommandFromResource(AssignDeviceResource resource) : AssignDeviceCommand
+    }
+    class "CreateLocationCommandFromResourceAssembler" as Backend_workplace_CreateLocationCommandFromResourceAssembler <<Assembler>> {
+      - CreateLocationCommandFromResourceAssembler()
+      + toCommandFromResource(CreateLocationResource resource, Long userId) : CreateLocationCommand
+    }
+    class "CreateRoomCommandFromResourceAssembler" as Backend_workplace_CreateRoomCommandFromResourceAssembler <<Assembler>> {
+      - CreateRoomCommandFromResourceAssembler()
+      + toCommandFromResource(CreateRoomResource resource) : CreateRoomCommand
+    }
+    class "DeviceAssignmentResourceFromEntityAssembler" as Backend_workplace_DeviceAssignmentResourceFromEntityAssembler <<Assembler>> {
+      - DeviceAssignmentResourceFromEntityAssembler()
+      + toResourceFromEntity(DeviceAssignment entity) : DeviceAssignmentResource
+    }
+    class "LocationResourceFromEntityAssembler" as Backend_workplace_LocationResourceFromEntityAssembler <<Assembler>> {
+      - LocationResourceFromEntityAssembler()
+      + toResourceFromEntity(Location entity) : LocationResource
+    }
+    class "RoomResourceFromEntityAssembler" as Backend_workplace_RoomResourceFromEntityAssembler <<Assembler>> {
+      - RoomResourceFromEntityAssembler()
+      + toResourceFromEntity(Room entity) : RoomResource
+    }
+  }
+  package "Interfaces / REST Controllers" {
+    class "WorkplaceController" as Backend_workplace_WorkplaceController <<REST Controller>> {
+      - service: WorkplaceApplicationService
+      - currentUserProvider: CurrentUserProvider
+      + getLocations() : List<LocationResource>
+      + createLocation(CreateLocationResource request) : LocationResource
+      + createRoom(CreateRoomResource request) : RoomResource
+      + assignDevice(AssignDeviceResource request) : DeviceAssignmentResource
+      + deleteLocation(Long locationId) : void
+      + deleteRoom(Long roomId) : void
+      + deleteAssignment(Long assignmentId) : void
+    }
+  }
+  package "Interfaces / REST Resources" {
+    class "AssignDeviceResource" as Backend_workplace_AssignDeviceResource <<record>> {
+      + Long deviceId
+      + Long roomId
+      + Long locationId
+    }
+    class "CreateLocationResource" as Backend_workplace_CreateLocationResource <<record>> {
+      + String name
+      + String address
+      + String type
+    }
+    class "CreateRoomResource" as Backend_workplace_CreateRoomResource <<record>> {
+      + Long locationId
+      + String name
+      + String floor
+    }
+    class "DeviceAssignmentResource" as Backend_workplace_DeviceAssignmentResource <<record>> {
+      + Long id
+      + Long deviceId
+      + Long roomId
+      + Long locationId
+      + LocalDateTime assignedAt
+      + from(DeviceAssignment assignment) : DeviceAssignmentResource
+    }
+    class "LocationResource" as Backend_workplace_LocationResource <<record>> {
+      + Long id
+      + Long userId
+      + String name
+      + String address
+      + String type
+      + LocalDate createdAt
+      + from(Location location) : LocationResource
+    }
+    class "MoveDeviceAssignmentResource" as Backend_workplace_MoveDeviceAssignmentResource <<record>> {
+      + Long locationId
+      + Long roomId
+    }
+    class "RoomResource" as Backend_workplace_RoomResource <<record>> {
+      + Long id
+      + Long locationId
+      + String name
+      + String floor
+      + LocalDate createdAt
+      + from(Room room) : RoomResource
+    }
+    class "UpdateLocationResource" as Backend_workplace_UpdateLocationResource <<record>> {
+      + String name
+      + String address
+      + String type
+    }
+    class "UpdateRoomResource" as Backend_workplace_UpdateRoomResource <<record>> {
+      + Long locationId
+      + String name
+      + String floor
+    }
+  }
+}
+
+Backend_workplace_AssignDeviceCommandFromResourceAssembler ..> Backend_workplace_AssignDeviceResource
+Backend_workplace_CreateLocationCommandFromResourceAssembler ..> Backend_workplace_CreateLocationResource
+Backend_workplace_CreateRoomCommandFromResourceAssembler ..> Backend_workplace_CreateRoomResource
+Backend_workplace_DeviceAssignmentResourceFromEntityAssembler ..> Backend_workplace_DeviceAssignmentResource
+Backend_workplace_LocationResourceFromEntityAssembler ..> Backend_workplace_LocationResource
+Backend_workplace_RoomResourceFromEntityAssembler ..> Backend_workplace_RoomResource
+Backend_workplace_WorkplaceController ..> Backend_workplace_AssignDeviceCommandFromResourceAssembler
+Backend_workplace_WorkplaceController ..> Backend_workplace_CreateLocationCommandFromResourceAssembler
+Backend_workplace_WorkplaceController ..> Backend_workplace_CreateRoomCommandFromResourceAssembler
+Backend_workplace_WorkplaceController ..> Backend_workplace_DeviceAssignmentResourceFromEntityAssembler
+Backend_workplace_WorkplaceController ..> Backend_workplace_LocationResourceFromEntityAssembler
+Backend_workplace_WorkplaceController ..> Backend_workplace_RoomResourceFromEntityAssembler
+Backend_workplace_WorkplaceController ..> Backend_workplace_MoveDeviceAssignmentResource
+Backend_workplace_WorkplaceController ..> Backend_workplace_UpdateLocationResource
+
+' Layer relationship completion: every declared type participates in this layer diagram.
+Backend_workplace_WorkplaceController ..> Backend_workplace_UpdateRoomResource
+
+@enduml

@@ -1,0 +1,109 @@
+@startuml
+title LowCortisol WebApp - Workplace Frontend Application Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Workplace / Application" {
+  package "Application / Commands" {
+    interface "AssignDeviceCommand" as Frontend_workplace_AssignDeviceCommand <<interface>> {
+      + deviceId: number
+      + locationId: number
+      + roomId?: number | null
+    }
+    interface "CreateLocationCommand" as Frontend_workplace_CreateLocationCommand <<interface>> {
+      + name: string
+      + address: string
+      + type: LocationType
+    }
+    interface "CreateRoomCommand" as Frontend_workplace_CreateRoomCommand <<interface>> {
+      + locationId: number
+      + name: string
+      + floor: string
+    }
+    interface "MoveDeviceAssignmentCommand" as Frontend_workplace_MoveDeviceAssignmentCommand <<interface>> {
+      + assignmentId: number
+      + locationId: number
+      + roomId?: number | null
+    }
+    interface "UpdateLocationCommand" as Frontend_workplace_UpdateLocationCommand <<interface>> {
+      + locationId: number
+      + name: string
+      + address: string
+      + type: LocationType
+    }
+    interface "UpdateRoomCommand" as Frontend_workplace_UpdateRoomCommand <<interface>> {
+      + roomId: number
+      + locationId: number
+      + name: string
+      + floor: string
+    }
+  }
+  package "Application / Facades and Services" {
+    class "ActiveWorkplaceContextService" as Frontend_workplace_ActiveWorkplaceContextService <<Service>> {
+      - activeLocationIdSignal
+      - locationsSignal
+      + setActiveLocation(locationId: number | null) : void
+      + clearActiveLocation() : void
+      + ensureActiveLocation(locations: Location[]) : Location | null
+      - restoreActiveLocationId() : number | null
+    }
+    class "WorkplaceFacade" as Frontend_workplace_WorkplaceFacade <<Facade>> {
+      - locationAssembler
+      - roomAssembler
+      - deviceAssignmentAssembler
+      + get: locations()
+      + get: rooms()
+      + get: deviceAssignments()
+      + get: loading()
+      + get: error()
+      + get: businessLocations()
+      + get: branchLocations()
+      + get: homeLocations()
+      + constructor: (
+      - locationsApi: LocationsApiService
+      - roomsApi: RoomsApiService
+      - deviceAssignmentsApi: DeviceAssignmentsApiService
+      - deviceControlFacade: DeviceControlFacade
+      - store: WorkplaceStore
+      + loadWorkplace() : Promise<void>
+    }
+  }
+  package "Application / Stores" {
+    class "WorkplaceStore" as Frontend_workplace_WorkplaceStore <<Store>> {
+      - locationsSignal
+      - roomsSignal
+      - deviceAssignmentsSignal
+      - loadingSignal
+      - errorSignal
+      + setLocations(value: Location[]) : void
+      + prependLocation(value: Location) : void
+      + updateLocation(value: Location) : void
+      + removeLocation(locationId: number) : void
+      + setRooms(value: Room[]) : void
+      + prependRoom(value: Room) : void
+      + updateRoom(value: Room) : void
+      + removeRoom(roomId: number) : void
+      + setDeviceAssignments(value: DeviceAssignment[]) : void
+      + prependDeviceAssignment(value: DeviceAssignment) : void
+      + updateDeviceAssignment(value: DeviceAssignment) : void
+      + removeDeviceAssignment(assignmentId: number) : void
+      + setLoading(value: boolean) : void
+    }
+  }
+}
+
+Frontend_workplace_WorkplaceFacade ..> Frontend_workplace_AssignDeviceCommand
+Frontend_workplace_WorkplaceFacade ..> Frontend_workplace_CreateLocationCommand
+Frontend_workplace_WorkplaceFacade ..> Frontend_workplace_CreateRoomCommand
+Frontend_workplace_WorkplaceFacade ..> Frontend_workplace_MoveDeviceAssignmentCommand
+Frontend_workplace_WorkplaceFacade ..> Frontend_workplace_UpdateLocationCommand
+Frontend_workplace_WorkplaceFacade ..> Frontend_workplace_UpdateRoomCommand
+Frontend_workplace_WorkplaceFacade ..> Frontend_workplace_WorkplaceStore
+
+' Layer relationship completion: every declared type participates in this layer diagram.
+Frontend_workplace_WorkplaceFacade ..> Frontend_workplace_ActiveWorkplaceContextService
+
+@enduml

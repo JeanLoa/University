@@ -1,0 +1,130 @@
+@startuml
+title ElectroCorp Web App - Energy Monitoring Frontend Infrastructure Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Energy Monitoring / Infrastructure" {
+  package "Infrastructure / API Services" {
+    class "EnergyReadingsApiService" as Frontend_energy_monitoring_EnergyReadingsApiService <<API Service>> {
+      + constructor: (
+      + http: HttpClient
+      + apiBaseUrl: string
+      + findAllForCurrentUser() : Observable<EnergyReadingResponse[]>
+      + getDashboardSummary() : Observable<EnergyDashboardSummaryResponse>
+      + getSamplingSettings() : Observable<EnergySamplingSettingsResponse>
+      + updateSamplingSettings(sampleSeconds: number) : Observable<EnergySamplingSettingsResponse>
+      + findCurrentUserByDateRange: (
+      + startDate: string
+      + endDate: string
+    }
+  }
+  package "Infrastructure / Assemblers" {
+    class "EnergyReadingAssembler" as Frontend_energy_monitoring_EnergyReadingAssembler <<Assembler>> {
+      + override: toEntity(response: EnergyReadingResponse): EnergyReading
+      + override: toResource(entity: EnergyReading): EnergyReadingResource
+    }
+  }
+  package "Infrastructure / Resources" {
+    interface "EnergyReadingResource" as Frontend_energy_monitoring_EnergyReadingResource <<interface>> {
+      + userId?: number
+      + deviceId: number
+      + deviceName: string
+      + watts: number
+      + kilowattHours?: number
+      + estimatedCost?: number
+      + sampleSeconds?: number
+      + recordedAt: string
+      + status: EnergyReadingStatus
+    }
+  }
+  package "Infrastructure / Responses" {
+    interface "EnergyActiveDeviceResponse" as Frontend_energy_monitoring_EnergyActiveDeviceResponse <<interface>> {
+      + deviceId: number
+      + name: string
+      + room: string
+      + type: string
+      + watts: number
+      + costPerHour: number
+    }
+    interface "EnergyDashboardSummaryResponse" as Frontend_energy_monitoring_EnergyDashboardSummaryResponse <<interface>> {
+      + currentWatts: number
+      + todayKilowattHours: number
+      + todayEstimatedCost: number
+      + projectedMonthlyCost: number
+      + costPerHour: number
+      + peakWatts: number
+      + averageWatts: number
+      + activeDevices: number
+      + monitoredDevices: number
+      + normalReadings: number
+      + highReadings: number
+      + efficiencyScore: number
+      + operationalStatus: string
+      + recommendation: string
+      + activeAlerts: number
+      + criticalAlerts: number
+      + latestAlertLevel: string | null
+      + latestAlertTitle: string | null
+    }
+    interface "EnergyDeviceConsumptionResponse" as Frontend_energy_monitoring_EnergyDeviceConsumptionResponse <<interface>> {
+      + deviceId: number
+      + name: string
+      + room: string
+      + type: string
+      + watts: number
+      + kilowattHours: number
+      + estimatedCost: number
+      + readings: number
+      + highReadings: number
+    }
+    interface "EnergyReadingResponse" as Frontend_energy_monitoring_EnergyReadingResponse <<interface>> {
+      + userId: number
+      + deviceId: number
+      + deviceName: string
+      + watts: number
+      + kilowattHours?: number
+      + estimatedCost?: number
+      + sampleSeconds?: number
+      + recordedAt: string
+      + status?: EnergyReadingStatus
+    }
+    interface "EnergyRoomConsumptionResponse" as Frontend_energy_monitoring_EnergyRoomConsumptionResponse <<interface>> {
+      + room: string
+      + watts: number
+      + kilowattHours: number
+      + estimatedCost: number
+      + activeDevices: number
+    }
+    interface "EnergySamplingSettingsResponse" as Frontend_energy_monitoring_EnergySamplingSettingsResponse <<interface>> {
+      + sampleSeconds: number
+    }
+    interface "EnergyTrendPointResponse" as Frontend_energy_monitoring_EnergyTrendPointResponse <<interface>> {
+      + label: string
+      + deviceName: string
+      + watts: number
+      + kilowattHours: number
+      + estimatedCost: number
+      + sampleSeconds: number
+      + high: boolean
+    }
+  }
+}
+
+Frontend_energy_monitoring_EnergyReadingAssembler ..> Frontend_energy_monitoring_EnergyReadingResource
+Frontend_energy_monitoring_EnergyReadingAssembler ..> Frontend_energy_monitoring_EnergyReadingResponse
+Frontend_energy_monitoring_EnergyReadingsApiService ..> Frontend_energy_monitoring_EnergyDashboardSummaryResponse
+Frontend_energy_monitoring_EnergyReadingsApiService ..> Frontend_energy_monitoring_EnergyReadingAssembler
+Frontend_energy_monitoring_EnergyReadingsApiService ..> Frontend_energy_monitoring_EnergyReadingResource
+Frontend_energy_monitoring_EnergyReadingsApiService ..> Frontend_energy_monitoring_EnergyReadingResponse
+Frontend_energy_monitoring_EnergyReadingsApiService ..> Frontend_energy_monitoring_EnergySamplingSettingsResponse
+
+' Layer relationship completion: every declared type participates in this layer diagram.
+Frontend_energy_monitoring_EnergyReadingsApiService ..> Frontend_energy_monitoring_EnergyActiveDeviceResponse
+Frontend_energy_monitoring_EnergyReadingsApiService ..> Frontend_energy_monitoring_EnergyDeviceConsumptionResponse
+Frontend_energy_monitoring_EnergyReadingsApiService ..> Frontend_energy_monitoring_EnergyRoomConsumptionResponse
+Frontend_energy_monitoring_EnergyReadingsApiService ..> Frontend_energy_monitoring_EnergyTrendPointResponse
+
+@enduml

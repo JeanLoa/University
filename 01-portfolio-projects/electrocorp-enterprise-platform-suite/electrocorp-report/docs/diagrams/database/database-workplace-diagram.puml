@@ -1,0 +1,56 @@
+@startuml
+title ElectroCorp Platform - Workplace Database Diagram
+left to right direction
+hide circle
+skinparam linetype ortho
+skinparam shadowing false
+skinparam packageStyle rectangle
+package "Workplace" {
+  entity "device_assignments" as device_assignments {
+    PK id : bigint
+    created_at : timestamp
+    updated_at : timestamp
+    device_id : bigint
+    room_id : bigint
+    location_id : bigint
+    assigned_at : timestamp
+  }
+  entity "locations" as locations {
+    PK id : bigint
+    created_at : timestamp
+    updated_at : timestamp
+    user_id : bigint
+    name : varchar
+    address : varchar
+    type : varchar
+  }
+  entity "rooms" as rooms {
+    PK id : bigint
+    created_at : timestamp
+    updated_at : timestamp
+    location_id : bigint
+    name : varchar
+    floor : varchar
+  }
+}
+
+package "External References" {
+  entity "devices" as devices <<external>> {
+    PK id
+  }
+  entity "operation_modes" as operation_modes <<external>> {
+    PK id
+  }
+  entity "users" as users <<external>> {
+    PK id
+  }
+}
+
+devices ||--o{ device_assignments : device_id
+locations ||--o{ device_assignments : location_id
+locations ||--o{ operation_modes : location_id
+locations ||--o{ rooms : location_id
+rooms ||--o{ device_assignments : room_id
+users ||--o{ locations : user_id
+
+@enduml

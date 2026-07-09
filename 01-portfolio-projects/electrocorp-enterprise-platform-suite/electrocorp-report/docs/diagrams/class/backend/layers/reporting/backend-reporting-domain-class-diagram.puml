@@ -1,0 +1,161 @@
+@startuml
+title ElectroCorp Platform - Reporting Backend Domain Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Reporting / Domain" {
+  package "Domain / Aggregates" {
+    class "ConsumptionReport" as Backend_reporting_ConsumptionReport <<Aggregate>> {
+      - userId: Long
+      - totalWatts: BigDecimal
+      - averageWatts: BigDecimal
+      - highestWatts: BigDecimal
+      - startDate: LocalDate
+      - endDate: LocalDate
+    }
+    class "EnergyGoal" as Backend_reporting_EnergyGoal <<Aggregate>> {
+      - userId: Long
+      - title: String
+      - targetKilowattHours: BigDecimal
+      - currentKilowattHours: BigDecimal
+      - deadline: LocalDate
+      - status: String
+      - scopeType: String
+      - scopeId: Long
+      - scopeName: String
+      - activeFrom: LocalTime
+      - activeTo: LocalTime
+    }
+  }
+  package "Domain / Commands" {
+    class "CreateConsumptionReportCommand" as Backend_reporting_CreateConsumptionReportCommand <<record>> {
+      + Long userId
+      + LocalDate startDate
+      + LocalDate endDate
+    }
+    class "CreateEnergyGoalCommand" as Backend_reporting_CreateEnergyGoalCommand <<record>> {
+      + Long userId
+      + String title
+      + BigDecimal targetKilowattHours
+      + LocalDate deadline
+      + String scopeType
+      + Long scopeId
+      + String scopeName
+      + LocalTime activeFrom
+      + LocalTime activeTo
+    }
+    class "DeleteEnergyGoalCommand" as Backend_reporting_DeleteEnergyGoalCommand <<record>> {
+      + Long userId
+      + Long goalId
+    }
+    class "ExportReportCommand" as Backend_reporting_ExportReportCommand <<record>> {
+      + Long userId
+      + LocalDate startDate
+      + LocalDate endDate
+      + String format
+    }
+    class "GenerateConsumptionReportCommand" as Backend_reporting_GenerateConsumptionReportCommand <<record>> {
+      + Long userId
+      + LocalDate startDate
+      + LocalDate endDate
+    }
+    class "UpdateEnergyGoalCommand" as Backend_reporting_UpdateEnergyGoalCommand <<record>> {
+      + Long userId
+      + Long goalId
+      + String title
+      + BigDecimal targetKilowattHours
+      + BigDecimal currentKilowattHours
+      + LocalDate deadline
+      + String status
+      + String scopeType
+      + Long scopeId
+      + String scopeName
+      + LocalTime activeFrom
+      + LocalTime activeTo
+    }
+  }
+  package "Domain / Queries" {
+    class "GetConsumptionReportsByUserQuery" as Backend_reporting_GetConsumptionReportsByUserQuery <<record>> {
+      + Long userId
+      + GetConsumptionReportsByUserQuery(Long userId) : record
+    }
+    class "GetEnergyGoalsByUserQuery" as Backend_reporting_GetEnergyGoalsByUserQuery <<record>> {
+      + Long userId
+      + GetEnergyGoalsByUserQuery(Long userId) : record
+    }
+  }
+  package "Domain / Repositories" {
+    interface "ConsumptionReportRepository" as Backend_reporting_ConsumptionReportRepository <<interface>> {
+    }
+    interface "EnergyGoalRepository" as Backend_reporting_EnergyGoalRepository <<interface>> {
+    }
+  }
+  package "Domain / Services" {
+    class "ConsumptionReportPolicyService" as Backend_reporting_ConsumptionReportPolicyService <<Domain Service>> {
+      + validateReportRange(LocalDate startDate, LocalDate endDate) : void
+      + isValidRange(LocalDate startDate, LocalDate endDate) : boolean
+    }
+    class "EnergyGoalPolicyService" as Backend_reporting_EnergyGoalPolicyService <<Domain Service>> {
+      + canCreateGoal(String title, BigDecimal targetKilowattHours, LocalDate deadline) : boolean
+    }
+    class "EnergyGoalProgressService" as Backend_reporting_EnergyGoalProgressService <<Domain Service>> {
+      + calculateProgressPercentage(BigDecimal currentKilowattHours, BigDecimal targetKilowattHours) : BigDecimal
+      + isCompleted(BigDecimal currentKilowattHours, BigDecimal targetKilowattHours) : boolean
+    }
+    class "ReportFormatPolicyService" as Backend_reporting_ReportFormatPolicyService <<Domain Service>> {
+      + validateFormat(String format) : void
+      + isCsv(String format) : boolean
+      + isPdf(String format) : boolean
+      + isJson(String format) : boolean
+    }
+    class "ReportSummaryService" as Backend_reporting_ReportSummaryService <<Domain Service>> {
+      + calculateTotalReportedWatts(List<ConsumptionReport> reports) : BigDecimal
+    }
+  }
+  package "Domain / Value Objects" {
+    class "EnergyGoalTitle" as Backend_reporting_EnergyGoalTitle <<record>> {
+      + String value
+      + EnergyGoalTitle(String value) : record
+    }
+    class "GoalTargetWatts" as Backend_reporting_GoalTargetWatts <<record>> {
+      + BigDecimal value
+      + GoalTargetWatts(BigDecimal value) : record
+    }
+    class "ReportEstimatedCost" as Backend_reporting_ReportEstimatedCost <<record>> {
+      + Money value
+      + ReportEstimatedCost(Money value) : record
+    }
+    class "ReportPeriod" as Backend_reporting_ReportPeriod <<record>> {
+      + LocalDate startDate
+      + LocalDate endDate
+      + ReportPeriod(LocalDate startDate, LocalDate endDate) : record
+    }
+  }
+}
+
+Backend_reporting_ConsumptionReportRepository ..> Backend_reporting_ConsumptionReport
+Backend_reporting_EnergyGoalRepository ..> Backend_reporting_EnergyGoal
+Backend_reporting_ReportSummaryService ..> Backend_reporting_ConsumptionReport
+
+' Layer relationship completion: every declared type participates in this layer diagram.
+Backend_reporting_ConsumptionReportRepository ..> Backend_reporting_CreateConsumptionReportCommand
+Backend_reporting_ConsumptionReportRepository ..> Backend_reporting_CreateEnergyGoalCommand
+Backend_reporting_ConsumptionReportRepository ..> Backend_reporting_DeleteEnergyGoalCommand
+Backend_reporting_ConsumptionReportRepository ..> Backend_reporting_ExportReportCommand
+Backend_reporting_ConsumptionReportRepository ..> Backend_reporting_GenerateConsumptionReportCommand
+Backend_reporting_ConsumptionReportRepository ..> Backend_reporting_UpdateEnergyGoalCommand
+Backend_reporting_ConsumptionReportRepository ..> Backend_reporting_GetConsumptionReportsByUserQuery
+Backend_reporting_ConsumptionReportRepository ..> Backend_reporting_GetEnergyGoalsByUserQuery
+Backend_reporting_ConsumptionReportRepository ..> Backend_reporting_ConsumptionReportPolicyService
+Backend_reporting_ConsumptionReportRepository ..> Backend_reporting_EnergyGoalPolicyService
+Backend_reporting_ConsumptionReportRepository ..> Backend_reporting_EnergyGoalProgressService
+Backend_reporting_ConsumptionReportRepository ..> Backend_reporting_ReportFormatPolicyService
+Backend_reporting_ConsumptionReportRepository ..> Backend_reporting_EnergyGoalTitle
+Backend_reporting_ConsumptionReportRepository ..> Backend_reporting_GoalTargetWatts
+Backend_reporting_ConsumptionReportRepository ..> Backend_reporting_ReportEstimatedCost
+Backend_reporting_ConsumptionReportRepository ..> Backend_reporting_ReportPeriod
+
+@enduml

@@ -1,0 +1,66 @@
+@startuml
+title LowCortisol WebApp - Monitoring Frontend Application Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Monitoring / Application" {
+  package "Application / Commands" {
+    interface "ExportConsumptionReadingsCommand" as Frontend_consumption_monitoring_ExportConsumptionReadingsCommand <<interface>> {
+      + fileName: string
+      + readings?: ConsumptionReading[]
+    }
+  }
+  package "Application / Criteria" {
+    interface "ConsumptionReadingsFilterCriteria" as Frontend_consumption_monitoring_ConsumptionReadingsFilterCriteria <<interface>> {
+      + startDate: string
+      + endDate: string
+    }
+  }
+  package "Application / Facades and Services" {
+    class "MonitoringFacade" as Frontend_consumption_monitoring_MonitoringFacade <<Facade>> {
+      - consumptionReadingAssembler
+      - toInputDate(date: Date) : string
+      + get: readings()
+      + get: filteredReadings()
+      + get: visibleReadings()
+      + get: dashboardSummary()
+      + get: loading()
+      + get: error()
+      + get: totalWatts()
+      + get: averageWatts()
+      + get: highestReading()
+      + get: highReadingsCount()
+      + get: normalReadingsCount()
+      + get: recommendationKey()
+      + get: groupedByDevice()
+      + constructor: (
+      - consumptionReadingsApi: ConsumptionReadingsApiService
+      - planFacade: PlanFacade
+    }
+  }
+  package "Application / Stores" {
+    class "MonitoringStore" as Frontend_consumption_monitoring_MonitoringStore <<Store>> {
+      - readingsSignal
+      - filteredReadingsSignal
+      - filterActiveSignal
+      - dashboardSummarySignal
+      + signal: <ConsumptionDashboardSummaryResponse | null>(null)
+      - loadingSignal
+      - errorSignal
+      + constructor: (
+      - statisticsService: ConsumptionStatisticsService
+      - recommendationService: ConsumptionRecommendationService
+      + setReadings(value: ConsumptionReading[]) : void
+    }
+  }
+}
+
+Frontend_consumption_monitoring_MonitoringFacade ..> Frontend_consumption_monitoring_MonitoringStore
+Frontend_consumption_monitoring_MonitoringFacade ..> Frontend_consumption_monitoring_ConsumptionReadingsFilterCriteria
+Frontend_consumption_monitoring_MonitoringFacade ..> Frontend_consumption_monitoring_ExportConsumptionReadingsCommand
+
+
+@enduml

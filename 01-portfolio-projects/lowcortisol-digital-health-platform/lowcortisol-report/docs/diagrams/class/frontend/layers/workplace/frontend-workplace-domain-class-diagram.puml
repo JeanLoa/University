@@ -1,0 +1,68 @@
+@startuml
+title LowCortisol WebApp - Workplace Frontend Domain Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Workplace / Domain" {
+  package "Domain / Model" {
+    class "DeviceAssignment" as Frontend_workplace_DeviceAssignment <<Entity>> {
+      - _userId: number
+      - _deviceId: number
+      - _locationId: number
+      - _roomId: number | null
+      - _assignedAt: string
+      + constructor: (props:
+      + get: userId(): number
+      + get: deviceId(): number
+      + get: locationId(): number
+      + get: roomId(): number | null
+      + get: hasRoom(): boolean
+      + get: assignedAt(): string
+    }
+    class "Location" as Frontend_workplace_Location <<Entity>> {
+      - _userId: number
+      - _name: string
+      - _address: string
+      - _type: LocationType
+      - _createdAt: string
+      + constructor: (props:
+      + get: userId(): number
+      + get: name(): string
+      + get: address(): string
+      + get: type(): LocationType
+      + get: createdAt(): string
+      + get: isBusiness(): boolean
+      + get: isBranch(): boolean
+      + get: isHome(): boolean
+    }
+    class "LocationType" as Frontend_workplace_LocationType <<type>> {
+      + 'HOME' | 'BUSINESS' | 'BRANCH'
+    }
+    class "Room" as Frontend_workplace_Room <<Entity>> {
+      - _userId: number
+      - _locationId: number
+      - _name: string
+      - _floor: string
+      - _createdAt: string
+      + constructor: (props:
+      + get: userId(): number
+      + get: locationId(): number
+      + get: name(): string
+      + get: floor(): string
+      + get: createdAt(): string
+    }
+  }
+}
+
+
+
+' Layer relationship completion: every declared type participates in this layer diagram.
+Frontend_workplace_DeviceAssignment ..> Frontend_workplace_Location
+Frontend_workplace_DeviceAssignment ..> Frontend_workplace_Location
+Frontend_workplace_DeviceAssignment ..> Frontend_workplace_LocationType
+Frontend_workplace_DeviceAssignment ..> Frontend_workplace_Room
+
+@enduml

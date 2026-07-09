@@ -1,0 +1,101 @@
+@startuml
+title LowCortisol WebApp - Report Experience Infrastructure Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Report Experience / Infrastructure" {
+  package "Infrastructure / API Services" {
+    class "ConsumptionReportsApiService" as Frontend_report_ConsumptionReportsApiService <<API Service>> {
+      + constructor: (
+      + http: HttpClient
+      + apiBaseUrl: string
+      + findAllForCurrentUser() : Observable<ConsumptionReportResponse[]>
+    }
+    class "ConsumptionGoalsApiService" as Frontend_report_ConsumptionGoalsApiService <<API Service>> {
+      + constructor: (
+      + http: HttpClient
+      + apiBaseUrl: string
+      + findAllForCurrentUser() : Observable<ConsumptionGoalResponse[]>
+    }
+  }
+  package "Infrastructure / Assemblers" {
+    class "ConsumptionReportAssembler" as Frontend_report_ConsumptionReportAssembler <<Assembler>> {
+      + override: toEntity(response: ConsumptionReportResponse): ConsumptionReport
+      + override: toResource(entity: ConsumptionReport): ConsumptionReportResource
+      - resolvePeriod: (
+      + startDate: string
+      + endDate: string
+    }
+    class "ConsumptionGoalAssembler" as Frontend_report_ConsumptionGoalAssembler <<Assembler>> {
+      + override: toEntity(response: ConsumptionGoalResponse): ConsumptionGoal
+      + override: toResource(entity: ConsumptionGoal): ConsumptionGoalResource
+      - resolveTargetKilowattHours(primary: number | undefined, legacyMisnamedKilowattHours: number | undefined) : number
+      - resolveCurrentKilowattHours(primary: number | undefined, legacyMisnamedKilowattHours: number | undefined) : number
+      - normalizeLegacyTarget(value: number) : number
+    }
+  }
+  package "Infrastructure / Resources" {
+    interface "ConsumptionReportResource" as Frontend_report_ConsumptionReportResource <<interface>> {
+      + userId?: number
+      + startDate: string
+      + endDate: string
+    }
+    interface "ConsumptionGoalResource" as Frontend_report_ConsumptionGoalResource <<interface>> {
+      + userId?: number
+      + title: string
+      + targetKilowattHours: number
+      + currentKilowattHours: number
+      + deadline: string
+      + status: ConsumptionGoalStatus
+      + createdAt?: string
+      + scopeType?: ConsumptionGoalScopeType
+      + scopeId?: number | null
+      + scopeName?: string | null
+      + activeFrom?: string | null
+      + activeTo?: string | null
+    }
+  }
+  package "Infrastructure / Responses" {
+    interface "ConsumptionReportResponse" as Frontend_report_ConsumptionReportResponse <<interface>> {
+      + userId: number
+      + totalWatts: number
+      + averageWatts: number
+      + highestWatts: number
+      + startDate: string
+      + endDate: string
+    }
+    interface "ConsumptionGoalResponse" as Frontend_report_ConsumptionGoalResponse <<interface>> {
+      + userId: number
+      + title: string
+      + targetKilowattHours: number
+      + currentKilowattHours: number
+      + targetWatts?: number
+      + currentWatts?: number
+      + deadline: string
+      + status: ConsumptionGoalStatus
+      + createdAt: string
+      + scopeType?: ConsumptionGoalScopeType | null
+      + scopeId?: number | null
+      + scopeName?: string | null
+      + activeFrom?: string | null
+      + activeTo?: string | null
+    }
+  }
+}
+
+Frontend_report_ConsumptionReportAssembler ..> Frontend_report_ConsumptionReportResource
+Frontend_report_ConsumptionReportAssembler ..> Frontend_report_ConsumptionReportResponse
+Frontend_report_ConsumptionReportsApiService ..> Frontend_report_ConsumptionReportAssembler
+Frontend_report_ConsumptionReportsApiService ..> Frontend_report_ConsumptionReportResource
+Frontend_report_ConsumptionReportsApiService ..> Frontend_report_ConsumptionReportResponse
+Frontend_report_ConsumptionGoalAssembler ..> Frontend_report_ConsumptionGoalResource
+Frontend_report_ConsumptionGoalAssembler ..> Frontend_report_ConsumptionGoalResponse
+Frontend_report_ConsumptionGoalsApiService ..> Frontend_report_ConsumptionGoalAssembler
+Frontend_report_ConsumptionGoalsApiService ..> Frontend_report_ConsumptionGoalResource
+Frontend_report_ConsumptionGoalsApiService ..> Frontend_report_ConsumptionGoalResponse
+
+
+@enduml

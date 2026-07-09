@@ -1,0 +1,188 @@
+@startuml
+title LowCortisol WebApp - Device Control Frontend Domain Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Device Control / Domain" {
+  package "Domain / Model" {
+    class "Device" as Frontend_device_control_Device <<Entity>> {
+      - _userId: number
+      - _name: string
+      - _room: string
+      - _type: DeviceType
+      - _powerWatts: number
+      - _status: DeviceStatus
+      - _createdAt: string
+      + constructor: (props:
+      + get: userId(): number
+      + get: name(): string
+      + get: room(): string
+      + get: type(): DeviceType
+      + get: powerWatts(): number
+      + get: status(): DeviceStatus
+      + get: createdAt(): string
+      + get: isOn(): boolean
+      + get: isOff(): boolean
+      + get: isInMaintenance(): boolean
+    }
+    class "DeviceGroup" as Frontend_device_control_DeviceGroup <<Entity>> {
+      - _userId: number
+      - _name: string
+      - _description: string
+      - _deviceIds: number[]
+      - _createdAt: string
+      + constructor: (props:
+      + get: userId(): number
+      + get: name(): string
+      + get: description(): string
+      + get: deviceIds(): number[]
+      + get: createdAt(): string
+      + get: deviceCount(): number
+      + get: hasDevices(): boolean
+      + containsDevice(deviceId: number) : boolean
+    }
+    class "DeviceStatus" as Frontend_device_control_DeviceStatus <<type>> {
+      + 'ON' | 'OFF' | 'MAINTENANCE' | 'REMOVED'
+    }
+    class "DeviceType" as Frontend_device_control_DeviceType <<type>> {
+      + 'PLUG' | 'LIGHT' | 'SWITCH' | 'SENSOR' | 'OTHER'
+    }
+    class "OperationMode" as Frontend_device_control_OperationMode <<Entity>> {
+      + constructor: (
+      - props
+      + get: userId(): number return this.props.userId
+      + get: locationId(): number return this.props.locationId
+      + get: name(): string return this.props.name
+      + get: description(): string return this.props.description
+      + get: status(): OperationModeStatus return this.props.status
+      + get: roomIds(): number[] return this.props.roomIds
+      + get: groupIds(): number[] return this.props.groupIds
+      + get: deviceIds(): number[] return this.props.deviceIds
+      + get: turnOnDeviceIds(): number[] return this.props.turnOnDeviceIds
+      + get: turnOffDeviceIds(): number[] return this.props.turnOffDeviceIds
+      + get: keepOnDeviceIds(): number[] return this.props.keepOnDeviceIds
+      + get: routineIds(): number[] return this.props.routineIds
+      + get: routinesToEnableIds(): number[] return this.props.routinesToEnableIds
+      + get: routinesToDisableIds(): number[] return this.props.routinesToDisableIds
+      + get: goalIds(): number[] return this.props.goalIds
+      + get: internalRoutines(): OperationModeRoutine[] return this.props.internalRoutines
+    }
+    interface "OperationModeActivation" as Frontend_device_control_OperationModeActivation <<interface>> {
+      + mode: OperationMode
+      + turnedOnDeviceIds: number[]
+      + turnedOffDeviceIds: number[]
+      + ignoredRemovedDeviceIds: number[]
+      + ignoredMaintenanceDeviceIds: number[]
+      + enabledRoutineIds: number[]
+      + disabledRoutineIds: number[]
+      + evidence: string
+      + explanation: string
+      + recommendedAction: string
+    }
+    interface "OperationModePreview" as Frontend_device_control_OperationModePreview <<interface>> {
+      + modeId: number
+      + locationId: number
+      + locationName: string
+      + affectedDeviceIds: number[]
+      + ignoredRemovedDeviceIds: number[]
+      + ignoredMaintenanceDeviceIds: number[]
+      + roomIds: number[]
+      + groupIds: number[]
+      + routineIds: number[]
+      + internalRoutineCount?: number
+      + goalIds: number[]
+      + ruleProfileId: number | null
+      + preferenceId: number | null
+      + evidence: string
+      + explanation: string
+      + recommendedAction: string
+    }
+    interface "OperationModeRoutine" as Frontend_device_control_OperationModeRoutine <<interface>> {
+      + name: string
+      + targetType: OperationModeRoutineTargetType
+      + targetId: number
+      + action: OperationModeRoutineAction
+      + triggerTime: string
+      + enabled: boolean
+    }
+    class "OperationModeRoutineAction" as Frontend_device_control_OperationModeRoutineAction <<type>> {
+      + 'TURN_ON' | 'TURN_OFF'
+    }
+    class "OperationModeRoutineTargetType" as Frontend_device_control_OperationModeRoutineTargetType <<type>> {
+      + 'DEVICE' | 'GROUP'
+    }
+    class "OperationModeStatus" as Frontend_device_control_OperationModeStatus <<type>> {
+      + 'DRAFT' | 'ACTIVE' | 'INACTIVE' | 'ARCHIVED'
+    }
+    class "Routine" as Frontend_device_control_Routine <<Entity>> {
+      - _userId: number
+      - _deviceId: number | null
+      - _groupId: number | null
+      - _targetType: RoutineTargetType
+      - _targetId: number
+      - _targetName: string
+      - _name: string
+      - _action: RoutineAction
+      - _time: string
+      - _repeatType: RoutineRepeatType
+      - _daysOfWeek: string
+      - _intervalDays: number
+      - _startsOn: string | null
+      - _applicableDeviceCount: number
+      - _blockedDeviceCount: number
+      - _enabled: boolean
+      + constructor: (props:
+      + get: userId(): number
+    }
+    class "RoutineAction" as Frontend_device_control_RoutineAction <<type>> {
+      + 'TURN_ON' | 'TURN_OFF'
+    }
+    interface "RoutineConflictCandidate" as Frontend_device_control_RoutineConflictCandidate <<interface>> {
+      + action: RoutineAction
+      + time: string
+      + targetType: RoutineTargetType
+      + targetId: number
+    }
+    class "RoutineRepeatType" as Frontend_device_control_RoutineRepeatType <<type>> {
+      + 'ONCE' | 'DAILY' | 'WEEKLY' | 'CUSTOM_INTERVAL'
+    }
+    class "RoutineTargetType" as Frontend_device_control_RoutineTargetType <<type>> {
+      + 'DEVICE' | 'GROUP' | 'ROOM' | 'WORKPLACE'
+    }
+  }
+  package "Domain / Services" {
+    class "DeviceGroupPolicyService" as Frontend_device_control_DeviceGroupPolicyService <<Domain Service>> {
+      + canCreateGroup: (
+      + name: string
+      + deviceIds: number[] | null | undefined
+      + canExecuteGroupAction(group: DeviceGroup | null | undefined) : boolean
+    }
+    class "RoutineConflictCheckerService" as Frontend_device_control_RoutineConflictCheckerService <<Domain Service>> {
+      + hasConflict(routines: Routine[], candidate: RoutineConflictCandidate) : boolean
+    }
+  }
+}
+
+Frontend_device_control_DeviceGroupPolicyService ..> Frontend_device_control_DeviceGroup
+Frontend_device_control_RoutineConflictCandidate ..> Frontend_device_control_RoutineAction
+Frontend_device_control_RoutineConflictCandidate ..> Frontend_device_control_RoutineTargetType
+Frontend_device_control_RoutineConflictCheckerService ..> Frontend_device_control_Routine
+Frontend_device_control_RoutineConflictCheckerService ..> Frontend_device_control_RoutineConflictCandidate
+
+' Layer relationship completion: every declared type participates in this layer diagram.
+Frontend_device_control_DeviceGroupPolicyService ..> Frontend_device_control_Device
+Frontend_device_control_DeviceGroupPolicyService ..> Frontend_device_control_DeviceStatus
+Frontend_device_control_DeviceGroupPolicyService ..> Frontend_device_control_DeviceType
+Frontend_device_control_DeviceGroupPolicyService ..> Frontend_device_control_OperationMode
+Frontend_device_control_DeviceGroupPolicyService ..> Frontend_device_control_OperationModeActivation
+Frontend_device_control_DeviceGroupPolicyService ..> Frontend_device_control_OperationModePreview
+Frontend_device_control_DeviceGroupPolicyService ..> Frontend_device_control_OperationModeRoutine
+Frontend_device_control_DeviceGroupPolicyService ..> Frontend_device_control_OperationModeRoutineAction
+Frontend_device_control_DeviceGroupPolicyService ..> Frontend_device_control_OperationModeRoutineTargetType
+Frontend_device_control_DeviceGroupPolicyService ..> Frontend_device_control_OperationModeStatus
+Frontend_device_control_DeviceGroupPolicyService ..> Frontend_device_control_RoutineRepeatType
+
+@enduml

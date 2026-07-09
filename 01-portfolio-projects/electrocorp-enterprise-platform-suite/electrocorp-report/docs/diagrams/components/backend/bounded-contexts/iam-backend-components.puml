@@ -1,0 +1,90 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+skinparam wrapWidth 220
+skinparam maxMessageSize 130
+skinparam nodesep 70
+skinparam ranksep 80
+skinparam ArrowColor #8A8A8A
+skinparam ArrowFontColor #666666
+skinparam ArrowFontStyle bold
+skinparam ArrowThickness 1
+skinparam rectangleRoundCorner 0
+skinparam rectangleBorderThickness 0
+skinparam rectangleFontColor #FFFFFF
+skinparam rectangleFontStyle plain
+skinparam rectangle {
+  BorderThickness 0
+  MinimumWidth 190
+  Padding 12
+}
+skinparam database {
+  MinimumWidth 210
+  Padding 12
+}
+skinparam rectangle<<SystemBoundary>> {
+  BackgroundColor transparent
+  BorderColor #4A4A4A
+  BorderThickness 2
+  BorderStyle dashed
+  FontColor #333333
+  FontStyle bold
+  MinimumWidth 760
+  Padding 18
+}
+skinparam rectangle<<BoundedContext>> {
+  BackgroundColor transparent
+  BorderColor #4A4A4A
+  BorderThickness 2
+  BorderStyle dashed
+  FontColor #333333
+  FontStyle bold
+  MinimumWidth 760
+  Padding 18
+}
+skinparam databaseBackgroundColor #C9332B
+skinparam databaseBorderColor #C9332B
+skinparam databaseFontColor #FFFFFF
+skinparam databaseFontStyle plain
+hide stereotype
+top to bottom direction
+
+title ElectroCorp - IAM Backend Components Diagram
+
+rectangle "<b>ElectroCorp SPA</b>\n<i>[Compiled Angular SPA]</i>\n\nBrowser runtime that consumes this bounded context through HTTPS." as Spa #3498DB
+
+rectangle "<b>IAM Backend Bounded Context</b>\n<i>[Spring Boot Module]</i>" <<BoundedContext>> {
+  rectangle "<b>Interfaces REST Layer</b>\n<i>[REST / Resources]</i>\n\nAuth, users and access-profile controllers translate resources into commands and queries." as Interfaces #58A9E8
+  rectangle "<b>Application Layer</b>\n<i>[Command Services / Query Services / Ports]</i>\n\nCoordinates sign-in, sign-up, password recovery, reset, user listing, access assignment and UI preferences." as Application #58A9E8
+  rectangle "<b>Domain Layer</b>\n<i>[Aggregates / Policies]</i>\n\nOwns users, access profiles, permissions, password reset tokens and profile policies." as Domain #58A9E8
+  rectangle "<b>Infrastructure Layer</b>\n<i>[JPA / Security / Delivery Adapters]</i>\n\nImplements repositories, BCrypt hashing, JWT token service and password recovery delivery." as Infrastructure #58A9E8
+}
+database "<b>ElectroCorp Database</b>\n<i>[PostgreSQL]</i>\n\nStores authentication, users, profiles and access control." as Database
+
+Spa --> Interfaces : Calls REST endpoints\n[JSON / HTTPS]
+Interfaces --> Application : Delegates use cases
+Application --> Domain : Enforces business rules
+Application --> Infrastructure : Uses hashing, token and delivery ports
+Infrastructure --> Domain : Maps persisted state
+Infrastructure --> Database : Reads and writes
+
+Spa -[hidden]down- Interfaces
+Interfaces -[hidden]down- Application
+Application -[hidden]down- Domain
+Domain -[hidden]right- Infrastructure
+Infrastructure -[hidden]down- Database
+
+legend right
+  <b>Legend</b>
+  |<#0B5593> person |
+  |<#0B6FB3> system |
+  |<#3498DB> container |
+  |<#58A9E8> component |
+  |<#F39C12> infrastructure / external |
+  |<#C9332B> database |
+  |<#7F8C8D> external container |
+endlegend
+
+@enduml

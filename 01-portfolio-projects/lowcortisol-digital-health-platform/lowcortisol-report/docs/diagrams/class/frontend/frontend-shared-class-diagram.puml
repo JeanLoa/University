@@ -1,0 +1,26 @@
+@startuml
+title LowCortisol WebApp - Shared Frontend Bounded Context Layers
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Shared Frontend Bounded Context" {
+  class "Domain" as Frontend_shared_kernel_Domain <<layer>>
+  class "Application" as Frontend_shared_kernel_Application <<layer>>
+  class "Infrastructure" as Frontend_shared_kernel_Infrastructure <<layer>>
+  class "Presentation" as Frontend_shared_kernel_Presentation <<layer>>
+}
+
+Frontend_shared_kernel_Presentation ..> Frontend_shared_kernel_Application : user actions / state
+Frontend_shared_kernel_Application ..> Frontend_shared_kernel_Domain : models and rules
+Frontend_shared_kernel_Application ..> Frontend_shared_kernel_Infrastructure : API services / adapters
+Frontend_shared_kernel_Infrastructure ..> Frontend_shared_kernel_Domain : resources and mappers
+Frontend_shared_kernel_Presentation ..> Frontend_shared_kernel_Domain : view models
+
+note bottom of Frontend_shared_kernel_Application
+Detailed class diagrams for each layer are available in docs/diagrams/class/frontend/layers/shared.
+end note
+
+@enduml

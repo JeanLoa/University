@@ -1,0 +1,150 @@
+@startuml
+title LowCortisol Platform - Device Control Backend Application Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Device Control / Application" {
+  package "Application / Command Services" {
+    interface "DeviceControlCommandService" as Backend_devicecontrol_DeviceControlCommandService <<interface>> {
+    }
+  }
+  package "Application / Command Services Impl" {
+    class "DeviceControlCommandServiceImpl" as Backend_devicecontrol_DeviceControlCommandServiceImpl <<Command Service>> {
+      - applicationService: DeviceControlApplicationService
+      + handle(CreateDeviceCommand command) : Device
+      + handle(ToggleDeviceCommand command) : Device
+      + handle(Long deviceId, Long userId, UpdateDeviceStatusCommand command) : Device
+      + handle(DeleteDeviceCommand command) : void
+      + handle(CreateRoutineCommand command) : RoutineDetails
+      + handle(Long routineId, Long userId, UpdateRoutineStatusCommand command) : RoutineDetails
+      + handle(ExecuteRoutineCommand command) : RoutineDetails
+      + handle(DeleteRoutineCommand command) : void
+      + handle(CreateDeviceGroupCommand command) : DeviceGroupDetails
+      + handle(Long userId, Long groupId, UpdateDeviceGroupCommand command) : DeviceGroupDetails
+      + handle(Long userId, Long groupId, ExecuteGroupActionCommand command) : void
+      + handle(DeleteDeviceGroupCommand command) : void
+      + handle(CreateOperationModeCommand command) : OperationMode
+      + handle(ActivateOperationModeCommand command) : OperationModeActivationResult
+      + handle(ArchiveOperationModeCommand command) : void
+    }
+  }
+  package "Application / Event Handlers" {
+    class "OperationModeActivatedEventHandler" as Backend_devicecontrol_OperationModeActivatedEventHandler <<Class>> {
+      - notificationApplicationService: NotificationApplicationService
+      + on(OperationModeActivatedEvent event) : void
+    }
+  }
+  package "Application / Query Services" {
+    interface "DeviceControlQueryService" as Backend_devicecontrol_DeviceControlQueryService <<interface>> {
+    }
+  }
+  package "Application / Query Services Impl" {
+    class "DeviceControlQueryServiceImpl" as Backend_devicecontrol_DeviceControlQueryServiceImpl <<Query Service>> {
+      - applicationService: DeviceControlApplicationService
+      + handle(GetDevicesQuery query) : List<Device>
+      + handle(GetRoutinesQuery query) : List<RoutineDetails>
+      + handle(GetDeviceGroupsQuery query) : List<DeviceGroupDetails>
+      + handle(GetOperationModesQuery query) : List<OperationMode>
+      + handle(PreviewOperationModeQuery query) : OperationModePreviewResult
+    }
+  }
+  package "Application / Results" {
+    class "DeviceGroupDetails" as Backend_devicecontrol_DeviceGroupDetails <<record>> {
+      + DeviceGroup group
+      + List<Long> deviceIds
+      + DeviceGroupDetails(DeviceGroup group, List<Long> deviceIds) : record
+    }
+    class "OperationModeActivationResult" as Backend_devicecontrol_OperationModeActivationResult <<record>> {
+      + OperationMode mode
+      + List<Long> turnedOnDeviceIds
+      + List<Long> turnedOffDeviceIds
+      + List<Long> ignoredRemovedDeviceIds
+      + List<Long> ignoredMaintenanceDeviceIds
+      + List<Long> enabledRoutineIds
+      + List<Long> disabledRoutineIds
+      + String evidence
+      + String explanation
+      + String recommendedAction
+    }
+    class "OperationModePreviewResult" as Backend_devicecontrol_OperationModePreviewResult <<record>> {
+      + Long modeId
+      + Long locationId
+      + String locationName
+      + List<Long> affectedDeviceIds
+      + List<Long> ignoredRemovedDeviceIds
+      + List<Long> ignoredMaintenanceDeviceIds
+      + List<Long> roomIds
+      + List<Long> groupIds
+      + List<Long> routineIds
+      + List<Long> goalIds
+      + Long ruleProfileId
+      + Long preferenceId
+      + String evidence
+      + String explanation
+      + String recommendedAction
+    }
+    class "RoutineDetails" as Backend_devicecontrol_RoutineDetails <<record>> {
+      + Routine routine
+      + String targetName
+      + int applicableDeviceCount
+      + int blockedDeviceCount
+    }
+  }
+  package "Application / Services" {
+    class "DeviceControlApplicationService" as Backend_devicecontrol_DeviceControlApplicationService <<Application Service>> {
+      - consumptionReadingRecorderService: ConsumptionReadingRecorderService
+      - deviceRepository: DeviceRepository
+      - routineRepository: RoutineRepository
+      - operationModeRepository: OperationModeRepository
+      - deviceGroupRepository: DeviceGroupRepository
+      - deviceGroupDeviceRepository: DeviceGroupDeviceRepository
+      - deviceAssignmentRepository: DeviceAssignmentRepository
+      - locationRepository: LocationRepository
+      - roomRepository: RoomRepository
+      - consumptionGoalRepository: ConsumptionGoalRepository
+      - alertRuleProfileRepository: AlertRuleProfileRepository
+      - notificationPreferenceRepository: NotificationPreferenceRepository
+      - domainEventPublisher: DomainEventPublisher
+      + getDevices(Long userId) : List<Device>
+      + getOperationModes(Long userId) : List<OperationMode>
+      + createOperationMode(CreateOperationModeCommand command) : OperationMode
+      + previewOperationMode(Long userId, Long modeId) : OperationModePreviewResult
+      + activateOperationMode(Long userId, Long modeId) : OperationModeActivationResult
+      + archiveOperationMode(Long userId, Long modeId) : void
+      + createDevice(CreateDeviceCommand command) : Device
+      + toggleDevice(Long userId, Long deviceId) : Device
+      + deleteDevice(Long userId, Long deviceId) : void
+      + getRoutines(Long userId) : List<RoutineDetails>
+      + createRoutine(CreateRoutineCommand command) : RoutineDetails
+    }
+  }
+}
+
+Backend_devicecontrol_DeviceControlApplicationService ..> Backend_devicecontrol_DeviceGroupDetails
+Backend_devicecontrol_DeviceControlApplicationService ..> Backend_devicecontrol_OperationModeActivationResult
+Backend_devicecontrol_DeviceControlApplicationService ..> Backend_devicecontrol_OperationModePreviewResult
+Backend_devicecontrol_DeviceControlApplicationService ..> Backend_devicecontrol_RoutineDetails
+Backend_devicecontrol_DeviceControlCommandService ..> Backend_devicecontrol_DeviceGroupDetails
+Backend_devicecontrol_DeviceControlCommandService ..> Backend_devicecontrol_OperationModeActivationResult
+Backend_devicecontrol_DeviceControlCommandService ..> Backend_devicecontrol_RoutineDetails
+Backend_devicecontrol_DeviceControlCommandServiceImpl ..> Backend_devicecontrol_DeviceControlApplicationService
+Backend_devicecontrol_DeviceControlCommandServiceImpl ..> Backend_devicecontrol_DeviceControlCommandService
+Backend_devicecontrol_DeviceControlCommandServiceImpl ..> Backend_devicecontrol_DeviceGroupDetails
+Backend_devicecontrol_DeviceControlCommandServiceImpl ..> Backend_devicecontrol_OperationModeActivationResult
+Backend_devicecontrol_DeviceControlCommandServiceImpl ..> Backend_devicecontrol_RoutineDetails
+Backend_devicecontrol_DeviceControlQueryService ..> Backend_devicecontrol_DeviceGroupDetails
+Backend_devicecontrol_DeviceControlQueryService ..> Backend_devicecontrol_OperationModePreviewResult
+Backend_devicecontrol_DeviceControlQueryService ..> Backend_devicecontrol_RoutineDetails
+Backend_devicecontrol_DeviceControlQueryServiceImpl ..> Backend_devicecontrol_DeviceControlApplicationService
+Backend_devicecontrol_DeviceControlQueryServiceImpl ..> Backend_devicecontrol_DeviceControlQueryService
+Backend_devicecontrol_DeviceControlQueryServiceImpl ..> Backend_devicecontrol_DeviceGroupDetails
+Backend_devicecontrol_DeviceControlQueryServiceImpl ..> Backend_devicecontrol_OperationModePreviewResult
+Backend_devicecontrol_DeviceControlQueryServiceImpl ..> Backend_devicecontrol_RoutineDetails
+
+' Layer relationship completion: every declared type participates in this layer diagram.
+Backend_devicecontrol_DeviceControlCommandServiceImpl ..> Backend_devicecontrol_OperationModeActivatedEventHandler
+
+@enduml

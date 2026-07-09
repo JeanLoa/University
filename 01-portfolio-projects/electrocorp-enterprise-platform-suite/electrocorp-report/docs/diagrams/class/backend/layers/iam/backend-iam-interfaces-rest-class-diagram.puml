@@ -1,0 +1,138 @@
+@startuml
+title ElectroCorp Platform - IAM Backend Interfaces REST Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "IAM / Interfaces REST" {
+  package "Interfaces / REST Controllers" {
+    class "AuthController" as Backend_iam_AuthController <<REST Controller>> {
+      - authCommandService: AuthCommandService
+      - authenticatedUserQueryService: AuthenticatedUserQueryService
+      - currentUserProvider: CurrentUserProvider
+      + signUp(SignUpResource request) : AuthResource
+      + signIn(SignInResource request) : AuthResource
+      + signOut() : void
+      + recoverPassword(RecoverPasswordResource request) : void
+      + resetPassword(ResetPasswordResource request) : void
+      + me() : UserResource
+    }
+    class "UserController" as Backend_iam_UserController <<REST Controller>> {
+      - userCommandService: UserCommandService
+      - userQueryService: UserQueryService
+      - currentUserProvider: CurrentUserProvider
+      + getUsers() : List<UserResource>
+      + getCurrentUserProfile() : UserResource
+      + updateCurrentUserProfile(UpdateProfileResource request) : UserResource
+      + deleteCurrentUserAccount() : void
+      + getCurrentUserUiPreference() : UserUiPreferenceResource
+      + updateCurrentUserUiPreference(UpdateUiPreferenceResource request) : UserUiPreferenceResource
+      + getProfile(Long userId) : UserResource
+      + updateProfile(Long userId, UpdateProfileResource request) : UserResource
+      + assignAccessProfile(Long userId, AssignAccessProfileResource request) : UserResource
+    }
+    class "AccessProfileController" as Backend_iam_AccessProfileController <<REST Controller>> {
+      - accessProfileQueryService: AccessProfileQueryService
+      + getAccessProfiles() : List<AccessProfileResource>
+    }
+  }
+  package "Interfaces / REST Assemblers" {
+    class "AccessProfileResourceFromResultAssembler" as Backend_iam_AccessProfileResourceFromResultAssembler <<Assembler>> {
+      + toResourceFromResult(AccessProfileDetails details) : AccessProfileResource
+    }
+    class "AuthResourceFromResultAssembler" as Backend_iam_AuthResourceFromResultAssembler <<Assembler>> {
+      + toResourceFromResult(AuthenticationResult result) : AuthResource
+    }
+    class "RecoverPasswordCommandFromResourceAssembler" as Backend_iam_RecoverPasswordCommandFromResourceAssembler <<Assembler>> {
+      + toCommandFromResource(RecoverPasswordResource resource) : RecoverPasswordCommand
+    }
+    class "ResetPasswordCommandFromResourceAssembler" as Backend_iam_ResetPasswordCommandFromResourceAssembler <<Assembler>> {
+      + toCommandFromResource(ResetPasswordResource resource) : ResetPasswordCommand
+    }
+    class "SignInCommandFromResourceAssembler" as Backend_iam_SignInCommandFromResourceAssembler <<Assembler>> {
+      + toCommandFromResource(SignInResource resource) : SignInCommand
+    }
+    class "SignUpCommandFromResourceAssembler" as Backend_iam_SignUpCommandFromResourceAssembler <<Assembler>> {
+      + toCommandFromResource(SignUpResource resource) : SignUpCommand
+    }
+    class "UpdateProfileCommandFromResourceAssembler" as Backend_iam_UpdateProfileCommandFromResourceAssembler <<Assembler>> {
+      + toCommandFromResource(UpdateProfileResource resource) : UpdateProfileCommand
+    }
+    class "UserResourceFromEntityAssembler" as Backend_iam_UserResourceFromEntityAssembler <<Assembler>> {
+      + toResourceFromEntity(User entity) : UserResource
+    }
+  }
+  package "Interfaces / REST Resources" {
+    class "AccessProfileResource" as Backend_iam_AccessProfileResource <<record>> {
+      + Long id
+      + String name
+      + String description
+      + Set<String> permissions
+    }
+    class "AssignAccessProfileResource" as Backend_iam_AssignAccessProfileResource <<record>> {
+      + Long accessProfileId
+    }
+    class "AuthResource" as Backend_iam_AuthResource <<record>> {
+      + UserResource user
+      + String token
+    }
+    class "RecoverPasswordResource" as Backend_iam_RecoverPasswordResource <<record>> {
+      + String email
+    }
+    class "ResetPasswordResource" as Backend_iam_ResetPasswordResource <<record>> {
+      + String token
+      + String password
+    }
+    class "SignInResource" as Backend_iam_SignInResource <<record>> {
+      + String email
+      + String password
+    }
+    class "SignUpResource" as Backend_iam_SignUpResource <<record>> {
+      + String fullName
+      + String email
+      + String password
+    }
+    class "UpdateProfileResource" as Backend_iam_UpdateProfileResource <<record>> {
+      + String fullName
+      + String email
+    }
+    class "UpdateUiPreferenceResource" as Backend_iam_UpdateUiPreferenceResource <<record>> {
+      + String language
+      + String theme
+    }
+    class "UserResource" as Backend_iam_UserResource <<record>> {
+      + Long id
+      + String fullName
+      + String email
+      + Long accessProfileId
+      + String accessProfileName
+      + String status
+    }
+    class "UserUiPreferenceResource" as Backend_iam_UserUiPreferenceResource <<record>> {
+      + Long userId
+      + String language
+      + String theme
+    }
+  }
+}
+
+Backend_iam_AuthController ..> Backend_iam_AuthCommandService
+Backend_iam_AuthController ..> Backend_iam_AuthenticatedUserQueryService
+Backend_iam_AuthController ..> Backend_iam_AuthResourceFromResultAssembler
+Backend_iam_AuthController ..> Backend_iam_RecoverPasswordCommandFromResourceAssembler
+Backend_iam_AuthController ..> Backend_iam_ResetPasswordCommandFromResourceAssembler
+Backend_iam_AuthController ..> Backend_iam_SignInCommandFromResourceAssembler
+Backend_iam_AuthController ..> Backend_iam_SignUpCommandFromResourceAssembler
+Backend_iam_AuthController ..> Backend_iam_UserResourceFromEntityAssembler
+Backend_iam_UserController ..> Backend_iam_UserCommandService
+Backend_iam_UserController ..> Backend_iam_UserQueryService
+Backend_iam_UserController ..> Backend_iam_AssignAccessProfileResource
+Backend_iam_UserController ..> Backend_iam_UpdateUiPreferenceResource
+Backend_iam_UserController ..> Backend_iam_UserUiPreferenceResource
+Backend_iam_UserController ..> Backend_iam_UserResourceFromEntityAssembler
+Backend_iam_AccessProfileController ..> Backend_iam_AccessProfileQueryService
+Backend_iam_AccessProfileController ..> Backend_iam_AccessProfileResourceFromResultAssembler
+
+@enduml

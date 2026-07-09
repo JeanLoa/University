@@ -1,0 +1,48 @@
+@startuml
+title ElectroCorp Platform - Energy Monitoring Database Diagram
+left to right direction
+hide circle
+skinparam linetype ortho
+skinparam shadowing false
+skinparam packageStyle rectangle
+package "Energy Monitoring" {
+  entity "energy_device_usage_states" as energy_device_usage_states {
+    PK id : bigint
+    created_at : timestamp
+    updated_at : timestamp
+    user_id : bigint
+    device_id : bigint
+    started_at : timestamp
+    last_recorded_at : timestamp
+  }
+  entity "energy_readings" as energy_readings {
+    PK id : bigint
+    created_at : timestamp
+    updated_at : timestamp
+    user_id : bigint
+    device_id : bigint
+    device_name : varchar
+    recorded_at : timestamp
+    watts : decimal
+    kilowatt_hours : decimal
+    estimated_cost : decimal
+    sample_seconds : integer
+    status : varchar
+  }
+}
+
+package "External References" {
+  entity "devices" as devices <<external>> {
+    PK id
+  }
+  entity "users" as users <<external>> {
+    PK id
+  }
+}
+
+devices ||--o{ energy_device_usage_states : device_id
+devices ||--o{ energy_readings : device_id
+users ||--o{ energy_device_usage_states : user_id
+users ||--o{ energy_readings : user_id
+
+@enduml

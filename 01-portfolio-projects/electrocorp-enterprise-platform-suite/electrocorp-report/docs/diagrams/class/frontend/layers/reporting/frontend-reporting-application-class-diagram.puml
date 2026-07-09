@@ -1,0 +1,106 @@
+@startuml
+title ElectroCorp Web App - Reporting Frontend Application Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Reporting / Application" {
+  package "Application / Commands" {
+    interface "CreateConsumptionReportCommand" as Frontend_reporting_CreateConsumptionReportCommand <<interface>> {
+      + title: string
+      + period: ConsumptionReportPeriod
+      + startDate: string
+      + endDate: string
+    }
+    interface "CreateEnergyGoalCommand" as Frontend_reporting_CreateEnergyGoalCommand <<interface>> {
+      + title: string
+      + targetKilowattHours: number
+      + deadline: string
+      + scopeType?: 'GENERAL' | 'WORKPLACE' | 'ROOM' | 'DEVICE' | 'GROUP'
+      + scopeId?: number | null
+      + scopeName?: string | null
+      + activeFrom?: string | null
+      + activeTo?: string | null
+    }
+    interface "ExportReportCommand" as Frontend_reporting_ExportReportCommand <<interface>> {
+      + reportId: number
+    }
+    interface "GenerateConsumptionReportCommand" as Frontend_reporting_GenerateConsumptionReportCommand <<interface>> {
+      + startDate: string
+      + endDate: string
+    }
+    interface "UpdateEnergyGoalCommand" as Frontend_reporting_UpdateEnergyGoalCommand <<interface>> {
+      + goalId: number
+      + title: string
+      + targetKilowattHours: number
+      + currentKilowattHours: number
+      + deadline: string
+      + scopeType?: 'GENERAL' | 'WORKPLACE' | 'ROOM' | 'DEVICE' | 'GROUP'
+      + scopeId?: number | null
+      + scopeName?: string | null
+      + activeFrom?: string | null
+      + activeTo?: string | null
+    }
+  }
+  package "Application / Facades and Services" {
+    class "CreateConsumptionReportResult" as Frontend_reporting_CreateConsumptionReportResult <<type>> {
+      + | 'CREATED' | 'UPDATED' | 'UNCHANGED' | 'FAILED'
+    }
+    class "ReportingFacade" as Frontend_reporting_ReportingFacade <<Facade>> {
+      - consumptionReportAssembler
+      - energyGoalAssembler
+      + get: consumptionReports()
+      + get: energyGoals()
+      + get: loading()
+      + get: error()
+      + get: activeGoals()
+      + get: completedGoals()
+      + get: failedGoals()
+      + get: totalReportedWatts()
+      + get: averageReportedWatts()
+      + get: highestReport()
+      + get: energyReadings()
+      + constructor: (
+      - consumptionReportsApi: ConsumptionReportsApiService
+      - energyGoalsApi: EnergyGoalsApiService
+      - billingFacade: BillingFacade
+      - energyMonitoringFacade: EnergyMonitoringFacade
+    }
+  }
+  package "Application / Stores" {
+    class "ReportingStore" as Frontend_reporting_ReportingStore <<Store>> {
+      - consumptionReportsSignal
+      - energyGoalsSignal
+      - loadingSignal
+      - errorSignal
+      + constructor(reportSummaryService: ReportSummaryService)
+      + setConsumptionReports(value: ConsumptionReport[]) : void
+      + upsertConsumptionReport(value: ConsumptionReport) : void
+      + removeConsumptionReport(reportId: number) : void
+      + setEnergyGoals(value: EnergyGoal[]) : void
+      + prependEnergyGoal(value: EnergyGoal) : void
+      + updateEnergyGoal(value: EnergyGoal) : void
+      + removeEnergyGoal(goalId: number) : void
+      + setLoading(value: boolean) : void
+      + setError(value: string | null) : void
+    }
+  }
+}
+
+Frontend_reporting_CreateConsumptionReportResult ..> Frontend_reporting_CreateConsumptionReportCommand
+Frontend_reporting_CreateConsumptionReportResult ..> Frontend_reporting_CreateEnergyGoalCommand
+Frontend_reporting_CreateConsumptionReportResult ..> Frontend_reporting_ExportReportCommand
+Frontend_reporting_CreateConsumptionReportResult ..> Frontend_reporting_ReportingStore
+Frontend_reporting_CreateConsumptionReportResult ..> Frontend_reporting_UpdateEnergyGoalCommand
+Frontend_reporting_ReportingFacade ..> Frontend_reporting_CreateConsumptionReportCommand
+Frontend_reporting_ReportingFacade ..> Frontend_reporting_CreateEnergyGoalCommand
+Frontend_reporting_ReportingFacade ..> Frontend_reporting_ExportReportCommand
+Frontend_reporting_ReportingFacade ..> Frontend_reporting_ReportingStore
+Frontend_reporting_ReportingFacade ..> Frontend_reporting_UpdateEnergyGoalCommand
+
+' Layer relationship completion: every declared type participates in this layer diagram.
+Frontend_reporting_ReportingFacade ..> Frontend_reporting_GenerateConsumptionReportCommand
+
+@enduml

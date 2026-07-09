@@ -1,0 +1,604 @@
+[
+  {
+    "id": "ancon",
+    "parentId": "lima-province",
+    "label": "Ancon",
+    "kind": "district",
+    "center": { "latitude": -11.7730, "longitude": -77.1760 },
+    "bounds": { "north": -11.5800, "south": -11.9100, "east": -77.0700, "west": -77.2400 },
+    "boundarySource": {
+      "provider": "openstreetmap",
+      "parentRelationId": 1944670,
+      "queryName": "Ancón",
+      "sourceUrl": "https://www.openstreetmap.org/search?query=Anc%C3%B3n%2C%20Lima%2C%20Peru"
+    }
+  },
+  {
+    "id": "ate",
+    "parentId": "lima-province",
+    "label": "Ate",
+    "kind": "district",
+    "center": { "latitude": -12.0464, "longitude": -76.9006 },
+    "bounds": { "north": -11.9700, "south": -12.1000, "east": -76.8000, "west": -76.9800 },
+    "boundarySource": {
+      "provider": "openstreetmap",
+      "parentRelationId": 1944670,
+      "queryName": "Ate",
+      "sourceUrl": "https://www.openstreetmap.org/search?query=Ate%2C%20Lima%2C%20Peru"
+    }
+  },
+  {
+    "id": "barranco",
+    "parentId": "lima-province",
+    "label": "Barranco",
+    "kind": "district",
+    "center": { "latitude": -12.1494, "longitude": -77.0217 },
+    "bounds": { "north": -12.1350, "south": -12.1650, "east": -77.0100, "west": -77.0350 },
+    "boundarySource": {
+      "provider": "openstreetmap",
+      "parentRelationId": 1944670,
+      "queryName": "Barranco",
+      "sourceUrl": "https://www.openstreetmap.org/search?query=Barranco%2C%20Lima%2C%20Peru"
+    }
+  },
+  {
+    "id": "brena",
+    "parentId": "lima-province",
+    "label": "Brena",
+    "kind": "district",
+    "center": { "latitude": -12.0590, "longitude": -77.0520 },
+    "bounds": { "north": -12.0450, "south": -12.0750, "east": -77.0400, "west": -77.0650 },
+    "boundarySource": {
+      "provider": "openstreetmap",
+      "parentRelationId": 1944670,
+      "queryName": "Breña",
+      "sourceUrl": "https://www.openstreetmap.org/search?query=Bre%C3%B1a%2C%20Lima%2C%20Peru"
+    }
+  },
+  {
+    "id": "carabayllo",
+    "parentId": "lima-province",
+    "label": "Carabayllo",
+    "kind": "district",
+    "center": { "latitude": -11.8617, "longitude": -77.0378 },
+    "bounds": { "north": -11.7200, "south": -11.9800, "east": -76.9000, "west": -77.1500 },
+    "boundarySource": {
+      "provider": "openstreetmap",
+      "parentRelationId": 1944670,
+      "queryName": "Carabayllo",
+      "sourceUrl": "https://www.openstreetmap.org/search?query=Carabayllo%2C%20Lima%2C%20Peru"
+    }
+  },
+  {
+    "id": "chaclacayo",
+    "parentId": "lima-province",
+    "label": "Chaclacayo",
+    "kind": "district",
+    "center": { "latitude": -11.9797, "longitude": -76.7665 },
+    "bounds": { "north": -11.9300, "south": -12.0300, "east": -76.6800, "west": -76.8400 },
+    "boundarySource": {
+      "provider": "openstreetmap",
+      "parentRelationId": 1944670,
+      "queryName": "Chaclacayo",
+      "sourceUrl": "https://www.openstreetmap.org/search?query=Chaclacayo%2C%20Lima%2C%20Peru"
+    }
+  },
+  {
+    "id": "chorrillos",
+    "parentId": "lima-province",
+    "label": "Chorrillos",
+    "kind": "district",
+    "center": { "latitude": -12.1740, "longitude": -77.0240 },
+    "bounds": { "north": -12.1300, "south": -12.2300, "east": -76.9800, "west": -77.0600 },
+    "boundarySource": {
+      "provider": "openstreetmap",
+      "parentRelationId": 1944670,
+      "queryName": "Chorrillos",
+      "sourceUrl": "https://www.openstreetmap.org/search?query=Chorrillos%2C%20Lima%2C%20Peru"
+    }
+  },
+  {
+    "id": "cieneguilla",
+    "parentId": "lima-province",
+    "label": "Cieneguilla",
+    "kind": "district",
+    "center": { "latitude": -12.0911, "longitude": -76.7748 },
+    "bounds": { "north": -12.0000, "south": -12.2000, "east": -76.6200, "west": -76.8800 },
+    "boundarySource": {
+      "provider": "openstreetmap",
+      "parentRelationId": 1944670,
+      "queryName": "Cieneguilla",
+      "sourceUrl": "https://www.openstreetmap.org/search?query=Cieneguilla%2C%20Lima%2C%20Peru"
+    }
+  },
+  {
+    "id": "comas",
+    "parentId": "lima-province",
+    "label": "Comas",
+    "kind": "district",
+    "center": { "latitude": -11.9370, "longitude": -77.0550 },
+    "bounds": { "north": -11.8800, "south": -12.0000, "east": -76.9900, "west": -77.1000 },
+    "boundarySource": {
+      "provider": "openstreetmap",
+      "parentRelationId": 1944670,
+      "queryName": "Comas",
+      "sourceUrl": "https://www.openstreetmap.org/search?query=Comas%2C%20Lima%2C%20Peru"
+    }
+  },
+  {
+    "id": "el-agustino",
+    "parentId": "lima-province",
+    "label": "El Agustino",
+    "kind": "district",
+    "center": { "latitude": -12.0444, "longitude": -76.9978 },
+    "bounds": { "north": -12.0250, "south": -12.0750, "east": -76.9700, "west": -77.0250 },
+    "boundarySource": {
+      "provider": "openstreetmap",
+      "parentRelationId": 1944670,
+      "queryName": "El Agustino",
+      "sourceUrl": "https://www.openstreetmap.org/search?query=El%20Agustino%2C%20Lima%2C%20Peru"
+    }
+  },
+  {
+    "id": "independencia",
+    "parentId": "lima-province",
+    "label": "Independencia",
+    "kind": "district",
+    "center": { "latitude": -11.9950, "longitude": -77.0540 },
+    "bounds": { "north": -11.9650, "south": -12.0350, "east": -77.0250, "west": -77.0800 },
+    "boundarySource": {
+      "provider": "openstreetmap",
+      "parentRelationId": 1944670,
+      "queryName": "Independencia",
+      "sourceUrl": "https://www.openstreetmap.org/search?query=Independencia%2C%20Lima%2C%20Peru"
+    }
+  },
+  {
+    "id": "jesus-maria",
+    "parentId": "lima-province",
+    "label": "Jesus Maria",
+    "kind": "district",
+    "center": { "latitude": -12.0748, "longitude": -77.0481 },
+    "bounds": { "north": -12.0638, "south": -12.0893, "east": -77.0356, "west": -77.0565 },
+    "boundarySource": {
+      "provider": "openstreetmap",
+      "relationId": 1944744,
+      "queryName": "Jesús María",
+      "sourceUrl": "https://www.openstreetmap.org/relation/1944744"
+    }
+  },
+  {
+    "id": "la-molina",
+    "parentId": "lima-province",
+    "label": "La Molina",
+    "kind": "district",
+    "center": { "latitude": -12.0875, "longitude": -76.9289 },
+    "bounds": { "north": -12.0350, "south": -12.1350, "east": -76.8550, "west": -76.9950 },
+    "boundarySource": {
+      "provider": "openstreetmap",
+      "parentRelationId": 1944670,
+      "queryName": "La Molina",
+      "sourceUrl": "https://www.openstreetmap.org/search?query=La%20Molina%2C%20Lima%2C%20Peru"
+    }
+  },
+  {
+    "id": "la-victoria",
+    "parentId": "lima-province",
+    "label": "La Victoria",
+    "kind": "district",
+    "center": { "latitude": -12.0700, "longitude": -77.0130 },
+    "bounds": { "north": -12.0450, "south": -12.0950, "east": -76.9900, "west": -77.0350 },
+    "boundarySource": {
+      "provider": "openstreetmap",
+      "parentRelationId": 1944670,
+      "queryName": "La Victoria",
+      "sourceUrl": "https://www.openstreetmap.org/search?query=La%20Victoria%2C%20Lima%2C%20Peru"
+    }
+  },
+  {
+    "id": "lima-district",
+    "parentId": "lima-province",
+    "label": "Lima",
+    "kind": "district",
+    "center": { "latitude": -12.0464, "longitude": -77.0428 },
+    "bounds": { "north": -12.0180, "south": -12.0750, "east": -77.0050, "west": -77.0800 },
+    "boundarySource": {
+      "provider": "openstreetmap",
+      "parentRelationId": 1944670,
+      "queryName": "Lima",
+      "sourceUrl": "https://www.openstreetmap.org/search?query=Lima%20District%2C%20Lima%2C%20Peru"
+    }
+  },
+  {
+    "id": "lince",
+    "parentId": "lima-province",
+    "label": "Lince",
+    "kind": "district",
+    "center": { "latitude": -12.0833, "longitude": -77.0350 },
+    "bounds": { "north": -12.0680, "south": -12.0980, "east": -77.0200, "west": -77.0500 },
+    "boundarySource": {
+      "provider": "openstreetmap",
+      "parentRelationId": 1944670,
+      "queryName": "Lince",
+      "sourceUrl": "https://www.openstreetmap.org/search?query=Lince%2C%20Lima%2C%20Peru"
+    }
+  },
+  {
+    "id": "los-olivos",
+    "parentId": "lima-province",
+    "label": "Los Olivos",
+    "kind": "district",
+    "center": { "latitude": -11.9723, "longitude": -77.0749 },
+    "bounds": { "north": -11.9350, "south": -12.0150, "east": -77.0400, "west": -77.1100 },
+    "boundarySource": {
+      "provider": "openstreetmap",
+      "parentRelationId": 1944670,
+      "queryName": "Los Olivos",
+      "sourceUrl": "https://www.openstreetmap.org/search?query=Los%20Olivos%2C%20Lima%2C%20Peru"
+    }
+  },
+  {
+    "id": "lurigancho-chosica",
+    "parentId": "lima-province",
+    "label": "Lurigancho-Chosica",
+    "kind": "district",
+    "center": { "latitude": -11.9300, "longitude": -76.6900 },
+    "bounds": { "north": -11.8200, "south": -12.0400, "east": -76.4500, "west": -76.8800 },
+    "boundarySource": {
+      "provider": "openstreetmap",
+      "parentRelationId": 1944670,
+      "queryName": "Lurigancho",
+      "sourceUrl": "https://www.openstreetmap.org/search?query=Lurigancho-Chosica%2C%20Lima%2C%20Peru"
+    }
+  },
+  {
+    "id": "lurin",
+    "parentId": "lima-province",
+    "label": "Lurin",
+    "kind": "district",
+    "center": { "latitude": -12.2740, "longitude": -76.8700 },
+    "bounds": { "north": -12.1800, "south": -12.3500, "east": -76.7000, "west": -76.9800 },
+    "boundarySource": {
+      "provider": "openstreetmap",
+      "parentRelationId": 1944670,
+      "queryName": "Lurín",
+      "sourceUrl": "https://www.openstreetmap.org/search?query=Lur%C3%ADn%2C%20Lima%2C%20Peru"
+    }
+  },
+  {
+    "id": "magdalena",
+    "parentId": "lima-province",
+    "label": "Magdalena del Mar",
+    "kind": "district",
+    "center": { "latitude": -12.0908, "longitude": -77.0743 },
+    "bounds": { "north": -12.0832, "south": -12.1036, "east": -77.0632, "west": -77.0863 },
+    "boundarySource": {
+      "provider": "openstreetmap",
+      "relationId": 1944765,
+      "queryName": "Magdalena del Mar",
+      "sourceUrl": "https://www.openstreetmap.org/relation/1944765"
+    }
+  },
+  {
+    "id": "miraflores",
+    "parentId": "lima-province",
+    "label": "Miraflores",
+    "kind": "district",
+    "center": { "latitude": -12.1211, "longitude": -77.0305 },
+    "bounds": { "north": -12.1000, "south": -12.1400, "east": -77.0100, "west": -77.0500 },
+    "boundarySource": {
+      "provider": "openstreetmap",
+      "parentRelationId": 1944670,
+      "queryName": "Miraflores",
+      "sourceUrl": "https://www.openstreetmap.org/search?query=Miraflores%2C%20Lima%2C%20Peru"
+    }
+  },
+  {
+    "id": "pachacamac",
+    "parentId": "lima-province",
+    "label": "Pachacamac",
+    "kind": "district",
+    "center": { "latitude": -12.2286, "longitude": -76.8580 },
+    "bounds": { "north": -12.1000, "south": -12.3400, "east": -76.6800, "west": -77.0000 },
+    "boundarySource": {
+      "provider": "openstreetmap",
+      "parentRelationId": 1944670,
+      "queryName": "Pachacamac",
+      "sourceUrl": "https://www.openstreetmap.org/search?query=Pachacamac%2C%20Lima%2C%20Peru"
+    }
+  },
+  {
+    "id": "pucusana",
+    "parentId": "lima-province",
+    "label": "Pucusana",
+    "kind": "district",
+    "center": { "latitude": -12.4810, "longitude": -76.7970 },
+    "bounds": { "north": -12.4300, "south": -12.5200, "east": -76.7600, "west": -76.8300 },
+    "boundarySource": {
+      "provider": "openstreetmap",
+      "parentRelationId": 1944670,
+      "queryName": "Pucusana",
+      "sourceUrl": "https://www.openstreetmap.org/search?query=Pucusana%2C%20Lima%2C%20Peru"
+    }
+  },
+  {
+    "id": "pueblo-libre",
+    "parentId": "lima-province",
+    "label": "Pueblo Libre",
+    "kind": "district",
+    "center": { "latitude": -12.0735, "longitude": -77.0639 },
+    "bounds": { "north": -12.0626, "south": -12.0835, "east": -77.0521, "west": -77.0802 },
+    "boundarySource": {
+      "provider": "openstreetmap",
+      "relationId": 1944764,
+      "queryName": "Pueblo Libre",
+      "sourceUrl": "https://www.openstreetmap.org/relation/1944764"
+    }
+  },
+  {
+    "id": "puente-piedra",
+    "parentId": "lima-province",
+    "label": "Puente Piedra",
+    "kind": "district",
+    "center": { "latitude": -11.8660, "longitude": -77.0730 },
+    "bounds": { "north": -11.7800, "south": -11.9400, "east": -76.9900, "west": -77.1500 },
+    "boundarySource": {
+      "provider": "openstreetmap",
+      "parentRelationId": 1944670,
+      "queryName": "Puente Piedra",
+      "sourceUrl": "https://www.openstreetmap.org/search?query=Puente%20Piedra%2C%20Lima%2C%20Peru"
+    }
+  },
+  {
+    "id": "punta-hermosa",
+    "parentId": "lima-province",
+    "label": "Punta Hermosa",
+    "kind": "district",
+    "center": { "latitude": -12.3370, "longitude": -76.8250 },
+    "bounds": { "north": -12.2800, "south": -12.4000, "east": -76.7800, "west": -76.8600 },
+    "boundarySource": {
+      "provider": "openstreetmap",
+      "parentRelationId": 1944670,
+      "queryName": "Punta Hermosa",
+      "sourceUrl": "https://www.openstreetmap.org/search?query=Punta%20Hermosa%2C%20Lima%2C%20Peru"
+    }
+  },
+  {
+    "id": "punta-negra",
+    "parentId": "lima-province",
+    "label": "Punta Negra",
+    "kind": "district",
+    "center": { "latitude": -12.3650, "longitude": -76.7950 },
+    "bounds": { "north": -12.3200, "south": -12.4200, "east": -76.7600, "west": -76.8300 },
+    "boundarySource": {
+      "provider": "openstreetmap",
+      "parentRelationId": 1944670,
+      "queryName": "Punta Negra",
+      "sourceUrl": "https://www.openstreetmap.org/search?query=Punta%20Negra%2C%20Lima%2C%20Peru"
+    }
+  },
+  {
+    "id": "rimac",
+    "parentId": "lima-province",
+    "label": "Rimac",
+    "kind": "district",
+    "center": { "latitude": -12.0320, "longitude": -77.0320 },
+    "bounds": { "north": -12.0000, "south": -12.0600, "east": -77.0100, "west": -77.0600 },
+    "boundarySource": {
+      "provider": "openstreetmap",
+      "parentRelationId": 1944670,
+      "queryName": "Rímac",
+      "sourceUrl": "https://www.openstreetmap.org/search?query=R%C3%ADmac%2C%20Lima%2C%20Peru"
+    }
+  },
+  {
+    "id": "san-bartolo",
+    "parentId": "lima-province",
+    "label": "San Bartolo",
+    "kind": "district",
+    "center": { "latitude": -12.3860, "longitude": -76.7800 },
+    "bounds": { "north": -12.3500, "south": -12.4200, "east": -76.7400, "west": -76.8200 },
+    "boundarySource": {
+      "provider": "openstreetmap",
+      "parentRelationId": 1944670,
+      "queryName": "San Bartolo",
+      "sourceUrl": "https://www.openstreetmap.org/search?query=San%20Bartolo%2C%20Lima%2C%20Peru"
+    }
+  },
+  {
+    "id": "san-borja",
+    "parentId": "lima-province",
+    "label": "San Borja",
+    "kind": "district",
+    "center": { "latitude": -12.0970, "longitude": -76.9950 },
+    "bounds": { "north": -12.0750, "south": -12.1150, "east": -76.9650, "west": -77.0250 },
+    "boundarySource": {
+      "provider": "openstreetmap",
+      "parentRelationId": 1944670,
+      "queryName": "San Borja",
+      "sourceUrl": "https://www.openstreetmap.org/search?query=San%20Borja%2C%20Lima%2C%20Peru"
+    }
+  },
+  {
+    "id": "san-isidro",
+    "parentId": "lima-province",
+    "label": "San Isidro",
+    "kind": "district",
+    "center": { "latitude": -12.0970, "longitude": -77.0360 },
+    "bounds": { "north": -12.0850, "south": -12.1150, "east": -77.0100, "west": -77.0600 },
+    "boundarySource": {
+      "provider": "openstreetmap",
+      "parentRelationId": 1944670,
+      "queryName": "San Isidro",
+      "sourceUrl": "https://www.openstreetmap.org/search?query=San%20Isidro%2C%20Lima%2C%20Peru"
+    }
+  },
+  {
+    "id": "san-juan-de-lurigancho",
+    "parentId": "lima-province",
+    "label": "San Juan de Lurigancho",
+    "kind": "district",
+    "center": { "latitude": -11.9820, "longitude": -76.9950 },
+    "bounds": { "north": -11.8800, "south": -12.0500, "east": -76.8800, "west": -77.0500 },
+    "boundarySource": {
+      "provider": "openstreetmap",
+      "parentRelationId": 1944670,
+      "queryName": "San Juan de Lurigancho",
+      "sourceUrl": "https://www.openstreetmap.org/search?query=San%20Juan%20de%20Lurigancho%2C%20Lima%2C%20Peru"
+    }
+  },
+  {
+    "id": "san-juan-de-miraflores",
+    "parentId": "lima-province",
+    "label": "San Juan de Miraflores",
+    "kind": "district",
+    "center": { "latitude": -12.1630, "longitude": -76.9700 },
+    "bounds": { "north": -12.1200, "south": -12.2200, "east": -76.9200, "west": -77.0200 },
+    "boundarySource": {
+      "provider": "openstreetmap",
+      "parentRelationId": 1944670,
+      "queryName": "San Juan de Miraflores",
+      "sourceUrl": "https://www.openstreetmap.org/search?query=San%20Juan%20de%20Miraflores%2C%20Lima%2C%20Peru"
+    }
+  },
+  {
+    "id": "san-luis",
+    "parentId": "lima-province",
+    "label": "San Luis",
+    "kind": "district",
+    "center": { "latitude": -12.0750, "longitude": -76.9970 },
+    "bounds": { "north": -12.0600, "south": -12.0900, "east": -76.9750, "west": -77.0150 },
+    "boundarySource": {
+      "provider": "openstreetmap",
+      "parentRelationId": 1944670,
+      "queryName": "San Luis",
+      "sourceUrl": "https://www.openstreetmap.org/search?query=San%20Luis%2C%20Lima%2C%20Peru"
+    }
+  },
+  {
+    "id": "san-martin-de-porres",
+    "parentId": "lima-province",
+    "label": "San Martin de Porres",
+    "kind": "district",
+    "center": { "latitude": -12.0100, "longitude": -77.0850 },
+    "bounds": { "north": -11.9400, "south": -12.0750, "east": -77.0450, "west": -77.1350 },
+    "boundarySource": {
+      "provider": "openstreetmap",
+      "parentRelationId": 1944670,
+      "queryName": "San Martín de Porres",
+      "sourceUrl": "https://www.openstreetmap.org/search?query=San%20Mart%C3%ADn%20de%20Porres%2C%20Lima%2C%20Peru"
+    }
+  },
+  {
+    "id": "san-miguel",
+    "parentId": "lima-province",
+    "label": "San Miguel",
+    "kind": "district",
+    "center": { "latitude": -12.0763, "longitude": -77.0863 },
+    "bounds": { "north": -12.0643, "south": -12.0898, "east": -77.0752, "west": -77.1038 },
+    "boundarySource": {
+      "provider": "openstreetmap",
+      "relationId": 1944825,
+      "queryName": "San Miguel",
+      "sourceUrl": "https://www.openstreetmap.org/relation/1944825"
+    }
+  },
+  {
+    "id": "santa-anita",
+    "parentId": "lima-province",
+    "label": "Santa Anita",
+    "kind": "district",
+    "center": { "latitude": -12.0430, "longitude": -76.9710 },
+    "bounds": { "north": -12.0200, "south": -12.0650, "east": -76.9450, "west": -77.0000 },
+    "boundarySource": {
+      "provider": "openstreetmap",
+      "parentRelationId": 1944670,
+      "queryName": "Santa Anita",
+      "sourceUrl": "https://www.openstreetmap.org/search?query=Santa%20Anita%2C%20Lima%2C%20Peru"
+    }
+  },
+  {
+    "id": "santa-maria-del-mar",
+    "parentId": "lima-province",
+    "label": "Santa Maria del Mar",
+    "kind": "district",
+    "center": { "latitude": -12.4090, "longitude": -76.7700 },
+    "bounds": { "north": -12.3800, "south": -12.4400, "east": -76.7300, "west": -76.8000 },
+    "boundarySource": {
+      "provider": "openstreetmap",
+      "parentRelationId": 1944670,
+      "queryName": "Santa María del Mar",
+      "sourceUrl": "https://www.openstreetmap.org/search?query=Santa%20Mar%C3%ADa%20del%20Mar%2C%20Lima%2C%20Peru"
+    }
+  },
+  {
+    "id": "santa-rosa",
+    "parentId": "lima-province",
+    "label": "Santa Rosa",
+    "kind": "district",
+    "center": { "latitude": -11.8000, "longitude": -77.1700 },
+    "bounds": { "north": -11.7400, "south": -11.8700, "east": -77.1200, "west": -77.2200 },
+    "boundarySource": {
+      "provider": "openstreetmap",
+      "parentRelationId": 1944670,
+      "queryName": "Santa Rosa",
+      "sourceUrl": "https://www.openstreetmap.org/search?query=Santa%20Rosa%2C%20Lima%2C%20Peru"
+    }
+  },
+  {
+    "id": "santiago-de-surco",
+    "parentId": "lima-province",
+    "label": "Santiago de Surco",
+    "kind": "district",
+    "center": { "latitude": -12.1450, "longitude": -76.9910 },
+    "bounds": { "north": -12.0950, "south": -12.1900, "east": -76.9250, "west": -77.0550 },
+    "boundarySource": {
+      "provider": "openstreetmap",
+      "parentRelationId": 1944670,
+      "queryName": "Santiago de Surco",
+      "sourceUrl": "https://www.openstreetmap.org/search?query=Santiago%20de%20Surco%2C%20Lima%2C%20Peru"
+    }
+  },
+  {
+    "id": "surquillo",
+    "parentId": "lima-province",
+    "label": "Surquillo",
+    "kind": "district",
+    "center": { "latitude": -12.1120, "longitude": -77.0110 },
+    "bounds": { "north": -12.1000, "south": -12.1250, "east": -76.9950, "west": -77.0250 },
+    "boundarySource": {
+      "provider": "openstreetmap",
+      "parentRelationId": 1944670,
+      "queryName": "Surquillo",
+      "sourceUrl": "https://www.openstreetmap.org/search?query=Surquillo%2C%20Lima%2C%20Peru"
+    }
+  },
+  {
+    "id": "villa-el-salvador",
+    "parentId": "lima-province",
+    "label": "Villa El Salvador",
+    "kind": "district",
+    "center": { "latitude": -12.2130, "longitude": -76.9430 },
+    "bounds": { "north": -12.1700, "south": -12.2600, "east": -76.8800, "west": -77.0000 },
+    "boundarySource": {
+      "provider": "openstreetmap",
+      "parentRelationId": 1944670,
+      "queryName": "Villa El Salvador",
+      "sourceUrl": "https://www.openstreetmap.org/search?query=Villa%20El%20Salvador%2C%20Lima%2C%20Peru"
+    }
+  },
+  {
+    "id": "villa-maria-del-triunfo",
+    "parentId": "lima-province",
+    "label": "Villa Maria del Triunfo",
+    "kind": "district",
+    "center": { "latitude": -12.1600, "longitude": -76.9200 },
+    "bounds": { "north": -12.0800, "south": -12.2400, "east": -76.8200, "west": -77.0000 },
+    "boundarySource": {
+      "provider": "openstreetmap",
+      "parentRelationId": 1944670,
+      "queryName": "Villa María del Triunfo",
+      "sourceUrl": "https://www.openstreetmap.org/search?query=Villa%20Mar%C3%ADa%20del%20Triunfo%2C%20Lima%2C%20Peru"
+    }
+  }
+]

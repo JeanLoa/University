@@ -1,0 +1,71 @@
+@startuml
+title LowCortisol Platform - Plan Database Diagram
+left to right direction
+hide circle
+skinparam linetype ortho
+skinparam shadowing false
+skinparam packageStyle rectangle
+package "Plan" {
+  entity "plans" as plans {
+    PK id : uuid
+    created_at : timestamp
+    updated_at : timestamp
+    code : varchar
+    name : varchar
+    description : varchar
+    price : decimal
+    currency : varchar
+    billing_period : varchar
+    max_sites : integer
+    max_devices : integer
+    is_recommended : boolean
+    is_active : boolean
+  }
+  entity "plan_features" as plan_features {
+    PK id : uuid
+    FK plan_id : uuid
+    name : varchar
+    description : varchar
+    created_at : timestamp
+    updated_at : timestamp
+  }
+  entity "subscriptions" as subscriptions {
+    PK id : uuid
+    user_id : varchar
+    workplace_id : varchar
+    FK plan_id : uuid
+    status : varchar
+    started_at : timestamp
+    expires_at : timestamp
+    auto_renew : boolean
+    created_at : timestamp
+    updated_at : timestamp
+  }
+  entity "payments" as payments {
+    PK id : uuid
+    FK subscription_id : uuid
+    amount : decimal
+    currency : varchar
+    method : varchar
+    status : varchar
+    paid_at : timestamp
+    created_at : timestamp
+    updated_at : timestamp
+  }
+  entity "service_requests" as service_requests {
+    PK id : uuid
+    FK subscription_id : uuid
+    type : varchar
+    description : varchar
+    status : varchar
+    created_at : timestamp
+    updated_at : timestamp
+  }
+}
+
+plans ||--o{ plan_features : plan_id
+plans ||--o{ subscriptions : plan_id
+subscriptions ||--o{ payments : subscription_id
+subscriptions ||--o{ service_requests : subscription_id
+
+@enduml

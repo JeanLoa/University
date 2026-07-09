@@ -1,0 +1,43 @@
+@startuml
+title LowCortisol Platform - Workplace Backend Infrastructure Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Workplace / Infrastructure" {
+  package "Infrastructure / EF Core" {
+    class "WorkplaceJpaTableNames" as Backend_workplace_WorkplaceJpaTableNames <<Class>> {
+      + LOCATIONS: String
+      + ROOMS: String
+      + DEVICE_ASSIGNMENTS: String
+      - WorkplaceJpaTableNames()
+    }
+    class "WorkplaceQueryHints" as Backend_workplace_WorkplaceQueryHints <<Class>> {
+      + FIND_LOCATIONS_BY_USER: String
+      + FIND_ROOMS_BY_LOCATION: String
+      + FIND_ASSIGNMENTS_BY_LOCATION: String
+      - WorkplaceQueryHints()
+    }
+  }
+  package "Infrastructure / EF Core Repositories" {
+    interface "JpaDeviceAssignmentRepository" as Backend_workplace_JpaDeviceAssignmentRepository <<interface>> {
+    }
+    interface "JpaLocationRepository" as Backend_workplace_JpaLocationRepository <<interface>> {
+    }
+    interface "JpaRoomRepository" as Backend_workplace_JpaRoomRepository <<interface>> {
+    }
+  }
+}
+
+
+
+' Layer relationship completion: every declared type participates in this layer diagram.
+Backend_workplace_JpaDeviceAssignmentRepository ..> Backend_workplace_WorkplaceJpaTableNames
+Backend_workplace_JpaDeviceAssignmentRepository ..> Backend_workplace_WorkplaceQueryHints
+Backend_workplace_JpaDeviceAssignmentRepository ..> Backend_workplace_WorkplaceJpaTableNames
+Backend_workplace_JpaDeviceAssignmentRepository ..> Backend_workplace_JpaLocationRepository
+Backend_workplace_JpaDeviceAssignmentRepository ..> Backend_workplace_JpaRoomRepository
+
+@enduml

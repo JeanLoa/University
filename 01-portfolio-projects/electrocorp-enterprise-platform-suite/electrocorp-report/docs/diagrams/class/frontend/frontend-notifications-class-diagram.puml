@@ -1,0 +1,26 @@
+@startuml
+title ElectroCorp Web App - Notifications Frontend Bounded Context Layers
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Notifications Frontend Bounded Context" {
+  class "Domain" as Frontend_notifications_Domain <<layer>>
+  class "Application" as Frontend_notifications_Application <<layer>>
+  class "Infrastructure" as Frontend_notifications_Infrastructure <<layer>>
+  class "Presentation" as Frontend_notifications_Presentation <<layer>>
+}
+
+Frontend_notifications_Presentation ..> Frontend_notifications_Application : user actions / state
+Frontend_notifications_Application ..> Frontend_notifications_Domain : models and rules
+Frontend_notifications_Application ..> Frontend_notifications_Infrastructure : API services / adapters
+Frontend_notifications_Infrastructure ..> Frontend_notifications_Domain : resources and mappers
+Frontend_notifications_Presentation ..> Frontend_notifications_Domain : view models
+
+note bottom of Frontend_notifications_Application
+Detailed class diagrams for each layer are available in docs/diagrams/class/frontend/layers/notifications.
+end note
+
+@enduml

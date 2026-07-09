@@ -1,0 +1,47 @@
+@startuml
+title LowCortisol Platform - Shared Backend Interfaces REST Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Shared / Interfaces REST" {
+  package "Interfaces / REST Controllers" {
+    class "HealthController" as Backend_shared_HealthController <<REST Controller>> {
+      + root() : Map<String, String>
+      + health() : Map<String, String>
+    }
+  }
+  package "Interfaces / REST Errors" {
+    class "GlobalExceptionHandler" as Backend_shared_GlobalExceptionHandler <<Error Handling>> {
+      - messageSource: MessageSource
+      + GlobalExceptionHandler(MessageSource messageSource)
+      + handleResourceNotFoundException(ResourceNotFoundException exception) : ErrorResource
+      + handleConflictException(ConflictException exception) : ErrorResource
+      + handleDomainException(RuntimeException exception) : ErrorResource
+      + handleIllegalArgumentException(IllegalArgumentException exception) : ErrorResource
+      + handleGeneralException(Exception exception) : ErrorResource
+      - error(String code, String message) : ErrorResource
+      - resolveMessage(String message) : String
+    }
+  }
+  package "Interfaces / REST Resources" {
+    class "ApiResource" as Backend_shared_ApiResource <<record>> {
+    }
+    class "ErrorResource" as Backend_shared_ErrorResource <<record>> {
+      + String code
+      + String message
+      + LocalDateTime timestamp
+    }
+    class "PageResource" as Backend_shared_PageResource <<record>> {
+    }
+  }
+}
+
+Backend_shared_GlobalExceptionHandler ..> Backend_shared_ErrorResource
+Backend_shared_HealthController ..> Backend_shared_ApiResource
+Backend_shared_HealthController ..> Backend_shared_PageResource
+
+
+@enduml

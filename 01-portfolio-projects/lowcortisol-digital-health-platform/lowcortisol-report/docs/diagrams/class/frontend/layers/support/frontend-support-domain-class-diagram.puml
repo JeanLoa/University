@@ -1,0 +1,58 @@
+@startuml
+title LowCortisol WebApp - Support Frontend Domain Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Support / Domain" {
+  package "Domain Model" {
+    class "SupportTicket" as Frontend_support_SupportTicket <<Entity>> {
+      + id
+      + title
+      + description
+      + category
+      + priority
+      + status
+      + messages
+    }
+
+    class "SupportMessage" as Frontend_support_SupportMessage <<Entity>> {
+      + id
+      + ticketId
+      + senderType
+      + senderName
+      + content
+      + sentAt
+    }
+
+    class "SupportConversation" as Frontend_support_SupportConversation <<Entity>> {
+      + id
+      + ticketId
+      + messages
+      + lastMessageAt
+    }
+
+    class "SupportAgent" as Frontend_support_SupportAgent <<Entity>> {
+      + id
+      + name
+      + specialty
+      + status
+    }
+
+    class "KnowledgeArticle" as Frontend_support_KnowledgeArticle <<Entity>> {
+      + id
+      + title
+      + summary
+      + category
+      + helpfulCount
+    }
+  }
+}
+
+Frontend_support_SupportTicket "1" o-- "*" Frontend_support_SupportMessage
+Frontend_support_SupportConversation "1" o-- "*" Frontend_support_SupportMessage
+Frontend_support_SupportConversation --> Frontend_support_SupportTicket
+
+@enduml

@@ -1,0 +1,27 @@
+<section class="comparison-panel" aria-label="Comparacion de algoritmos">
+  <div class="panel-heading">
+    <span>Comparativa</span>
+    <h2>Dijkstra / A* / BFS</h2>
+  </div>
+
+  <div class="comparison-list">
+    @for (result of comparison; track result.algorithm) {
+      <button
+        type="button"
+        class="comparison-row"
+        [class.is-active]="selectedAlgorithm === result.algorithm"
+        (click)="algorithmSelected.emit(result.algorithm)"
+      >
+        <span class="comparison-row__name">{{ labelFor(result.algorithm) }}</span>
+        <span class="comparison-row__metric">{{ distanceFor(result) }}</span>
+        <span class="comparison-row__metric">{{ timeFor(result) }}</span>
+        <span class="comparison-row__metric">{{ visitedFor(result) }} nodos</span>
+        <span class="comparison-row__bars" aria-hidden="true">
+          <i class="bar bar--time" [style.width]="widthFor(result, 'time')"></i>
+          <i class="bar bar--visited" [style.width]="widthFor(result, 'visited')"></i>
+        </span>
+      </button>
+    }
+  </div>
+</section>
+

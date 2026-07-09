@@ -1,0 +1,97 @@
+@startuml
+title LowCortisol WebApp - Shared Frontend Infrastructure Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Shared / Infrastructure" {
+  package "Infrastructure / API Services" {
+    class "ApiConfig" as Frontend_shared_ApiConfig <<API Service>> {
+      + InjectionToken
+    }
+    class "BaseApiService" as Frontend_shared_BaseApiService <<API Service>> {
+      # resourceEndpoint: string
+      # constructor: (
+      # http: HttpClient
+      # apiBaseUrl: string
+      + endpoint: string
+      # assembler: BaseAssembler<TEntity, TResource, TResponse>
+      + findAll() : Observable<TResponse[]>
+      + findById(id: number | string) : Observable<TResponse>
+      + create(resource: TResource) : Observable<TResponse>
+      + update(id: number | string, resource: Partial<TResource>) : Observable<TResponse>
+      + patch(id: number | string, resource: Partial<TResource>) : Observable<TResponse>
+      + delete(id: number | string) : Observable<void>
+    }
+  }
+  package "Infrastructure / Assemblers" {
+    class "BaseAssembler" as Frontend_shared_BaseAssembler <<Assembler>> {
+      + abstract: toEntity(response: TResponse): TEntity
+      + abstract: toResource(entity: TEntity): TResource
+    }
+  }
+  package "Infrastructure / Constants" {
+    class "AppLanguageCode" as Frontend_shared_AppLanguageCode <<type>> {
+      + (typeof APP_LANGUAGES)[keyof typeof APP_LANGUAGES]
+    }
+    class "HttpStatusCode" as Frontend_shared_HttpStatusCode <<type>> {
+      + (typeof HTTP_STATUS_CODES)[keyof typeof HTTP_STATUS_CODES]
+    }
+    class "RoutePaths" as Frontend_shared_RoutePaths <<Class>> {
+      + IAM
+      + HOME: '/home'
+      + ABOUT: '/about'
+      + BILLING
+      + DEVICE_CONTROL
+      + ENERGY_MONITORING
+      + NOTIFICATIONS
+      + WORKPLACE
+      + REPORTING
+      + SERVICE_MANAGEMENT
+      + LEGACY
+    }
+    class "StorageKeys" as Frontend_shared_StorageKeys <<Class>> {
+      + auth: 'ec.auth'
+      + userId: 'ec.user.id'
+      + userEmail: 'ec.user.email'
+      + userName: 'ec.user.name'
+      + language: 'ec.language'
+      + darkMode: 'ec.darkMode'
+      + activeWorkplaceId: 'ec.activeWorkplaceId'
+      + notificationClassificationPolicy: 'ec.notification.classificationPolicy'
+    }
+  }
+  package "Infrastructure / Resources" {
+    interface "BaseResource" as Frontend_shared_BaseResource <<interface>> {
+    }
+  }
+  package "Infrastructure / Responses" {
+    interface "BaseResponse" as Frontend_shared_BaseResponse <<interface>> {
+      + id: TId
+    }
+  }
+  package "Infrastructure / Storage" {
+    class "LocalStorageService" as Frontend_shared_LocalStorageService <<Storage>> {
+      + getItem(key: string) : string | null
+      + setItem(key: string, value: string) : void
+      + removeItem(key: string) : void
+      + clear() : void
+    }
+  }
+}
+
+Frontend_shared_BaseApiService ..> Frontend_shared_BaseAssembler
+
+' Layer relationship completion: every declared type participates in this layer diagram.
+Frontend_shared_BaseApiService ..> Frontend_shared_ApiConfig
+Frontend_shared_BaseApiService ..> Frontend_shared_AppLanguageCode
+Frontend_shared_BaseApiService ..> Frontend_shared_HttpStatusCode
+Frontend_shared_BaseApiService ..> Frontend_shared_RoutePaths
+Frontend_shared_BaseApiService ..> Frontend_shared_StorageKeys
+Frontend_shared_BaseApiService ..> Frontend_shared_BaseResource
+Frontend_shared_BaseApiService ..> Frontend_shared_BaseResponse
+Frontend_shared_BaseApiService ..> Frontend_shared_LocalStorageService
+
+@enduml

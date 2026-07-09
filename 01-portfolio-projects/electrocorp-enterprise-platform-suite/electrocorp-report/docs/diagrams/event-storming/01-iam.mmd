@@ -1,0 +1,41 @@
+flowchart LR
+  classDef actor fill:#ffe066,stroke:#d4a100,color:#3d2f00;
+  classDef command fill:#6db3f2,stroke:#1c6fb8,color:#08243d;
+  classDef aggregate fill:#fff2ae,stroke:#c9a900,color:#4a3b00;
+  classDef event fill:#ffb84d,stroke:#d47500,color:#4a2600;
+  classDef integration fill:#ff8c42,stroke:#c0501a,color:#3d1500;
+  classDef readmodel fill:#b5e7a0,stroke:#4f9a2f,color:#1f3d0f;
+  classDef external fill:#ffb6c1,stroke:#d63b6a,color:#4a0a1c;
+
+  VISITOR([🎬 Visitor]):::actor
+  USER([🎬 User]):::actor
+  ADMIN([🎬 Administrator]):::actor
+
+  C_SIGNUP[⚡ SignUp]:::command
+  C_SIGNIN[⚡ SignIn]:::command
+  C_RECOVER[⚡ RecoverPassword]:::command
+  C_RESET[⚡ ResetPassword]:::command
+  C_PROFILE[⚡ UpdateProfile]:::command
+  C_UIPREF[⚡ UpdateUiPreference]:::command
+  C_ASSIGN[⚡ AssignAccessProfile]:::command
+  C_DELETE[⚡ DeleteAccount]:::command
+
+  A_USER[📦 User]:::aggregate
+  A_ACCESS[📦 AccessProfile]:::aggregate
+  A_UIPREF[📦 UserUiPreference]:::aggregate
+
+  E_USER_REG[🟠 UserRegistered]:::event
+  IE_USER_REG[🔗 UserRegisteredIntegrationEvent]:::integration
+  JWT[🟢 JWT Session]:::readmodel
+
+  VISITOR --> C_SIGNUP --> A_USER --> E_USER_REG --> IE_USER_REG
+  USER --> C_SIGNIN --> A_USER --> JWT
+  VISITOR --> C_RECOVER --> A_USER
+  USER --> C_RESET --> A_USER
+  USER --> C_PROFILE --> A_USER
+  USER --> C_UIPREF --> A_UIPREF
+  ADMIN --> C_ASSIGN --> A_ACCESS
+  A_ACCESS -.roles/permissions.-> A_USER
+  USER --> C_DELETE --> A_USER
+
+  IE_USER_REG -->|consumed by Notifications and Reporting| OUT([🔗 to Notifications + Reporting]):::integration

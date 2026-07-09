@@ -1,0 +1,61 @@
+@startuml
+title ElectroCorp Platform - Notifications Backend Infrastructure Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Notifications / Infrastructure" {
+  package "Infrastructure / JPA" {
+    class "NotificationsJpaTableNames" as Backend_notifications_NotificationsJpaTableNames <<Class>> {
+      + ALERTS: String
+      + ALERT_RULES: String
+      + NOTIFICATION_PREFERENCES: String
+      - NotificationsJpaTableNames()
+    }
+    class "NotificationsQueryHints" as Backend_notifications_NotificationsQueryHints <<Class>> {
+      + FIND_ALERTS_BY_USER: String
+      + FIND_ALERT_RULES_BY_USER: String
+      + FIND_PREFERENCE_BY_USER: String
+      - NotificationsQueryHints()
+    }
+  }
+  package "Infrastructure / JPA Repositories" {
+    interface "JpaAlertRepository" as Backend_notifications_JpaAlertRepository <<interface>> {
+    }
+    interface "JpaAlertRuleProfileRepository" as Backend_notifications_JpaAlertRuleProfileRepository <<interface>> {
+    }
+    interface "JpaAlertRuleRepository" as Backend_notifications_JpaAlertRuleRepository <<interface>> {
+    }
+    interface "JpaNotificationPreferenceRepository" as Backend_notifications_JpaNotificationPreferenceRepository <<interface>> {
+    }
+  }
+  package "Infrastructure / Delivery" {
+    class "MailchimpNotificationDeliveryAdapter" as Backend_notifications_MailchimpNotificationDeliveryAdapter <<Adapter>> {
+      - restClient: RestClient
+      - userRepository: UserRepository
+      - mailchimpApiKey: String
+      - mailchimpMessagesUrl: String
+      - fromEmail: String
+      - fromName: String
+      + MailchimpNotificationDeliveryAdapter(restClientBuilder: RestClient.Builder, userRepository: UserRepository)
+      + send(Alert alert, NotificationPreference preference, NotificationDeliveryDecision decision) : void
+      - sendMailchimpEmail(Alert alert) : boolean
+      - resolveRecipientEmail(Alert alert) : Optional<String>
+    }
+  }
+}
+
+
+
+' Layer relationship completion: every declared type participates in this layer diagram.
+Backend_notifications_JpaAlertRepository ..> Backend_notifications_NotificationsJpaTableNames
+Backend_notifications_JpaAlertRepository ..> Backend_notifications_NotificationsQueryHints
+Backend_notifications_JpaAlertRepository ..> Backend_notifications_NotificationsJpaTableNames
+Backend_notifications_JpaAlertRepository ..> Backend_notifications_JpaAlertRuleProfileRepository
+Backend_notifications_JpaAlertRepository ..> Backend_notifications_JpaAlertRuleRepository
+Backend_notifications_JpaAlertRepository ..> Backend_notifications_JpaNotificationPreferenceRepository
+Backend_notifications_MailchimpNotificationDeliveryAdapter ..|> Backend_notifications_NotificationDeliveryPort
+
+@enduml

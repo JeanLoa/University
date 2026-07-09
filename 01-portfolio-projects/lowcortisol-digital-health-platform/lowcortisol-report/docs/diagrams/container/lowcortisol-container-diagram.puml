@@ -1,0 +1,91 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+skinparam wrapWidth 135
+skinparam maxMessageSize 70
+skinparam nodesep 35
+skinparam ranksep 45
+skinparam ArrowColor #8A8A8A
+skinparam ArrowFontColor #666666
+skinparam ArrowFontStyle bold
+skinparam ArrowThickness 1
+skinparam rectangleRoundCorner 0
+skinparam rectangleBorderThickness 0
+skinparam rectangleFontColor #FFFFFF
+skinparam rectangleFontStyle plain
+skinparam rectangle {
+  BorderThickness 0
+  MinimumWidth 155
+  Padding 8
+}
+skinparam database {
+  MinimumWidth 165
+  Padding 8
+}
+skinparam rectangle<<SystemBoundary>> {
+  BackgroundColor transparent
+  BorderColor #4A4A4A
+  BorderThickness 2
+  BorderStyle dashed
+  FontColor #333333
+  FontStyle bold
+  MinimumWidth 640
+  Padding 12
+}
+skinparam databaseBackgroundColor #C9332B
+skinparam databaseBorderColor #C9332B
+skinparam databaseFontColor #FFFFFF
+skinparam databaseFontStyle plain
+hide stereotype
+top to bottom direction
+
+title LowCortisol - C4 Container Diagram
+
+rectangle "<b>LowCortisol User</b>\n<i>[Person]</i>\n\nUses public landing content and authenticated operational flows." as User #0B5593
+
+rectangle "<b>LowCortisol Product Boundary</b>\n<i>[Software System]</i>" <<SystemBoundary>> {
+  rectangle "<b>LowCortisol Website</b>\n<i>[Static Website]</i>\n\nLanding page with product positioning, benefits, plan comparison and call-to-action links." as Website #3498DB
+  rectangle "<b>LowCortisol WebApp Host</b>\n<i>[Static Web Application Host]</i>\n\nServes the compiled Vue/Vite bundle, static assets and deployment-time frontend configuration." as WebAppHost #3498DB
+  rectangle "<b>LowCortisol SPA</b>\n<i>[Vue 3 + Vite Browser Runtime]</i>\n\nBrowser-executed application where users operate IAM, Workplace, DeviceControl, Monitoring, Notification, Plan, Support and Reports experiences." as Spa #3498DB
+
+  rectangle "<b>Backend API</b>\n<i>[ASP.NET Core Container]</i>\n\nModular monolith organized by DDD bounded contexts." as Api #3498DB
+  database "<b>lowcortisol_db</b>\n<i>[PostgreSQL Database]</i>\n\nPersists users, sites, rooms, device groups, devices, sensors, valves, readings, thresholds, anomalies, alerts, incidents, notification channels, plans, subscriptions, support tickets and mitigation operations." as Db
+}
+
+rectangle "<b>GitHub Pages</b>\n<i>[External Platform]</i>\n\nPublishes the static website." as Pages #7F8C8D
+rectangle "<b>Render Static Site</b>\n<i>[External Platform]</i>\n\nHosts the WebApp delivery layer that renders the SPA into the user's browser." as RenderStatic #7F8C8D
+rectangle "<b>Render Web Service</b>\n<i>[External Platform]</i>\n\nRuns the ASP.NET Core API service." as RenderApi #7F8C8D
+rectangle "<b>Render PostgreSQL</b>\n<i>[External Platform]</i>\n\nProvides the managed PostgreSQL database." as RenderDb #7F8C8D
+
+User --> Website : browses plans\n[Browser]
+Website --> WebAppHost : opens app\n[CTA Link]
+User --> WebAppHost : opens app URL\n[Browser]
+WebAppHost --> Spa : delivers and renders SPA\n[HTML / CSS / JS]
+User --> Spa : operates platform\n[Browser UI]
+Spa --> Api : REST\n[JSON / HTTPS]
+Api --> Db : data access\n[EF Core / SQL]
+
+Website --> Pages : hosted on
+WebAppHost --> RenderStatic : hosted on
+Api --> RenderApi : runs on
+Db --> RenderDb : hosted by
+
+Website -[hidden]right- WebAppHost
+WebAppHost -[hidden]right- Spa
+Spa -[hidden]down- Api
+Api -[hidden]right- Db
+Pages -[hidden]right- RenderStatic
+RenderStatic -[hidden]right- RenderApi
+RenderApi -[hidden]right- RenderDb
+
+legend right
+  <b>Legend</b>
+  |<#0B5593> person |
+  |<#3498DB> container |
+  |<#C9332B> database |
+  |<#7F8C8D> external container |
+endlegend
+
+@enduml

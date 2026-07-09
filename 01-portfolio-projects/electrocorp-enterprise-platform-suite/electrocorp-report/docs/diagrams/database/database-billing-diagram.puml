@@ -1,0 +1,67 @@
+@startuml
+title ElectroCorp Platform - Billing Database Diagram
+left to right direction
+hide circle
+skinparam linetype ortho
+skinparam shadowing false
+skinparam packageStyle rectangle
+package "Billing" {
+  entity "invoices" as invoices {
+    PK id : bigint
+    created_at : timestamp
+    updated_at : timestamp
+    user_id : bigint
+    FK payment_id : bigint
+    invoice_number : varchar
+    total_amount : Money
+    issued_at : date
+  }
+  entity "payments" as payments {
+    PK id : bigint
+    created_at : timestamp
+    updated_at : timestamp
+    user_id : bigint
+    FK subscription_id : bigint
+    amount : Money
+    status : varchar
+    payment_method : varchar
+    paid_at : timestamp
+  }
+  entity "plans" as plans {
+    PK id : bigint
+    created_at : timestamp
+    updated_at : timestamp
+    code : varchar
+    name : varchar
+    monthly_price : Money
+    max_devices : integer
+    max_routines : integer
+    max_alerts : integer
+    report_export_enabled : boolean
+  }
+  entity "subscriptions" as subscriptions {
+    PK id : bigint
+    created_at : timestamp
+    updated_at : timestamp
+    user_id : bigint
+    FK plan_id : bigint
+    status : varchar
+    start_date : date
+    end_date : date
+  }
+}
+
+package "External References" {
+  entity "users" as users <<external>> {
+    PK id
+  }
+}
+
+payments ||--o{ invoices : payment_id
+plans ||--o{ subscriptions : plan_id
+subscriptions ||--o{ payments : subscription_id
+users ||--o{ invoices : user_id
+users ||--o{ payments : user_id
+users ||--o{ subscriptions : user_id
+
+@enduml

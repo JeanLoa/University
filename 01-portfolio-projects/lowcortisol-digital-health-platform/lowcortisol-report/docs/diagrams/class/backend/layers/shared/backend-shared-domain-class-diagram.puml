@@ -1,0 +1,168 @@
+@startuml
+title LowCortisol Platform - Shared Backend Domain Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Shared / Domain" {
+  package "Domain / Exceptions" {
+    class "BusinessRuleException" as Backend_shared_BusinessRuleException <<Class>> {
+      + BusinessRuleException(String message)
+    }
+    class "BusinessRuleValidationException" as Backend_shared_BusinessRuleValidationException <<Class>> {
+      + BusinessRuleValidationException(String message)
+    }
+    class "ConflictException" as Backend_shared_ConflictException <<Class>> {
+      + ConflictException(String message)
+    }
+    class "DomainException" as Backend_shared_DomainException <<Class>> {
+      + DomainException(String message)
+    }
+    class "InvalidValueObjectException" as Backend_shared_InvalidValueObjectException <<Class>> {
+      + InvalidValueObjectException(String message)
+    }
+    class "ResourceNotFoundException" as Backend_shared_ResourceNotFoundException <<Class>> {
+      + ResourceNotFoundException(String resourceName, Long id)
+      + ResourceNotFoundException(String message)
+    }
+  }
+  package "Domain / Model" {
+    interface "DomainEvent" as Backend_shared_DomainEvent <<interface>> {
+    }
+    class "EntityId" as Backend_shared_EntityId <<record>> {
+      + Long value
+      + EntityId(Long value) : record
+    }
+    class "AuditableEntity" as Backend_shared_AuditableEntity <<abstract>> {
+      # id: Long
+      # createdAt: LocalDateTime
+      # updatedAt: LocalDateTime
+      # onCreate() : void
+      # onUpdate() : void
+    }
+  }
+  package "Domain / Repositories" {
+    interface "UnitOfWork" as Backend_shared_UnitOfWork <<interface>> {
+    }
+  }
+  package "Domain / Shared Value Objects" {
+    class "DateRange" as Backend_shared_DateRange <<record>> {
+      + LocalDate startDate
+      + LocalDate endDate
+      + DateRange(LocalDate startDate, LocalDate endDate) : record
+      + contains(LocalDate date) : boolean
+    }
+    class "DeviceId" as Backend_shared_DeviceId <<Value Object>> {
+      - value: Long
+      + DeviceId(Long value)
+      + of(Long value) : DeviceId
+      + equals(Object o) : boolean
+      + hashCode() : int
+    }
+    class "EmailAddress" as Backend_shared_EmailAddress <<record>> {
+      + String value
+      + EmailAddress(String value) : record
+    }
+    class "ConsumptionUsage" as Backend_shared_ConsumptionUsage <<Value Object>> {
+      - watts: BigDecimal
+      + ConsumptionUsage(BigDecimal watts)
+      + of(BigDecimal watts) : ConsumptionUsage
+      + zero() : ConsumptionUsage
+      + add(ConsumptionUsage other) : ConsumptionUsage
+      + isHighUsage(BigDecimal threshold) : boolean
+      + classify() : String
+      + equals(Object o) : boolean
+      + hashCode() : int
+    }
+    class "LocationId" as Backend_shared_LocationId <<Value Object>> {
+      - value: Long
+      + LocationId(Long value)
+      + of(Long value) : LocationId
+      + equals(Object o) : boolean
+      + hashCode() : int
+    }
+    class "Money" as Backend_shared_Money <<Value Object>> {
+      + DEFAULT_CURRENCY: String
+      - amount: BigDecimal
+      - currency: String
+      + Money(BigDecimal amount, String currency)
+      + of(BigDecimal amount) : Money
+      + of(BigDecimal amount, String currency) : Money
+      + zero() : Money
+      + add(Money other) : Money
+      + subtract(Money other) : Money
+      + multiply(BigDecimal factor) : Money
+      + isZero() : boolean
+      + isPositive() : boolean
+      + isGreaterThan(Money other) : boolean
+      - validateSameCurrency(Money other) : void
+    }
+    class "NonBlankText" as Backend_shared_NonBlankText <<record>> {
+      + String value
+      + NonBlankText(String value) : record
+      + of(String value) : NonBlankText
+    }
+    class "Percentage" as Backend_shared_Percentage <<record>> {
+      + BigDecimal value
+      + Percentage(BigDecimal value) : record
+      + of(BigDecimal value) : Percentage
+    }
+    class "PhoneNumber" as Backend_shared_PhoneNumber <<record>> {
+      + String value
+      + PhoneNumber(String value) : record
+      - PHONE_PATTERN: Pattern
+    }
+    class "RoomId" as Backend_shared_RoomId <<record>> {
+      + Long value
+      + RoomId(Long value) : record
+    }
+    class "UserId" as Backend_shared_UserId <<Value Object>> {
+      - value: Long
+      + UserId(Long value)
+      + of(Long value) : UserId
+      + equals(Object o) : boolean
+      + hashCode() : int
+    }
+    class "UserPlatformSummary" as Backend_shared_UserPlatformSummary <<Value Object>> {
+      - userId: UserId
+      - plan: PlanSnapshot
+      - devices: DeviceSnapshot
+      - workplace: WorkplaceSnapshot
+      - consumption: ConsumptionSnapshot
+      - notification: NotificationSnapshot
+      - service: ServiceSnapshot
+      - suggestedActions: List<PlatformAction>
+      + isOperationallyHealthy() : boolean
+      + calculatePlatformScore() : BigDecimal
+      - buildSuggestedActions() : List<PlatformAction>
+    }
+  }
+}
+
+Backend_shared_UserPlatformSummary ..> Backend_shared_ConsumptionUsage
+Backend_shared_UserPlatformSummary ..> Backend_shared_UserId
+
+' Layer relationship completion: every declared type participates in this layer diagram.
+Backend_shared_BusinessRuleException ..> Backend_shared_BusinessRuleValidationException
+Backend_shared_BusinessRuleException ..> Backend_shared_BusinessRuleValidationException
+Backend_shared_BusinessRuleException ..> Backend_shared_ConflictException
+Backend_shared_BusinessRuleException ..> Backend_shared_DomainException
+Backend_shared_BusinessRuleException ..> Backend_shared_InvalidValueObjectException
+Backend_shared_BusinessRuleException ..> Backend_shared_ResourceNotFoundException
+Backend_shared_BusinessRuleException ..> Backend_shared_DomainEvent
+Backend_shared_BusinessRuleException ..> Backend_shared_EntityId
+Backend_shared_BusinessRuleException ..> Backend_shared_AuditableEntity
+Backend_shared_BusinessRuleException ..> Backend_shared_UnitOfWork
+Backend_shared_BusinessRuleException ..> Backend_shared_DateRange
+Backend_shared_BusinessRuleException ..> Backend_shared_DeviceId
+Backend_shared_BusinessRuleException ..> Backend_shared_EmailAddress
+Backend_shared_BusinessRuleException ..> Backend_shared_LocationId
+Backend_shared_BusinessRuleException ..> Backend_shared_Money
+Backend_shared_BusinessRuleException ..> Backend_shared_NonBlankText
+Backend_shared_BusinessRuleException ..> Backend_shared_Percentage
+Backend_shared_BusinessRuleException ..> Backend_shared_PhoneNumber
+Backend_shared_BusinessRuleException ..> Backend_shared_RoomId
+
+@enduml

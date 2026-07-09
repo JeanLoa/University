@@ -1,0 +1,96 @@
+@startuml
+title ElectroCorp Platform - Database General Overview
+left to right direction
+hide circle
+skinparam linetype ortho
+skinparam shadowing false
+skinparam packageStyle rectangle
+skinparam nodesep 95
+skinparam ranksep 95
+skinparam entity {
+  BackgroundColor #F8FBFF
+  BorderColor #64748B
+}
+
+' Bounded contexts are intentionally compact: the header is only the context name,
+' and the tables are listed as attributes to keep the overview readable.
+entity "IAM" as db_iam <<bounded context>> {
+  access_profiles
+  users
+  password_reset_tokens
+  user_ui_preferences
+}
+
+entity "Billing" as db_billing <<bounded context>> {
+  plans
+  subscriptions
+  payments
+  invoices
+}
+
+entity "Workplace" as db_workplace <<bounded context>> {
+  locations
+  rooms
+  device_assignments
+}
+
+entity "Device Control" as db_device_control <<bounded context>> {
+  devices
+  device_groups
+  device_group_devices
+  routines
+  operation_modes
+  operation_mode_routines
+}
+
+entity "Energy Monitoring" as db_energy_monitoring <<bounded context>> {
+  energy_readings
+  energy_device_usage_states
+}
+
+entity "Notifications" as db_notifications <<bounded context>> {
+  alerts
+  alert_rules
+  alert_rule_profiles
+  notification_preferences
+}
+
+entity "Reporting" as db_reporting <<bounded context>> {
+  consumption_reports
+  energy_goals
+  reporting_events
+}
+
+entity "Service Management" as db_service_management <<bounded context>> {
+  support_tickets
+  maintenance_tickets
+}
+
+' Layout guides reduce relation lines crossing through bounded context boxes.
+db_iam -[hidden]right- db_billing
+db_billing -[hidden]right- db_reporting
+db_iam -[hidden]down- db_workplace
+db_workplace -[hidden]right- db_device_control
+db_device_control -[hidden]right- db_energy_monitoring
+db_device_control -[hidden]down- db_service_management
+db_notifications -[hidden]down- db_iam
+
+' Cross-context persistence references.
+db_iam ..> db_billing : user_id
+db_iam ..> db_workplace : user_id
+db_iam ..> db_device_control : user_id
+db_iam ..> db_energy_monitoring : user_id
+db_iam ..> db_notifications : user_id
+db_iam ..> db_reporting : user_id
+db_iam ..> db_service_management : user_id
+db_workplace ..> db_device_control : assignments
+db_device_control ..> db_energy_monitoring : devices
+db_device_control ..> db_service_management : devices
+db_billing ..> db_reporting : plan limits
+
+note bottom
+Detailed table-level database diagrams are split by bounded context.
+Each bounded context diagram includes local tables and external references used by foreign keys.
+end note
+
+@enduml

@@ -1,0 +1,472 @@
+{
+  "metadata": {
+    "sourceName": "OSMnx Lima road network",
+    "sourceNotebook": "control_trafico_lima.ipynb",
+    "studyAreaName": "San Miguel, Pueblo Libre, Magdalena del Mar y Jesus Maria",
+    "sourceNodeCount": 3196,
+    "sourceEdgeCount": 6719,
+    "normalizedAt": "2026-06-24",
+    "notes": [
+      "El notebook descarga la red vial con OSMnx usando network_type=drive.",
+      "La base original se trabaja como MultiDiGraph y usa length o travel_time como criterio de costo.",
+      "Este recurso comprime puntos de decision relevantes para la demo frontend hasta que se exporten nodos_lima.csv y aristas_lima.csv completos."
+    ]
+  },
+  "nodes": [
+    {
+      "id": "san-miguel-origin",
+      "sourceId": "746787330",
+      "label": "San Miguel",
+      "district": "San Miguel",
+      "districtId": "san-miguel",
+      "kind": "district",
+      "point": { "latitude": -12.0770, "longitude": -77.0920 }
+    },
+    {
+      "id": "plaza-san-miguel",
+      "label": "Plaza San Miguel",
+      "district": "San Miguel",
+      "districtId": "san-miguel",
+      "kind": "landmark",
+      "point": { "latitude": -12.0778, "longitude": -77.0857 }
+    },
+    {
+      "id": "la-marina-faucett",
+      "label": "La Marina / Faucett",
+      "district": "San Miguel",
+      "districtId": "san-miguel",
+      "kind": "mobility-hub",
+      "point": { "latitude": -12.0695, "longitude": -77.0983 }
+    },
+    {
+      "id": "universitaria-la-marina",
+      "label": "Universitaria / La Marina",
+      "district": "San Miguel",
+      "districtId": "san-miguel",
+      "kind": "mobility-hub",
+      "point": { "latitude": -12.0738, "longitude": -77.0830 }
+    },
+    {
+      "id": "pucp",
+      "label": "PUCP",
+      "district": "Pueblo Libre",
+      "districtId": "pueblo-libre",
+      "kind": "landmark",
+      "point": { "latitude": -12.0696, "longitude": -77.0792 }
+    },
+    {
+      "id": "museo-larco",
+      "label": "Museo Larco",
+      "district": "Pueblo Libre",
+      "districtId": "pueblo-libre",
+      "kind": "landmark",
+      "point": { "latitude": -12.0727, "longitude": -77.0702 }
+    },
+    {
+      "id": "pueblo-libre",
+      "label": "Pueblo Libre",
+      "district": "Pueblo Libre",
+      "districtId": "pueblo-libre",
+      "kind": "district",
+      "point": { "latitude": -12.0751, "longitude": -77.0635 }
+    },
+    {
+      "id": "brasil-bolivar",
+      "label": "Brasil / Bolivar",
+      "district": "Pueblo Libre",
+      "districtId": "pueblo-libre",
+      "kind": "mobility-hub",
+      "point": { "latitude": -12.0759, "longitude": -77.0556 }
+    },
+    {
+      "id": "magdalena-market",
+      "label": "Magdalena",
+      "district": "Magdalena del Mar",
+      "districtId": "magdalena",
+      "kind": "district",
+      "point": { "latitude": -12.0917, "longitude": -77.0741 }
+    },
+    {
+      "id": "magdalena-boardwalk",
+      "label": "Malecon Magdalena",
+      "district": "Magdalena del Mar",
+      "districtId": "magdalena",
+      "kind": "landmark",
+      "point": { "latitude": -12.0980, "longitude": -77.0785 }
+    },
+    {
+      "id": "javier-prado-magdalena",
+      "label": "Javier Prado Oeste",
+      "district": "Magdalena del Mar",
+      "districtId": "magdalena",
+      "kind": "mobility-hub",
+      "point": { "latitude": -12.0910, "longitude": -77.0660 }
+    },
+    {
+      "id": "media-luna",
+      "label": "Media Luna",
+      "district": "San Miguel",
+      "districtId": "san-miguel",
+      "kind": "landmark",
+      "point": { "latitude": -12.0818, "longitude": -77.0813 }
+    },
+    {
+      "id": "salaverry-san-felipe",
+      "label": "San Felipe",
+      "district": "Jesus Maria",
+      "districtId": "jesus-maria",
+      "kind": "mobility-hub",
+      "point": { "latitude": -12.0860, "longitude": -77.0527 }
+    },
+    {
+      "id": "campo-de-marte",
+      "label": "Campo de Marte",
+      "district": "Jesus Maria",
+      "districtId": "jesus-maria",
+      "kind": "landmark",
+      "point": { "latitude": -12.0708, "longitude": -77.0432 }
+    },
+    {
+      "id": "jesus-maria-destination",
+      "sourceId": "2209617985",
+      "label": "Jesus Maria",
+      "district": "Jesus Maria",
+      "districtId": "jesus-maria",
+      "kind": "district",
+      "point": { "latitude": -12.0690, "longitude": -77.0430 }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e-origin-plaza",
+      "from": "san-miguel-origin",
+      "to": "plaza-san-miguel",
+      "corridor": "Av. La Marina",
+      "distanceMeters": 760,
+      "path": [
+        { "latitude": -12.0770, "longitude": -77.0920 },
+        { "latitude": -12.0772, "longitude": -77.0895 },
+        { "latitude": -12.0778, "longitude": -77.0857 }
+      ],
+      "travelTimeSeconds": 138,
+      "speedKph": 30,
+      "congestionLevel": 0.58,
+      "bidirectional": true
+    },
+    {
+      "id": "e-origin-faucett",
+      "from": "san-miguel-origin",
+      "to": "la-marina-faucett",
+      "corridor": "Av. La Marina Oeste",
+      "distanceMeters": 1280,
+      "path": [
+        { "latitude": -12.0770, "longitude": -77.0920 },
+        { "latitude": -12.0738, "longitude": -77.0950 },
+        { "latitude": -12.0695, "longitude": -77.0983 }
+      ],
+      "travelTimeSeconds": 234,
+      "speedKph": 31,
+      "congestionLevel": 0.52,
+      "bidirectional": true
+    },
+    {
+      "id": "e-faucett-plaza",
+      "from": "la-marina-faucett",
+      "to": "plaza-san-miguel",
+      "corridor": "Av. La Marina",
+      "distanceMeters": 1510,
+      "path": [
+        { "latitude": -12.0695, "longitude": -77.0983 },
+        { "latitude": -12.0739, "longitude": -77.0915 },
+        { "latitude": -12.0778, "longitude": -77.0857 }
+      ],
+      "travelTimeSeconds": 277,
+      "speedKph": 30,
+      "congestionLevel": 0.56,
+      "bidirectional": true
+    },
+    {
+      "id": "e-plaza-universitaria",
+      "from": "plaza-san-miguel",
+      "to": "universitaria-la-marina",
+      "corridor": "Av. La Marina",
+      "distanceMeters": 820,
+      "path": [
+        { "latitude": -12.0778, "longitude": -77.0857 },
+        { "latitude": -12.0760, "longitude": -77.0841 },
+        { "latitude": -12.0738, "longitude": -77.0830 }
+      ],
+      "travelTimeSeconds": 149,
+      "speedKph": 31,
+      "congestionLevel": 0.55,
+      "bidirectional": true
+    },
+    {
+      "id": "e-universitaria-pucp",
+      "from": "universitaria-la-marina",
+      "to": "pucp",
+      "corridor": "Av. Universitaria",
+      "distanceMeters": 880,
+      "path": [
+        { "latitude": -12.0738, "longitude": -77.0830 },
+        { "latitude": -12.0716, "longitude": -77.0812 },
+        { "latitude": -12.0696, "longitude": -77.0792 }
+      ],
+      "travelTimeSeconds": 136,
+      "speedKph": 35,
+      "congestionLevel": 0.43,
+      "bidirectional": true
+    },
+    {
+      "id": "e-pucp-museo-larco",
+      "from": "pucp",
+      "to": "museo-larco",
+      "corridor": "Av. Bolivar",
+      "distanceMeters": 980,
+      "path": [
+        { "latitude": -12.0696, "longitude": -77.0792 },
+        { "latitude": -12.0711, "longitude": -77.0745 },
+        { "latitude": -12.0727, "longitude": -77.0702 }
+      ],
+      "travelTimeSeconds": 178,
+      "speedKph": 30,
+      "congestionLevel": 0.5,
+      "bidirectional": true
+    },
+    {
+      "id": "e-museo-pueblo-libre",
+      "from": "museo-larco",
+      "to": "pueblo-libre",
+      "corridor": "Av. Bolivar",
+      "distanceMeters": 760,
+      "path": [
+        { "latitude": -12.0727, "longitude": -77.0702 },
+        { "latitude": -12.0739, "longitude": -77.0669 },
+        { "latitude": -12.0751, "longitude": -77.0635 }
+      ],
+      "travelTimeSeconds": 128,
+      "speedKph": 32,
+      "congestionLevel": 0.44,
+      "bidirectional": true
+    },
+    {
+      "id": "e-pueblo-brasil",
+      "from": "pueblo-libre",
+      "to": "brasil-bolivar",
+      "corridor": "Av. Bolivar",
+      "distanceMeters": 890,
+      "path": [
+        { "latitude": -12.0751, "longitude": -77.0635 },
+        { "latitude": -12.0755, "longitude": -77.0596 },
+        { "latitude": -12.0759, "longitude": -77.0556 }
+      ],
+      "travelTimeSeconds": 166,
+      "speedKph": 29,
+      "congestionLevel": 0.57,
+      "bidirectional": true
+    },
+    {
+      "id": "e-brasil-campo",
+      "from": "brasil-bolivar",
+      "to": "campo-de-marte",
+      "corridor": "Av. Brasil",
+      "distanceMeters": 1510,
+      "path": [
+        { "latitude": -12.0759, "longitude": -77.0556 },
+        { "latitude": -12.0733, "longitude": -77.0501 },
+        { "latitude": -12.0708, "longitude": -77.0432 }
+      ],
+      "travelTimeSeconds": 304,
+      "speedKph": 25,
+      "congestionLevel": 0.68,
+      "bidirectional": true
+    },
+    {
+      "id": "e-campo-destination",
+      "from": "campo-de-marte",
+      "to": "jesus-maria-destination",
+      "corridor": "Av. 28 de Julio",
+      "distanceMeters": 260,
+      "path": [
+        { "latitude": -12.0708, "longitude": -77.0432 },
+        { "latitude": -12.0698, "longitude": -77.0431 },
+        { "latitude": -12.0690, "longitude": -77.0430 }
+      ],
+      "travelTimeSeconds": 42,
+      "speedKph": 24,
+      "congestionLevel": 0.46,
+      "bidirectional": true
+    },
+    {
+      "id": "e-plaza-media-luna",
+      "from": "plaza-san-miguel",
+      "to": "media-luna",
+      "corridor": "Av. Universitaria",
+      "distanceMeters": 1040,
+      "path": [
+        { "latitude": -12.0778, "longitude": -77.0857 },
+        { "latitude": -12.0797, "longitude": -77.0834 },
+        { "latitude": -12.0818, "longitude": -77.0813 }
+      ],
+      "travelTimeSeconds": 187,
+      "speedKph": 30,
+      "congestionLevel": 0.48,
+      "bidirectional": true
+    },
+    {
+      "id": "e-media-magdalena",
+      "from": "media-luna",
+      "to": "magdalena-market",
+      "corridor": "Malecon Bertolotto",
+      "distanceMeters": 1660,
+      "path": [
+        { "latitude": -12.0818, "longitude": -77.0813 },
+        { "latitude": -12.0865, "longitude": -77.0778 },
+        { "latitude": -12.0917, "longitude": -77.0741 }
+      ],
+      "travelTimeSeconds": 211,
+      "speedKph": 38,
+      "congestionLevel": 0.32,
+      "bidirectional": true
+    },
+    {
+      "id": "e-magdalena-san-felipe",
+      "from": "magdalena-market",
+      "to": "salaverry-san-felipe",
+      "corridor": "Av. Salaverry",
+      "distanceMeters": 2490,
+      "path": [
+        { "latitude": -12.0917, "longitude": -77.0741 },
+        { "latitude": -12.0898, "longitude": -77.0640 },
+        { "latitude": -12.0860, "longitude": -77.0527 }
+      ],
+      "travelTimeSeconds": 465,
+      "speedKph": 28,
+      "congestionLevel": 0.61,
+      "bidirectional": true
+    },
+    {
+      "id": "e-magdalena-boardwalk",
+      "from": "magdalena-market",
+      "to": "magdalena-boardwalk",
+      "corridor": "Jr. Bolognesi",
+      "distanceMeters": 980,
+      "path": [
+        { "latitude": -12.0917, "longitude": -77.0741 },
+        { "latitude": -12.0945, "longitude": -77.0760 },
+        { "latitude": -12.0980, "longitude": -77.0785 }
+      ],
+      "travelTimeSeconds": 156,
+      "speedKph": 28,
+      "congestionLevel": 0.36,
+      "bidirectional": true
+    },
+    {
+      "id": "e-magdalena-javier-prado",
+      "from": "magdalena-market",
+      "to": "javier-prado-magdalena",
+      "corridor": "Av. Javier Prado Oeste",
+      "distanceMeters": 910,
+      "path": [
+        { "latitude": -12.0917, "longitude": -77.0741 },
+        { "latitude": -12.0914, "longitude": -77.0698 },
+        { "latitude": -12.0910, "longitude": -77.0660 }
+      ],
+      "travelTimeSeconds": 149,
+      "speedKph": 31,
+      "congestionLevel": 0.42,
+      "bidirectional": true
+    },
+    {
+      "id": "e-javier-prado-san-felipe",
+      "from": "javier-prado-magdalena",
+      "to": "salaverry-san-felipe",
+      "corridor": "Av. Javier Prado Oeste / Salaverry",
+      "distanceMeters": 1420,
+      "path": [
+        { "latitude": -12.0910, "longitude": -77.0660 },
+        { "latitude": -12.0892, "longitude": -77.0591 },
+        { "latitude": -12.0860, "longitude": -77.0527 }
+      ],
+      "travelTimeSeconds": 249,
+      "speedKph": 30,
+      "congestionLevel": 0.51,
+      "bidirectional": true
+    },
+    {
+      "id": "e-san-felipe-destination",
+      "from": "salaverry-san-felipe",
+      "to": "jesus-maria-destination",
+      "corridor": "Av. Salaverry",
+      "distanceMeters": 2040,
+      "path": [
+        { "latitude": -12.0860, "longitude": -77.0527 },
+        { "latitude": -12.0780, "longitude": -77.0480 },
+        { "latitude": -12.0690, "longitude": -77.0430 }
+      ],
+      "travelTimeSeconds": 376,
+      "speedKph": 29,
+      "congestionLevel": 0.59,
+      "bidirectional": true
+    },
+    {
+      "id": "e-museo-magdalena",
+      "from": "museo-larco",
+      "to": "magdalena-market",
+      "corridor": "Av. Sucre",
+      "distanceMeters": 2180,
+      "path": [
+        { "latitude": -12.0727, "longitude": -77.0702 },
+        { "latitude": -12.0830, "longitude": -77.0719 },
+        { "latitude": -12.0917, "longitude": -77.0741 }
+      ],
+      "travelTimeSeconds": 372,
+      "speedKph": 32,
+      "congestionLevel": 0.49,
+      "bidirectional": true
+    },
+    {
+      "id": "e-pueblo-san-felipe",
+      "from": "pueblo-libre",
+      "to": "salaverry-san-felipe",
+      "corridor": "Av. Bolivar / Salaverry",
+      "distanceMeters": 1940,
+      "path": [
+        { "latitude": -12.0751, "longitude": -77.0635 },
+        { "latitude": -12.0809, "longitude": -77.0576 },
+        { "latitude": -12.0860, "longitude": -77.0527 }
+      ],
+      "travelTimeSeconds": 347,
+      "speedKph": 30,
+      "congestionLevel": 0.54,
+      "bidirectional": true
+    },
+    {
+      "id": "e-pueblo-campo",
+      "from": "pueblo-libre",
+      "to": "campo-de-marte",
+      "corridor": "Av. Brasil",
+      "distanceMeters": 2140,
+      "path": [
+        { "latitude": -12.0751, "longitude": -77.0635 },
+        { "latitude": -12.0759, "longitude": -77.0556 },
+        { "latitude": -12.0733, "longitude": -77.0501 },
+        { "latitude": -12.0708, "longitude": -77.0432 }
+      ],
+      "travelTimeSeconds": 421,
+      "speedKph": 27,
+      "congestionLevel": 0.66,
+      "bidirectional": true
+    }
+  ],
+  "notebookBenchmark": {
+    "origin": { "latitude": -12.0770, "longitude": -77.0920, "nearestNodeId": "746787330" },
+    "destination": { "latitude": -12.0690, "longitude": -77.0430, "nearestNodeId": "2209617985" },
+    "distanceCriterion": "length",
+    "results": [
+      { "algorithm": "Dijkstra", "routeNodes": 79, "exploredNodes": 3055, "costMeters": 6621.351911675737 },
+      { "algorithm": "A*", "routeNodes": 79, "exploredNodes": 1440, "costMeters": 6621.351911675737 },
+      { "algorithm": "BFS", "routeNodes": 74, "exploredNodes": 3052, "costMeters": 7020.422188425361 }
+    ]
+  }
+}

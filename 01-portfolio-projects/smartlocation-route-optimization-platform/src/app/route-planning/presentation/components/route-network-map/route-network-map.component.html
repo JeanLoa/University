@@ -1,0 +1,91 @@
+<section class="network-map" aria-label="Mapa de red vial">
+  <div class="map-toolbar">
+    <div>
+      <span>{{ selectedTerritory?.label ?? 'Lima urbana' }}</span>
+      <strong>Route Intelligence Console</strong>
+      <small>{{ territoryTrail }}</small>
+    </div>
+    <div class="map-legend" aria-label="Leyenda del mapa">
+      <span><i class="legend-route"></i>Ruta</span>
+      <span><i class="legend-origin"></i>Origen</span>
+      <span><i class="legend-destination"></i>Destino</span>
+    </div>
+  </div>
+
+  <div class="map-viewport">
+    <div #maplibreCanvas class="maplibre-canvas" [class.is-ready]="mapRendererStatus() === 'ready'"></div>
+
+    @if (mapRendererStatus() !== 'ready') {
+      <svg class="map-canvas" [attr.viewBox]="mapViewBox()" role="img" aria-label="Mapa vial de Lima" (click)="onFallbackMapClick($event)">
+        <defs>
+          <pattern id="networkGrid" width="42" height="42" patternUnits="userSpaceOnUse">
+            <path d="M 42 0 L 0 0 0 42" fill="none" stroke="rgba(44, 67, 58, 0.11)" stroke-width="1" />
+          </pattern>
+          <filter id="routeGlow" x="-20%" y="-20%" width="140%" height="140%">
+            <feGaussianBlur stdDeviation="5" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+        </defs>
+
+        <rect width="1000" height="680" fill="url(#networkGrid)"></rect>
+        <path class="coastline" d="M62 16 C42 132 86 202 61 318 C38 421 80 515 53 666" />
+        <path class="city-ridge" d="M268 48 C334 142 352 256 431 330 C518 411 558 514 660 626" />
+        <path class="city-ridge city-ridge--east" d="M654 44 C700 174 736 232 773 340 C805 437 864 516 934 660" />
+
+        <g class="urban-block-layer">
+          @for (block of urbanBlocks(); track block.id) {
+            <rect
+              class="urban-block"
+              [attr.x]="block.x"
+              [attr.y]="block.y"
+              [attr.width]="block.width"
+              [attr.height]="block.height"
+              [attr.opacity]="block.intensity"
+            />
+          }
+        </g>
+
+        <g class="district-layer">
+          @for (territory of selectedTerritories(); track territory.id) {
+            <polygon class="district-bounds" [attr.points]="territoryPolygonPoints(territory)" />
+          }
+        </g>
+
+        @if (routeHasPoints()) {
+          <polyline class="route-glow" [attr.points]="routePoints()" filter="url(#routeGlow)" />
+          <polyline class="route-line" [attr.points]="routePoints()" />
+          <text class="route-name-label" [attr.transform]="routeLabelTransform()">{{ routeLabel() }}</text>
+        }
+
+        <g class="free-points-layer">
+          @if (freeOriginPoint) {
+            <g class="free-point-marker is-origin" [attr.transform]="freePointTransform(freeOriginPoint)">
+              <circle class="free-point-marker__halo" r="18"></circle>
+              <circle class="free-point-marker__dot" r="7"></circle>
+              <text class="free-point-marker__label" x="14" y="4">Origen</text>
+            </g>
+          }
+          @if (freeDestinationPoint) {
+            <g class="free-point-marker is-destination" [attr.transform]="freePointTransform(freeDestinationPoint)">
+              <circle class="free-point-marker__halo" r="18"></circle>
+              <circle class="free-point-marker__dot" r="7"></circle>
+              <text class="free-point-marker__label" x="14" y="4">Destino</text>
+            </g>
+          }
+        </g>
+
+      </svg>
+    }
+
+    <span class="map-renderer-chip">{{ mapRendererLabel() }}</span>
+  </div>
+
+  <div class="map-footer">
+    <span>Click activo: {{ pickerMode === 'origin' ? 'origen' : 'destino' }}</span>
+    <span>{{ roadRouteFooterLabel() }}</span>
+    <span>{{ geoJsonFeatureCount() }} capas activas</span>
+  </div>
+</section>

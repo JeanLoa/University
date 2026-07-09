@@ -1,0 +1,75 @@
+@startuml
+title LowCortisol WebApp - IAM Frontend Application Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "IAM / Application" {
+  package "Application / Commands" {
+    interface "DeleteAccountCommand" as Frontend_iam_DeleteAccountCommand <<interface>> {
+      + confirmation: string
+    }
+    interface "RecoverPasswordCommand" as Frontend_iam_RecoverPasswordCommand <<interface>> {
+      + email: string
+    }
+    interface "SignInCommand" as Frontend_iam_SignInCommand <<interface>> {
+      + email: string
+      + password: string
+    }
+    interface "SignUpCommand" as Frontend_iam_SignUpCommand <<interface>> {
+      + fullName: string
+      + email: string
+      + password: string
+    }
+    interface "UpdateProfileCommand" as Frontend_iam_UpdateProfileCommand <<interface>> {
+      + fullName: string
+      + email: string
+    }
+  }
+  package "Application / Facades and Services" {
+    class "IamFacade" as Frontend_iam_IamFacade <<Facade>> {
+      - userAssembler
+      + get: currentUser()
+      + get: loading()
+      + get: error()
+      + get: isAuthenticated()
+      + constructor: (
+      - authApi: AuthApiService
+      - usersApi: UsersApiService
+      - authSession: AuthSessionService
+      - router: Router
+      - store: IamStore
+      + signIn(command: SignInCommand) : Promise<boolean>
+      + async: signUp(
+      + command: SignUpCommand
+      + options: SignUpOptions
+      + restoreSession() : Promise<boolean>
+      + signOut() : Promise<void>
+      + recoverPassword(command: RecoverPasswordCommand) : Promise<boolean>
+    }
+  }
+  package "Application / Stores" {
+    class "IamStore" as Frontend_iam_IamStore <<Store>> {
+      - currentUserSignal
+      - loadingSignal
+      - errorSignal
+      + setCurrentUser(user: User | null) : void
+      + setLoading(value: boolean) : void
+      + setError(value: string | null) : void
+      + clearMessages() : void
+      + reset() : void
+    }
+  }
+}
+
+Frontend_iam_IamFacade ..> Frontend_iam_DeleteAccountCommand
+Frontend_iam_IamFacade ..> Frontend_iam_IamStore
+Frontend_iam_IamFacade ..> Frontend_iam_RecoverPasswordCommand
+Frontend_iam_IamFacade ..> Frontend_iam_SignInCommand
+Frontend_iam_IamFacade ..> Frontend_iam_SignUpCommand
+Frontend_iam_IamFacade ..> Frontend_iam_UpdateProfileCommand
+
+
+@enduml

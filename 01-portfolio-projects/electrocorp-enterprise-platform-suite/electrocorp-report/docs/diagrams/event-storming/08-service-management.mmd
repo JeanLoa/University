@@ -1,0 +1,39 @@
+flowchart LR
+  classDef actor fill:#ffe066,stroke:#d4a100,color:#3d2f00;
+  classDef command fill:#6db3f2,stroke:#1c6fb8,color:#08243d;
+  classDef aggregate fill:#fff2ae,stroke:#c9a900,color:#4a3b00;
+  classDef event fill:#ffb84d,stroke:#d47500,color:#4a2600;
+  classDef integration fill:#ff8c42,stroke:#c0501a,color:#3d1500;
+  classDef readmodel fill:#b5e7a0,stroke:#4f9a2f,color:#1f3d0f;
+
+  USER([🎬 User]):::actor
+  ADMIN([🎬 Administrator / Technician]):::actor
+
+  C_CSUP[⚡ CreateSupportTicket]:::command
+  C_DSUP[⚡ DeleteSupportTicket]:::command
+  C_CMAINT[⚡ CreateMaintenanceTicket]:::command
+  C_SMAINT[⚡ ScheduleMaintenanceTicket]:::command
+  C_DMAINT[⚡ DeleteMaintenanceTicket]:::command
+  C_STATUS[⚡ UpdateTicketStatus]:::command
+
+  A_SUPPORT[📦 SupportTicket]:::aggregate
+  A_MAINT[📦 MaintenanceTicket]:::aggregate
+
+  E_SUPPORT[🟠 SupportTicketCreated]:::event
+  E_MAINT[🟠 MaintenanceTicketCreated]:::event
+  IE_SUPPORT[🔗 SupportTicketCreatedIntegrationEvent]:::integration
+  IE_MAINT[🔗 MaintenanceTicketCreatedIntegrationEvent]:::integration
+  RM_TICKETS[🟢 Tickets inbox and statuses]:::readmodel
+
+  USER --> C_CSUP --> A_SUPPORT --> E_SUPPORT --> IE_SUPPORT
+  USER --> C_DSUP --> A_SUPPORT
+  ADMIN --> C_CMAINT --> A_MAINT --> E_MAINT --> IE_MAINT
+  ADMIN --> C_SMAINT --> A_MAINT
+  ADMIN --> C_DMAINT --> A_MAINT
+  ADMIN --> C_STATUS --> A_SUPPORT
+  C_STATUS --> A_MAINT
+  A_SUPPORT --> RM_TICKETS
+  A_MAINT --> RM_TICKETS
+
+  IE_SUPPORT --> OUT([🔗 to Notifications + Reporting]):::integration
+  IE_MAINT --> OUT

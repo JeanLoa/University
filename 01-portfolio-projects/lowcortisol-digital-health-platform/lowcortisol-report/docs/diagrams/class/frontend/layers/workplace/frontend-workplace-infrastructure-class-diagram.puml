@@ -1,0 +1,111 @@
+@startuml
+title LowCortisol WebApp - Workplace Frontend Infrastructure Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Workplace / Infrastructure" {
+  package "Infrastructure / API Services" {
+    class "DeviceAssignmentsApiService" as Frontend_workplace_DeviceAssignmentsApiService <<API Service>> {
+      + constructor: (
+      + http: HttpClient
+      + apiBaseUrl: string
+      + findAllForCurrentUser() : Observable<DeviceAssignmentResponse[]>
+      + findByDeviceId(deviceId: number) : Observable<DeviceAssignmentResponse[]>
+    }
+    class "LocationsApiService" as Frontend_workplace_LocationsApiService <<API Service>> {
+      + constructor: (
+      + http: HttpClient
+      + apiBaseUrl: string
+      + findAllForCurrentUser() : Observable<LocationResponse[]>
+    }
+    class "RoomsApiService" as Frontend_workplace_RoomsApiService <<API Service>> {
+      + constructor: (
+      + http: HttpClient
+      + apiBaseUrl: string
+      + findAllForCurrentUser() : Observable<RoomResponse[]>
+      + findByLocationId(locationId: number) : Observable<RoomResponse[]>
+    }
+  }
+  package "Infrastructure / Assemblers" {
+    class "DeviceAssignmentAssembler" as Frontend_workplace_DeviceAssignmentAssembler <<Assembler>> {
+      + override: toEntity(response: DeviceAssignmentResponse): DeviceAssignment
+      + override: toResource(entity: DeviceAssignment): DeviceAssignmentResource
+    }
+    class "LocationAssembler" as Frontend_workplace_LocationAssembler <<Assembler>> {
+      + override: toEntity(response: LocationResponse): Location
+      + override: toResource(entity: Location): LocationResource
+    }
+    class "RoomAssembler" as Frontend_workplace_RoomAssembler <<Assembler>> {
+      + override: toEntity(response: RoomResponse): Room
+      + override: toResource(entity: Room): RoomResource
+    }
+  }
+  package "Infrastructure / Resources" {
+    interface "DeviceAssignmentResource" as Frontend_workplace_DeviceAssignmentResource <<interface>> {
+      + userId?: number
+      + deviceId: number
+      + locationId: number
+      + roomId?: number | null
+      + assignedAt: string
+    }
+    interface "LocationResource" as Frontend_workplace_LocationResource <<interface>> {
+      + userId?: number
+      + name: string
+      + address: string
+      + type: LocationType
+      + createdAt: string
+    }
+    interface "RoomResource" as Frontend_workplace_RoomResource <<interface>> {
+      + userId?: number
+      + locationId: number
+      + name: string
+      + floor: string
+      + createdAt: string
+    }
+  }
+  package "Infrastructure / Responses" {
+    interface "DeviceAssignmentResponse" as Frontend_workplace_DeviceAssignmentResponse <<interface>> {
+      + userId: number
+      + deviceId: number
+      + locationId: number
+      + roomId?: number | null
+      + assignedAt: string
+    }
+    interface "LocationResponse" as Frontend_workplace_LocationResponse <<interface>> {
+      + userId: number
+      + name: string
+      + address: string
+      + type: LocationType
+      + createdAt: string
+    }
+    interface "RoomResponse" as Frontend_workplace_RoomResponse <<interface>> {
+      + userId: number
+      + locationId: number
+      + name: string
+      + floor: string
+      + createdAt: string
+    }
+  }
+}
+
+Frontend_workplace_DeviceAssignmentAssembler ..> Frontend_workplace_DeviceAssignmentResource
+Frontend_workplace_DeviceAssignmentAssembler ..> Frontend_workplace_DeviceAssignmentResponse
+Frontend_workplace_DeviceAssignmentsApiService ..> Frontend_workplace_DeviceAssignmentAssembler
+Frontend_workplace_DeviceAssignmentsApiService ..> Frontend_workplace_DeviceAssignmentResource
+Frontend_workplace_DeviceAssignmentsApiService ..> Frontend_workplace_DeviceAssignmentResponse
+Frontend_workplace_LocationAssembler ..> Frontend_workplace_LocationResource
+Frontend_workplace_LocationAssembler ..> Frontend_workplace_LocationResponse
+Frontend_workplace_LocationsApiService ..> Frontend_workplace_LocationAssembler
+Frontend_workplace_LocationsApiService ..> Frontend_workplace_LocationResource
+Frontend_workplace_LocationsApiService ..> Frontend_workplace_LocationResponse
+Frontend_workplace_RoomAssembler ..> Frontend_workplace_RoomResource
+Frontend_workplace_RoomAssembler ..> Frontend_workplace_RoomResponse
+Frontend_workplace_RoomsApiService ..> Frontend_workplace_RoomAssembler
+Frontend_workplace_RoomsApiService ..> Frontend_workplace_RoomResource
+Frontend_workplace_RoomsApiService ..> Frontend_workplace_RoomResponse
+
+
+@enduml

@@ -1,0 +1,95 @@
+@startuml
+title ElectroCorp Web App - Service Management Frontend Infrastructure Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Service Management / Infrastructure" {
+  package "Infrastructure / API Services" {
+    class "MaintenanceTicketsApiService" as Frontend_service_management_MaintenanceTicketsApiService <<API Service>> {
+      + constructor: (
+      + http: HttpClient
+      + apiBaseUrl: string
+      + findAllForCurrentUser() : Observable<MaintenanceTicketResponse[]>
+      + updateStatus: (
+      + ticketId: number
+      + resource: Partial<MaintenanceTicketResource>
+    }
+    class "SupportTicketsApiService" as Frontend_service_management_SupportTicketsApiService <<API Service>> {
+      + constructor: (
+      + http: HttpClient
+      + apiBaseUrl: string
+      + findAllForCurrentUser() : Observable<SupportTicketResponse[]>
+      + updateStatus: (
+      + ticketId: number
+      + resource: Partial<SupportTicketResource>
+    }
+  }
+  package "Infrastructure / Assemblers" {
+    class "MaintenanceTicketAssembler" as Frontend_service_management_MaintenanceTicketAssembler <<Assembler>> {
+      + override: toEntity(response: MaintenanceTicketResponse): MaintenanceTicket
+      + override: toResource(entity: MaintenanceTicket): MaintenanceTicketResource
+    }
+    class "SupportTicketAssembler" as Frontend_service_management_SupportTicketAssembler <<Assembler>> {
+      + override: toEntity(response: SupportTicketResponse): SupportTicket
+      + override: toResource(entity: SupportTicket): SupportTicketResource
+      - resolveCreatedAt(value?: string | null) : string
+    }
+  }
+  package "Infrastructure / Resources" {
+    interface "MaintenanceTicketResource" as Frontend_service_management_MaintenanceTicketResource <<interface>> {
+      + userId?: number
+      + deviceId: number
+      + deviceName: string
+      + type: MaintenanceTicketType
+      + description: string
+      + scheduledDate: string
+      + status: MaintenanceTicketStatus
+      + createdAt: string
+    }
+    interface "SupportTicketResource" as Frontend_service_management_SupportTicketResource <<interface>> {
+      + userId?: number
+      + subject: string
+      + description: string
+      + priority: SupportTicketPriority
+      + status: SupportTicketStatus
+      + createdAt?: string | null
+    }
+  }
+  package "Infrastructure / Responses" {
+    interface "MaintenanceTicketResponse" as Frontend_service_management_MaintenanceTicketResponse <<interface>> {
+      + userId: number
+      + deviceId: number
+      + deviceName: string
+      + type: MaintenanceTicketType
+      + description: string
+      + scheduledDate: string
+      + status: MaintenanceTicketStatus
+      + createdAt: string
+    }
+    interface "SupportTicketResponse" as Frontend_service_management_SupportTicketResponse <<interface>> {
+      + userId: number
+      + subject: string
+      + description: string
+      + priority: SupportTicketPriority
+      + status: SupportTicketStatus
+      + createdAt?: string | null
+    }
+  }
+}
+
+Frontend_service_management_MaintenanceTicketAssembler ..> Frontend_service_management_MaintenanceTicketResource
+Frontend_service_management_MaintenanceTicketAssembler ..> Frontend_service_management_MaintenanceTicketResponse
+Frontend_service_management_MaintenanceTicketsApiService ..> Frontend_service_management_MaintenanceTicketAssembler
+Frontend_service_management_MaintenanceTicketsApiService ..> Frontend_service_management_MaintenanceTicketResource
+Frontend_service_management_MaintenanceTicketsApiService ..> Frontend_service_management_MaintenanceTicketResponse
+Frontend_service_management_SupportTicketAssembler ..> Frontend_service_management_SupportTicketResource
+Frontend_service_management_SupportTicketAssembler ..> Frontend_service_management_SupportTicketResponse
+Frontend_service_management_SupportTicketsApiService ..> Frontend_service_management_SupportTicketAssembler
+Frontend_service_management_SupportTicketsApiService ..> Frontend_service_management_SupportTicketResource
+Frontend_service_management_SupportTicketsApiService ..> Frontend_service_management_SupportTicketResponse
+
+
+@enduml

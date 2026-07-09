@@ -1,0 +1,93 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+skinparam wrapWidth 220
+skinparam maxMessageSize 130
+skinparam nodesep 70
+skinparam ranksep 80
+skinparam ArrowColor #8A8A8A
+skinparam ArrowFontColor #666666
+skinparam ArrowFontStyle bold
+skinparam ArrowThickness 1
+skinparam rectangleRoundCorner 0
+skinparam rectangleBorderThickness 0
+skinparam rectangleFontColor #FFFFFF
+skinparam rectangleFontStyle plain
+skinparam rectangle {
+  BorderThickness 0
+  MinimumWidth 190
+  Padding 12
+}
+skinparam database {
+  MinimumWidth 210
+  Padding 12
+}
+skinparam rectangle<<SystemBoundary>> {
+  BackgroundColor transparent
+  BorderColor #4A4A4A
+  BorderThickness 2
+  BorderStyle dashed
+  FontColor #333333
+  FontStyle bold
+  MinimumWidth 760
+  Padding 18
+}
+skinparam rectangle<<BoundedContext>> {
+  BackgroundColor transparent
+  BorderColor #4A4A4A
+  BorderThickness 2
+  BorderStyle dashed
+  FontColor #333333
+  FontStyle bold
+  MinimumWidth 760
+  Padding 18
+}
+skinparam databaseBackgroundColor #C9332B
+skinparam databaseBorderColor #C9332B
+skinparam databaseFontColor #FFFFFF
+skinparam databaseFontStyle plain
+hide stereotype
+left to right direction
+
+title LowCortisol - IAM Frontend Components Diagram
+
+rectangle "<b>IAM Frontend Bounded Context</b>\n<i>[Vue Bounded Context Module]</i>" <<BoundedContext>> {
+  rectangle "<b>Presentation Layer</b>\n<i>[Pages / Components / Routes]</i>\n\nRenders views, handles user interaction and delegates state changes." as Presentation #58A9E8
+  rectangle "<b>Application Layer</b>\n<i>[Facades / Stores]</i>\n\nCoordinates UI state, use cases and feature workflows." as Application #58A9E8
+  rectangle "<b>Domain Layer</b>\n<i>[Models / Rules]</i>\n\nDefines frontend models, view rules and local domain decisions." as Domain #58A9E8
+  rectangle "<b>Infrastructure Layer</b>\n<i>[API Clients / Mappers]</i>\n\nConsumes backend endpoints and maps resources into frontend models." as Infrastructure #58A9E8
+}
+rectangle "<b>LowCortisol Backend API</b>\n<i>[External Container]</i>\n\nREST API consumed by this frontend context." as Backend #7F8C8D
+rectangle "<b>Shared Frontend</b>\n<i>[Shared UI / Session]</i>\n\nProvides layout, session, preferences, UI primitives and base API behavior." as Shared #7F8C8D
+rectangle "<b>Plan</b>\n<i>[Frontend Context]</i>\n\nCoordinates navigation, shared state or referenced data." as Dep0 #7F8C8D
+rectangle "<b>Workplace</b>\n<i>[Frontend Context]</i>\n\nCoordinates navigation, shared state or referenced data." as Dep1 #7F8C8D
+rectangle "<b>Support</b>\n<i>[Frontend Context]</i>\n\nCoordinates navigation, shared state or referenced data." as Dep2 #7F8C8D
+
+Presentation --> Application : Dispatches UI actions
+Application --> Domain : Applies feature rules
+Application --> Infrastructure : Requests data
+Infrastructure --> Backend : Consumes REST endpoints
+Presentation ..> Shared : Uses layout / UI primitives
+Application ..> Shared : Uses session / preferences
+Application ..> Dep0 : Coordinates with
+Application ..> Dep1 : Coordinates with
+Application ..> Dep2 : Coordinates with
+
+Presentation -[hidden]right- Application
+Application -[hidden]right- Domain
+Domain -[hidden]right- Infrastructure
+
+legend right
+  <b>Legend</b>
+  |<#0B5593> person |
+  |<#0B6FB3> system |
+  |<#3498DB> container |
+  |<#58A9E8> component |
+  |<#F39C12> infrastructure / external |
+  |<#C9332B> database |
+  |<#7F8C8D> external container |
+endlegend
+
+@enduml

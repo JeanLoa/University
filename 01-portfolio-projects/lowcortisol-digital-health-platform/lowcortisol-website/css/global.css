@@ -1,0 +1,335 @@
+@import url("https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;500;600;700;800;900&display=swap");
+
+:root {
+  --color-primary: #2f80ed;
+  --color-primary-dark: #1f6fd6;
+  --color-primary-light: #eaf3ff;
+
+  --color-background: #f5f7fb;
+  --color-surface: #ffffff;
+  --color-surface-soft: #f8fafc;
+
+  --color-text: #07142f;
+  --color-text-muted: #64748b;
+  --color-border: #dbe4f0;
+
+  --color-success: #16a34a;
+  --color-warning: #f59e0b;
+  --color-danger: #ef4444;
+
+  --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.08);
+  --shadow-card-hover: 0 24px 60px rgba(15, 23, 42, 0.12);
+  --shadow-button: 0 10px 24px rgba(47, 128, 237, 0.28);
+
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-xl: 30px;
+  --radius-pill: 999px;
+
+  --font-main: "League Spartan", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+  --page-max-width: 1080px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 92px;
+}
+
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  background: var(--color-background);
+  color: var(--color-text);
+  font-family: var(--font-main);
+}
+
+body.payment-open {
+  overflow: hidden;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+section {
+  position: relative;
+}
+
+::selection {
+  background: var(--color-primary-light);
+  color: var(--color-primary-dark);
+}
+
+.home-container,
+.benefits-container,
+.features-container,
+.about-container,
+.plans-container,
+.contact-container,
+.footer-container {
+  width: min(var(--page-max-width), calc(100% - 32px));
+  margin: 0 auto;
+}
+
+.benefits-section,
+.features,
+.about-section,
+.plans-section,
+.contact,
+#solutions {
+  padding: 88px 0;
+}
+
+.benefits-header,
+.features-header,
+.about-header,
+.plans-header,
+.contact-header,
+#Intro-Solutions {
+  text-align: center;
+  margin-bottom: 44px;
+}
+
+.benefits-badge,
+.features-badge,
+.about-badge,
+.plans-badge,
+.contact-badge,
+#Green-Bar,
+.plan-recommended-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  border-radius: var(--radius-pill);
+  border: 1px solid #bfdbfe;
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 0.01em;
+  padding: 8px 14px;
+  margin-bottom: 16px;
+}
+
+.benefits-header h2,
+.features-header h2,
+.about-header h2,
+.plans-header h2,
+.contact-header h2,
+#Intro-Solutions h2 {
+  color: var(--color-text);
+  font-size: clamp(30px, 4vw, 42px);
+  line-height: 1;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  margin-bottom: 12px;
+}
+
+.benefits-header p,
+.features-header p,
+.about-header p,
+.plans-header p,
+.contact-header p,
+#Intro-Solutions p {
+  max-width: 720px;
+  margin: 0 auto;
+  color: var(--color-text-muted);
+  font-size: 17px;
+  line-height: 1.55;
+}
+
+.benefit-card,
+.feature-card,
+.about-card,
+.about-info-box,
+.plan-card,
+.contact-card,
+.contact-form-wrapper,
+.Container-Usuarios-Solutions,
+.payment-dialog {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-soft);
+}
+
+.benefit-card,
+.feature-card,
+.about-card,
+.plan-card,
+.contact-card,
+.Container-Usuarios-Solutions {
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.benefit-card:hover,
+.feature-card:hover,
+.about-card:hover,
+.plan-card:hover,
+.contact-card:hover,
+.Container-Usuarios-Solutions:hover {
+  transform: translateY(-5px);
+  border-color: #bfdbfe;
+  box-shadow: var(--shadow-card-hover);
+}
+
+.home-button,
+.header-login-button,
+.plan-button,
+.contact-button,
+.Solicita-Informacion,
+.payment-submit,
+.payment-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  font-weight: 900;
+  text-align: center;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease, border-color 0.25s ease;
+}
+
+.home-button:hover,
+.header-login-button:hover,
+.plan-button:hover,
+.contact-button:hover,
+.Solicita-Informacion:hover,
+.payment-submit:hover,
+.payment-close:hover {
+  transform: translateY(-2px);
+}
+
+/* Footer */
+
+.footer {
+  background: #07142f;
+  color: #ffffff;
+}
+
+.footer-container {
+  padding: 34px 0;
+}
+
+.footer-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.footer-brand {
+  display: grid;
+  gap: 10px;
+}
+
+.footer-logo {
+  width: 78px;
+  height: auto;
+  object-fit: contain;
+}
+
+.footer-brand h3 {
+  font-size: 20px;
+  font-weight: 900;
+}
+
+.footer-brand p {
+  max-width: 340px;
+  color: #cbd5e1;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.footer-links {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.footer-links a {
+  border-radius: var(--radius-md);
+  color: #e5e7eb;
+  font-size: 15px;
+  font-weight: 800;
+  padding: 10px 12px;
+  transition: background 0.25s ease, color 0.25s ease;
+}
+
+.footer-links a:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+}
+
+.footer-copy p {
+  color: #cbd5e1;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+@media (max-width: 700px) {
+  .benefits-section,
+  .features,
+  .about-section,
+  .plans-section,
+  .contact,
+  #solutions {
+    padding: 64px 0;
+  }
+
+  .home-container,
+  .benefits-container,
+  .features-container,
+  .about-container,
+  .plans-container,
+  .contact-container,
+  .footer-container {
+    width: min(100% - 24px, var(--page-max-width));
+  }
+
+  .footer-content {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .footer-brand {
+    justify-items: center;
+  }
+
+  .footer-links {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  html {
+    scroll-padding-top: 78px;
+  }
+}

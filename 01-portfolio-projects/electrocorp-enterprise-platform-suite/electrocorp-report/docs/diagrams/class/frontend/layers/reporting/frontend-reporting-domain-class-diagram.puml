@@ -1,0 +1,82 @@
+@startuml
+title ElectroCorp Web App - Reporting Frontend Domain Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Reporting / Domain" {
+  package "Domain / Model" {
+    class "ConsumptionReport" as Frontend_reporting_ConsumptionReport <<Entity>> {
+      - _userId: number
+      - _title: string
+      - _period: ConsumptionReportPeriod
+      - _totalWatts: number
+      - _averageWatts: number
+      - _highestWatts: number
+      - _startDate: string
+      - _endDate: string
+      - _generatedAt: string
+      + constructor: (props:
+      + get: userId(): number
+      + get: title(): string
+      + get: period(): ConsumptionReportPeriod
+      + get: totalWatts(): number
+      + get: averageWatts(): number
+      + get: highestWatts(): number
+      + get: startDate(): string
+      + get: endDate(): string
+    }
+    class "ConsumptionReportPeriod" as Frontend_reporting_ConsumptionReportPeriod <<type>> {
+      + 'DAILY' | 'WEEKLY' | 'MONTHLY' | 'YEARLY'
+    }
+    class "EnergyGoal" as Frontend_reporting_EnergyGoal <<Entity>> {
+      - _userId: number
+      - _title: string
+      - _targetKilowattHours: number
+      - _currentKilowattHours: number
+      - _deadline: string
+      - _status: EnergyGoalStatus
+      - _createdAt: string
+      - _scopeType: EnergyGoalScopeType
+      - _scopeId: number | null
+      - _scopeName: string
+      - _activeFrom: string | null
+      - _activeTo: string | null
+      + constructor: (props:
+      + get: userId(): number
+      + get: title(): string
+      + get: targetKilowattHours(): number
+      + get: currentKilowattHours(): number
+      + get: deadline(): string
+    }
+    class "EnergyGoalScopeType" as Frontend_reporting_EnergyGoalScopeType <<type>> {
+      + 'GENERAL' | 'WORKPLACE' | 'ROOM' | 'DEVICE' | 'GROUP'
+    }
+    class "EnergyGoalStatus" as Frontend_reporting_EnergyGoalStatus <<type>> {
+      + 'ACTIVE' | 'COMPLETED' | 'FAILED'
+    }
+  }
+  package "Domain / Services" {
+    class "EnergyGoalPolicyService" as Frontend_reporting_EnergyGoalPolicyService <<Domain Service>> {
+      + canCreateGoal(title: string, targetKilowattHours: number, deadline: string) : boolean
+      + resolveStatus(goal: EnergyGoalProgress) : 'ACTIVE' | 'COMPLETED' | 'FAILED'
+    }
+    class "ReportSummaryService" as Frontend_reporting_ReportSummaryService <<Domain Service>> {
+      + calculateTotalReportedWatts(reports: ConsumptionReport[]) : number
+      + calculateAverageReportedWatts(reports: ConsumptionReport[]) : number
+      + findHighestReport(reports: ConsumptionReport[]) : ConsumptionReport | null
+    }
+  }
+}
+
+Frontend_reporting_EnergyGoalPolicyService ..> Frontend_reporting_EnergyGoal
+Frontend_reporting_ReportSummaryService ..> Frontend_reporting_ConsumptionReport
+
+' Layer relationship completion: every declared type participates in this layer diagram.
+Frontend_reporting_EnergyGoalPolicyService ..> Frontend_reporting_ConsumptionReportPeriod
+Frontend_reporting_EnergyGoalPolicyService ..> Frontend_reporting_EnergyGoalScopeType
+Frontend_reporting_EnergyGoalPolicyService ..> Frontend_reporting_EnergyGoalStatus
+
+@enduml

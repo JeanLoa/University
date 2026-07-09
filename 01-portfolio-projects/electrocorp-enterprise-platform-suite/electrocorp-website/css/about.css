@@ -1,0 +1,143 @@
+/* Equipo de ElectroCorp */
+.section-about {
+    overflow: hidden;
+    background:
+            radial-gradient(circle at 50% 110%, rgba(0, 210, 255, 0.08), transparent 34rem),
+            linear-gradient(180deg, #050b13, #07101a);
+}
+
+.section-about::before {
+    position: absolute;
+    top: 8%;
+    right: -100px;
+    width: 370px;
+    height: 370px;
+    border: 1px solid rgba(0, 210, 255, 0.07);
+    border-radius: 50%;
+    content: "";
+    box-shadow: inset 0 0 85px rgba(0, 210, 255, 0.035);
+}
+
+.container-about {
+    position: relative;
+    z-index: 1;
+}
+
+.about-lead {
+    max-width: 720px;
+}
+
+.container-team-div {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.card-team {
+    position: relative;
+    grid-column: span 2;
+    min-width: 0;
+    min-height: 270px;
+    padding: 24px;
+    overflow: hidden;
+    border: 1px solid rgba(91, 145, 186, 0.2);
+    border-radius: 23px;
+    background:
+            linear-gradient(150deg, rgba(0, 210, 255, 0.055), transparent 37%),
+            rgba(9, 19, 31, 0.86);
+    box-shadow: 0 22px 58px rgba(0, 0, 0, 0.24), inset 0 1px rgba(255, 255, 255, 0.04);
+    transition: transform 0.26s ease, border-color 0.26s ease, box-shadow 0.26s ease;
+}
+
+.card-team:nth-child(4) {
+    grid-column: 2 / span 2;
+}
+
+.card-team:nth-child(5) {
+    grid-column: 4 / span 2;
+}
+
+.card-team::before {
+    position: absolute;
+    top: -72px;
+    right: -72px;
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    content: "";
+    background: rgba(0, 210, 255, 0.065);
+    filter: blur(18px);
+}
+
+.card-team::after {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 56px;
+    height: 56px;
+    border-right: 1px solid rgba(0, 210, 255, 0.28);
+    border-bottom: 1px solid rgba(0, 210, 255, 0.28);
+    border-radius: 0 0 23px 0;
+    content: "";
+    opacity: 0.5;
+}
+
+.card-team:hover {
+    border-color: rgba(0, 210, 255, 0.46);
+    box-shadow: 0 29px 70px rgba(0, 0, 0, 0.34), 0 0 30px rgba(0, 210, 255, 0.08), inset 0 1px rgba(255, 255, 255, 0.06);
+    transform: translateY(-7px);
+}
+
+.team-card-top {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 28px;
+}
+
+.team-card-top > span {
+    color: rgba(105, 231, 255, 0.32);
+    font-size: 2.2rem;
+    font-weight: 900;
+    letter-spacing: -0.08em;
+    line-height: 1;
+}
+
+.team-upc-badge {
+    width: auto;
+    max-width: 85px;
+    height: 36px;
+    object-fit: contain;
+    object-position: left center;
+    filter: brightness(1.08) contrast(1.04);
+}
+
+.card-team h3 {
+    position: relative;
+    z-index: 1;
+    max-width: 260px;
+    margin-bottom: 7px;
+    font-size: 1.03rem;
+    line-height: 1.42;
+}
+
+.team-role {
+    position: relative;
+    z-index: 1;
+    margin-bottom: 12px;
+    color: var(--main-blue);
+    font-size: 0.7rem;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.team-bio {
+    position: relative;
+    z-index: 1;
+    color: #8297ab;
+    font-size: 0.81rem;
+    line-height: 1.65;
+}

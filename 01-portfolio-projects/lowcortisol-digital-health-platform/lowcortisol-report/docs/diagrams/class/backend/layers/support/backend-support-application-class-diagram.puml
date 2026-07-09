@@ -1,0 +1,48 @@
+@startuml
+title LowCortisol Platform - Support Backend Application Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Support / Application" {
+  package "Application / Command Services" {
+    interface "ISupportCommandService" as Backend_support_ISupportCommandService <<interface>> {
+      + Handle(CreateSupportTicketCommand, CancellationToken) : Result<SupportTicket>
+      + Handle(UpdateSupportTicketCommand, CancellationToken) : Result<SupportTicket>
+      + Handle(SendSupportMessageCommand, CancellationToken) : Result<SupportMessage>
+    }
+    class "SupportCommandService" as Backend_support_SupportCommandService <<Command Service>> {
+      - ticketRepository: ISupportTicketRepository
+      - conversationRepository: ISupportConversationRepository
+      - agentRepository: ISupportAgentRepository
+      - unitOfWork: IUnitOfWork
+    }
+  }
+
+  package "Application / Query Services" {
+    interface "ISupportQueryService" as Backend_support_ISupportQueryService <<interface>> {
+      + Handle(GetSupportTicketsQuery, CancellationToken) : Result<IEnumerable<SupportTicket>>
+      + Handle(GetSupportAgentsQuery, CancellationToken) : Result<IEnumerable<SupportAgent>>
+      + Handle(GetKnowledgeArticlesQuery, CancellationToken) : Result<IEnumerable<KnowledgeArticle>>
+      + Handle(GetSupportConversationsQuery, CancellationToken) : Result<IEnumerable<SupportConversation>>
+      + Handle(GetSupportConversationByTicketQuery, CancellationToken) : Result<SupportConversation>
+      + Handle(GetSupportSummaryQuery, CancellationToken) : Result<SupportSummary>
+    }
+    class "SupportQueryService" as Backend_support_SupportQueryService <<Query Service>> {
+      - ticketRepository: ISupportTicketRepository
+      - conversationRepository: ISupportConversationRepository
+      - agentRepository: ISupportAgentRepository
+      - knowledgeArticleRepository: IKnowledgeArticleRepository
+    }
+  }
+}
+
+Backend_support_SupportCommandService ..|> Backend_support_ISupportCommandService
+Backend_support_SupportQueryService ..|> Backend_support_ISupportQueryService
+Backend_support_SupportCommandService ..> Backend_support_ISupportTicketRepository
+Backend_support_SupportCommandService ..> Backend_support_ISupportConversationRepository
+Backend_support_SupportQueryService ..> Backend_support_IKnowledgeArticleRepository
+
+@enduml

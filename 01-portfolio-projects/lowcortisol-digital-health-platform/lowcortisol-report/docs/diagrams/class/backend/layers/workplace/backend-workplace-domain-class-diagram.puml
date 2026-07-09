@@ -1,0 +1,159 @@
+@startuml
+title LowCortisol Platform - Workplace Backend Domain Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Workplace / Domain" {
+  package "Domain / Aggregates" {
+    class "DeviceAssignment" as Backend_workplace_DeviceAssignment <<Aggregate>> {
+      - deviceId: Long
+      - roomId: Long
+      - locationId: Long
+      - assignedAt: LocalDateTime
+    }
+    class "Location" as Backend_workplace_Location <<Aggregate>> {
+      - userId: Long
+      - name: String
+      - address: String
+      - type: String
+    }
+    class "Room" as Backend_workplace_Room <<Aggregate>> {
+      - locationId: Long
+      - name: String
+      - floor: String
+    }
+  }
+  package "Domain / Commands" {
+    class "AssignDeviceCommand" as Backend_workplace_AssignDeviceCommand <<record>> {
+      + Long deviceId
+      + Long roomId
+      + Long locationId
+    }
+    class "CreateLocationCommand" as Backend_workplace_CreateLocationCommand <<record>> {
+      + Long userId
+      + String name
+      + String address
+      + String type
+    }
+    class "CreateRoomCommand" as Backend_workplace_CreateRoomCommand <<record>> {
+      + Long locationId
+      + String name
+      + String floor
+    }
+    class "DeleteLocationCommand" as Backend_workplace_DeleteLocationCommand <<record>> {
+      + Long userId
+      + Long locationId
+    }
+    class "DeleteRoomCommand" as Backend_workplace_DeleteRoomCommand <<record>> {
+      + Long roomId
+      + Long locationId
+    }
+    class "RemoveDeviceAssignmentCommand" as Backend_workplace_RemoveDeviceAssignmentCommand <<record>> {
+      + Long assignmentId
+    }
+    class "UpdateLocationCommand" as Backend_workplace_UpdateLocationCommand <<record>> {
+      + Long userId
+      + Long locationId
+      + String name
+      + String address
+      + String type
+    }
+    class "UpdateRoomCommand" as Backend_workplace_UpdateRoomCommand <<record>> {
+      + Long roomId
+      + Long locationId
+      + String name
+      + String floor
+    }
+  }
+  package "Domain / Events" {
+    class "DeviceAssignedToRoomEvent" as Backend_workplace_DeviceAssignedToRoomEvent <<record>> {
+      + Long userId
+      + Long deviceId
+      + Long roomId
+      + LocalDateTime occurredOn
+      + DeviceAssignedToRoomEvent(Long userId, Long deviceId, Long roomId, LocalDateTime occurredOn) : record
+      + DeviceAssignedToRoomEvent(Long userId, Long deviceId, Long roomId)
+    }
+  }
+  package "Domain / Repositories" {
+    interface "DeviceAssignmentRepository" as Backend_workplace_DeviceAssignmentRepository <<interface>> {
+    }
+    interface "LocationRepository" as Backend_workplace_LocationRepository <<interface>> {
+    }
+    interface "RoomRepository" as Backend_workplace_RoomRepository <<interface>> {
+    }
+  }
+  package "Domain / Services" {
+    class "DeviceAssignmentPolicyService" as Backend_workplace_DeviceAssignmentPolicyService <<Domain Service>> {
+      + validateAssignment(Long deviceId, Long roomId, Long locationId) : void
+      + canAssignDevice(Long deviceId, Long roomId, Long locationId) : boolean
+    }
+    class "LocationPolicyService" as Backend_workplace_LocationPolicyService <<Domain Service>> {
+      + validateLocation(String name, String type) : void
+      + normalizeType(String type) : String
+    }
+    class "RoomPolicyService" as Backend_workplace_RoomPolicyService <<Domain Service>> {
+      + validateRoom(Long locationId, String name) : void
+      + normalizeFloor(String floor) : String
+    }
+    class "WorkplacePolicyService" as Backend_workplace_WorkplacePolicyService <<Domain Service>> {
+      + canCreateLocation(String name) : boolean
+      + canCreateRoom(Long locationId, String name) : boolean
+      + canAssignDevice(Long deviceId, Long roomId, Long locationId) : boolean
+    }
+    class "WorkplaceSummaryService" as Backend_workplace_WorkplaceSummaryService <<Domain Service>> {
+      + countLocations(List<Location> locations) : int
+      + countRooms(List<Room> rooms) : int
+      + countAssignments(List<DeviceAssignment> assignments) : int
+    }
+  }
+  package "Domain / Value Objects" {
+    class "Address" as Backend_workplace_Address <<record>> {
+      + String value
+      + Address(String value) : record
+    }
+    class "Capacity" as Backend_workplace_Capacity <<record>> {
+      + Integer value
+      + Capacity(Integer value) : record
+    }
+    class "LocationName" as Backend_workplace_LocationName <<record>> {
+      + String value
+      + LocationName(String value) : record
+    }
+    class "RoomName" as Backend_workplace_RoomName <<record>> {
+      + String value
+      + RoomName(String value) : record
+    }
+  }
+}
+
+Backend_workplace_DeviceAssignmentRepository ..> Backend_workplace_DeviceAssignment
+Backend_workplace_LocationRepository ..> Backend_workplace_Location
+Backend_workplace_RoomRepository ..> Backend_workplace_Room
+Backend_workplace_WorkplaceSummaryService ..> Backend_workplace_DeviceAssignment
+Backend_workplace_WorkplaceSummaryService ..> Backend_workplace_Location
+Backend_workplace_WorkplaceSummaryService ..> Backend_workplace_Room
+
+' Layer relationship completion: every declared type participates in this layer diagram.
+Backend_workplace_DeviceAssignmentRepository ..> Backend_workplace_AssignDeviceCommand
+Backend_workplace_DeviceAssignmentRepository ..> Backend_workplace_CreateLocationCommand
+Backend_workplace_DeviceAssignmentRepository ..> Backend_workplace_CreateRoomCommand
+Backend_workplace_DeviceAssignmentRepository ..> Backend_workplace_DeleteLocationCommand
+Backend_workplace_DeviceAssignmentRepository ..> Backend_workplace_DeleteRoomCommand
+Backend_workplace_DeviceAssignmentRepository ..> Backend_workplace_RemoveDeviceAssignmentCommand
+Backend_workplace_DeviceAssignmentRepository ..> Backend_workplace_UpdateLocationCommand
+Backend_workplace_DeviceAssignmentRepository ..> Backend_workplace_UpdateRoomCommand
+Backend_workplace_DeviceAssignmentRepository ..> Backend_workplace_DeviceAssignedToRoomEvent
+Backend_workplace_DeviceAssignmentRepository ..> Backend_workplace_DeviceAssignmentPolicyService
+Backend_workplace_DeviceAssignmentRepository ..> Backend_workplace_LocationPolicyService
+Backend_workplace_DeviceAssignmentRepository ..> Backend_workplace_RoomPolicyService
+Backend_workplace_DeviceAssignmentRepository ..> Backend_workplace_WorkplacePolicyService
+Backend_workplace_DeviceAssignmentRepository ..> Backend_workplace_Address
+Backend_workplace_DeviceAssignmentRepository ..> Backend_workplace_Capacity
+Backend_workplace_DeviceAssignmentRepository ..> Backend_workplace_LocationName
+Backend_workplace_DeviceAssignmentRepository ..> Backend_workplace_RoomName
+
+@enduml

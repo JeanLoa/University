@@ -1,0 +1,55 @@
+@startuml
+title LowCortisol WebApp - Plan Frontend Infrastructure Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Plan / Infrastructure" {
+  package "API" {
+    class "PlanApiService" as Frontend_plan_PlanApiService <<API Service>> {
+      + getPlans()
+      + getPlanById(planId)
+      + getActiveSubscription()
+      + subscribe(subscriptionRequest)
+      + changePlan(planChange)
+      + cancelSubscription(cancellation)
+      + getPayments()
+      + getServiceRequest()
+      + getSummary()
+    }
+
+    class "PlanApiEndpoint" as Frontend_plan_PlanApiEndpoint <<Endpoint>> {
+      + basePath: /plans
+    }
+  }
+
+  package "Assemblers" {
+    class "PlanAssembler" as Frontend_plan_PlanAssembler <<Assembler>>
+    class "SubscriptionAssembler" as Frontend_plan_SubscriptionAssembler <<Assembler>>
+    class "PaymentAssembler" as Frontend_plan_PaymentAssembler <<Assembler>>
+    class "ServiceRequestAssembler" as Frontend_plan_ServiceRequestAssembler <<Assembler>>
+  }
+
+  package "Resources and Responses" {
+    class "PlanResource" as Frontend_plan_PlanResource <<Resource>>
+    class "SubscriptionResource" as Frontend_plan_SubscriptionResource <<Resource>>
+    class "PaymentResource" as Frontend_plan_PaymentResource <<Resource>>
+    class "ServiceRequestResource" as Frontend_plan_ServiceRequestResource <<Resource>>
+    class "PlansResponse" as Frontend_plan_PlansResponse <<Response>>
+    class "PaymentsResponse" as Frontend_plan_PaymentsResponse <<Response>>
+  }
+}
+
+Frontend_plan_PlanApiService --> Frontend_plan_PlanApiEndpoint
+Frontend_plan_PlanApiService ..> Frontend_plan_PlanAssembler
+Frontend_plan_PlanApiService ..> Frontend_plan_SubscriptionAssembler
+Frontend_plan_PlanApiService ..> Frontend_plan_PaymentAssembler
+Frontend_plan_PlanApiService ..> Frontend_plan_ServiceRequestAssembler
+Frontend_plan_PlanAssembler ..> Frontend_plan_PlanResource
+Frontend_plan_SubscriptionAssembler ..> Frontend_plan_SubscriptionResource
+Frontend_plan_PaymentAssembler ..> Frontend_plan_PaymentResource
+Frontend_plan_ServiceRequestAssembler ..> Frontend_plan_ServiceRequestResource
+
+@enduml

@@ -1,0 +1,130 @@
+@startuml
+title LowCortisol WebApp - Monitoring Frontend Infrastructure Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Monitoring / Infrastructure" {
+  package "Infrastructure / API Services" {
+    class "ConsumptionReadingsApiService" as Frontend_consumption_monitoring_ConsumptionReadingsApiService <<API Service>> {
+      + constructor: (
+      + http: HttpClient
+      + apiBaseUrl: string
+      + findAllForCurrentUser() : Observable<ConsumptionReadingResponse[]>
+      + getDashboardSummary() : Observable<ConsumptionDashboardSummaryResponse>
+      + getSamplingSettings() : Observable<ConsumptionSamplingSettingsResponse>
+      + updateSamplingSettings(sampleSeconds: number) : Observable<ConsumptionSamplingSettingsResponse>
+      + findCurrentUserByDateRange: (
+      + startDate: string
+      + endDate: string
+    }
+  }
+  package "Infrastructure / Assemblers" {
+    class "ConsumptionReadingAssembler" as Frontend_consumption_monitoring_ConsumptionReadingAssembler <<Assembler>> {
+      + override: toEntity(response: ConsumptionReadingResponse): ConsumptionReading
+      + override: toResource(entity: ConsumptionReading): ConsumptionReadingResource
+    }
+  }
+  package "Infrastructure / Resources" {
+    interface "ConsumptionReadingResource" as Frontend_consumption_monitoring_ConsumptionReadingResource <<interface>> {
+      + userId?: number
+      + deviceId: number
+      + deviceName: string
+      + watts: number
+      + kilowattHours?: number
+      + estimatedCost?: number
+      + sampleSeconds?: number
+      + recordedAt: string
+      + status: ConsumptionReadingStatus
+    }
+  }
+  package "Infrastructure / Responses" {
+    interface "ConsumptionActiveDeviceResponse" as Frontend_consumption_monitoring_ConsumptionActiveDeviceResponse <<interface>> {
+      + deviceId: number
+      + name: string
+      + room: string
+      + type: string
+      + watts: number
+      + costPerHour: number
+    }
+    interface "ConsumptionDashboardSummaryResponse" as Frontend_consumption_monitoring_ConsumptionDashboardSummaryResponse <<interface>> {
+      + currentWatts: number
+      + todayKilowattHours: number
+      + todayEstimatedCost: number
+      + projectedMonthlyCost: number
+      + costPerHour: number
+      + peakWatts: number
+      + averageWatts: number
+      + activeDevices: number
+      + monitoredDevices: number
+      + normalReadings: number
+      + highReadings: number
+      + efficiencyScore: number
+      + operationalStatus: string
+      + recommendation: string
+      + activeAlerts: number
+      + criticalAlerts: number
+      + latestAlertLevel: string | null
+      + latestAlertTitle: string | null
+    }
+    interface "ConsumptionDeviceConsumptionResponse" as Frontend_consumption_monitoring_ConsumptionDeviceConsumptionResponse <<interface>> {
+      + deviceId: number
+      + name: string
+      + room: string
+      + type: string
+      + watts: number
+      + kilowattHours: number
+      + estimatedCost: number
+      + readings: number
+      + highReadings: number
+    }
+    interface "ConsumptionReadingResponse" as Frontend_consumption_monitoring_ConsumptionReadingResponse <<interface>> {
+      + userId: number
+      + deviceId: number
+      + deviceName: string
+      + watts: number
+      + kilowattHours?: number
+      + estimatedCost?: number
+      + sampleSeconds?: number
+      + recordedAt: string
+      + status?: ConsumptionReadingStatus
+    }
+    interface "ConsumptionRoomConsumptionResponse" as Frontend_consumption_monitoring_ConsumptionRoomConsumptionResponse <<interface>> {
+      + room: string
+      + watts: number
+      + kilowattHours: number
+      + estimatedCost: number
+      + activeDevices: number
+    }
+    interface "ConsumptionSamplingSettingsResponse" as Frontend_consumption_monitoring_ConsumptionSamplingSettingsResponse <<interface>> {
+      + sampleSeconds: number
+    }
+    interface "ConsumptionTrendPointResponse" as Frontend_consumption_monitoring_ConsumptionTrendPointResponse <<interface>> {
+      + label: string
+      + deviceName: string
+      + watts: number
+      + kilowattHours: number
+      + estimatedCost: number
+      + sampleSeconds: number
+      + high: boolean
+    }
+  }
+}
+
+Frontend_consumption_monitoring_ConsumptionReadingAssembler ..> Frontend_consumption_monitoring_ConsumptionReadingResource
+Frontend_consumption_monitoring_ConsumptionReadingAssembler ..> Frontend_consumption_monitoring_ConsumptionReadingResponse
+Frontend_consumption_monitoring_ConsumptionReadingsApiService ..> Frontend_consumption_monitoring_ConsumptionDashboardSummaryResponse
+Frontend_consumption_monitoring_ConsumptionReadingsApiService ..> Frontend_consumption_monitoring_ConsumptionReadingAssembler
+Frontend_consumption_monitoring_ConsumptionReadingsApiService ..> Frontend_consumption_monitoring_ConsumptionReadingResource
+Frontend_consumption_monitoring_ConsumptionReadingsApiService ..> Frontend_consumption_monitoring_ConsumptionReadingResponse
+Frontend_consumption_monitoring_ConsumptionReadingsApiService ..> Frontend_consumption_monitoring_ConsumptionSamplingSettingsResponse
+
+' Layer relationship completion: every declared type participates in this layer diagram.
+Frontend_consumption_monitoring_ConsumptionReadingsApiService ..> Frontend_consumption_monitoring_ConsumptionActiveDeviceResponse
+Frontend_consumption_monitoring_ConsumptionReadingsApiService ..> Frontend_consumption_monitoring_ConsumptionDeviceConsumptionResponse
+Frontend_consumption_monitoring_ConsumptionReadingsApiService ..> Frontend_consumption_monitoring_ConsumptionRoomConsumptionResponse
+Frontend_consumption_monitoring_ConsumptionReadingsApiService ..> Frontend_consumption_monitoring_ConsumptionTrendPointResponse
+
+@enduml

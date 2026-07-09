@@ -1,0 +1,403 @@
+@startuml
+title LowCortisol Platform - Device Control Backend Domain Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Device Control / Domain" {
+  package "Domain / Aggregates" {
+    class "Device" as Backend_devicecontrol_Device <<Aggregate>> {
+      - userId: Long
+      - name: String
+      - room: String
+      - type: String
+      - powerWatts: BigDecimal
+      - status: DeviceStatus
+      + toggle() : void
+      + turnOn() : void
+      + turnOff() : void
+      + placeInMaintenance() : void
+      + markAsRemoved() : void
+      + isOn() : boolean
+      + isRemoved() : boolean
+      + isInMaintenance() : boolean
+      + canReceiveOperationalChanges() : boolean
+    }
+    class "DeviceGroup" as Backend_devicecontrol_DeviceGroup <<Aggregate>> {
+      - userId: Long
+      - name: String
+      - description: String
+    }
+    class "OperationMode" as Backend_devicecontrol_OperationMode <<Aggregate>> {
+      - userId: Long
+      - locationId: Long
+      - name: String
+      - description: String
+      - status: OperationModeStatus
+      - roomIds: String
+      - groupIds: String
+      - deviceIds: String
+      - turnOnDeviceIds: String
+      - turnOffDeviceIds: String
+      - keepOnDeviceIds: String
+      - routineIds: String
+      - routinesToEnableIds: String
+      - routinesToDisableIds: String
+      - goalIds: String
+      - allDay: Boolean
+      - startsAt: String
+      - endsAt: String
+      - ruleProfileId: Long
+      - preferenceId: Long
+      - applyRuleProfile: Boolean
+      - applyNotificationPreference: Boolean
+      - applyRoutines: Boolean
+      - preserveCriticalSound: Boolean
+    }
+    class "Routine" as Backend_devicecontrol_Routine <<Aggregate>> {
+      - userId: Long
+      - deviceId: Long
+      - groupId: Long
+      - targetType: RoutineTargetType
+      - targetId: Long
+      - name: String
+      - action: RoutineAction
+      - time: String
+      - repeatType: RoutineRepeatType
+      - daysOfWeek: String
+      - intervalDays: Integer
+      - startsOn: String
+      - enabled: Boolean
+      + toggle() : void
+      + getExecutionTime() : String
+      + getEffectiveRepeatType() : RoutineRepeatType
+      + getEffectiveIntervalDays() : Integer
+    }
+  }
+  package "Domain / Commands" {
+    class "ActivateOperationModeCommand" as Backend_devicecontrol_ActivateOperationModeCommand <<record>> {
+      + Long userId
+      + Long modeId
+      + ActivateOperationModeCommand(Long userId, Long modeId) : record
+    }
+    class "AddDeviceToGroupCommand" as Backend_devicecontrol_AddDeviceToGroupCommand <<record>> {
+      + Long userId
+      + Long deviceGroupId
+      + Long deviceId
+    }
+    class "ArchiveOperationModeCommand" as Backend_devicecontrol_ArchiveOperationModeCommand <<record>> {
+      + Long userId
+      + Long modeId
+      + ArchiveOperationModeCommand(Long userId, Long modeId) : record
+    }
+    class "CreateDeviceCommand" as Backend_devicecontrol_CreateDeviceCommand <<record>> {
+      + Long userId
+      + String name
+      + String room
+      + String type
+      + BigDecimal powerWatts
+    }
+    class "CreateDeviceGroupCommand" as Backend_devicecontrol_CreateDeviceGroupCommand <<record>> {
+      + Long userId
+      + String name
+      + String description
+      + List<Long> deviceIds
+    }
+    class "CreateOperationModeCommand" as Backend_devicecontrol_CreateOperationModeCommand <<record>> {
+      + Long userId
+      + Long locationId
+      + String name
+      + String description
+      + List<Long> roomIds
+      + List<Long> groupIds
+      + List<Long> deviceIds
+      + List<Long> turnOnDeviceIds
+      + List<Long> turnOffDeviceIds
+      + List<Long> keepOnDeviceIds
+      + List<Long> routineIds
+      + List<Long> routinesToEnableIds
+      + List<Long> routinesToDisableIds
+      + List<Long> goalIds
+      + List<OperationModeRoutineCommand> internalRoutines
+      + Boolean allDay
+      + String startsAt
+      + String endsAt
+      + Long ruleProfileId
+      + Long preferenceId
+      + Boolean applyRuleProfile
+      + Boolean applyNotificationPreference
+      + Boolean applyRoutines
+      + Boolean preserveCriticalSound
+    }
+    class "CreateRoutineCommand" as Backend_devicecontrol_CreateRoutineCommand <<record>> {
+      + Long userId
+      + Long deviceId
+      + Long groupId
+      + RoutineTargetType targetType
+      + Long targetId
+      + String name
+      + RoutineAction action
+      + String time
+      + RoutineRepeatType repeatType
+      + String daysOfWeek
+      + Integer intervalDays
+      + String startsOn
+    }
+    class "DeleteDeviceCommand" as Backend_devicecontrol_DeleteDeviceCommand <<record>> {
+      + Long userId
+      + Long deviceId
+    }
+    class "DeleteDeviceGroupCommand" as Backend_devicecontrol_DeleteDeviceGroupCommand <<record>> {
+      + Long userId
+      + Long deviceGroupId
+    }
+    class "DeleteRoutineCommand" as Backend_devicecontrol_DeleteRoutineCommand <<record>> {
+      + Long userId
+      + Long routineId
+    }
+    class "ExecuteGroupActionCommand" as Backend_devicecontrol_ExecuteGroupActionCommand <<record>> {
+      + DeviceStatus status
+      + ExecuteGroupActionCommand(DeviceStatus status) : record
+    }
+    class "ExecuteRoutineCommand" as Backend_devicecontrol_ExecuteRoutineCommand <<record>> {
+      + Long userId
+      + Long routineId
+    }
+    class "OperationModeRoutineCommand" as Backend_devicecontrol_OperationModeRoutineCommand <<record>> {
+      + String name
+      + RoutineTargetType targetType
+      + Long targetId
+      + RoutineAction action
+      + String triggerTime
+      + Boolean enabled
+    }
+    class "RemoveDeviceFromGroupCommand" as Backend_devicecontrol_RemoveDeviceFromGroupCommand <<record>> {
+      + Long userId
+      + Long deviceGroupId
+      + Long deviceId
+    }
+    class "ToggleDeviceCommand" as Backend_devicecontrol_ToggleDeviceCommand <<record>> {
+      + Long userId
+      + Long deviceId
+    }
+    class "ToggleRoutineCommand" as Backend_devicecontrol_ToggleRoutineCommand <<record>> {
+      + Long userId
+      + Long routineId
+    }
+    class "UpdateDeviceCommand" as Backend_devicecontrol_UpdateDeviceCommand <<record>> {
+      + Long userId
+      + Long deviceId
+      + String name
+      + String room
+      + String type
+      + BigDecimal powerWatts
+    }
+    class "UpdateDeviceGroupCommand" as Backend_devicecontrol_UpdateDeviceGroupCommand <<record>> {
+      + String name
+      + String description
+      + List<Long> deviceIds
+    }
+    class "UpdateDeviceStatusCommand" as Backend_devicecontrol_UpdateDeviceStatusCommand <<record>> {
+      + DeviceStatus status
+      + UpdateDeviceStatusCommand(DeviceStatus status) : record
+    }
+    class "UpdateRoutineStatusCommand" as Backend_devicecontrol_UpdateRoutineStatusCommand <<record>> {
+      + Boolean enabled
+      + UpdateRoutineStatusCommand(Boolean enabled) : record
+    }
+  }
+  package "Domain / Entities" {
+    class "DeviceGroupDevice" as Backend_devicecontrol_DeviceGroupDevice <<Entity>> {
+      - deviceGroupId: Long
+      - deviceId: Long
+    }
+    class "OperationModeRoutine" as Backend_devicecontrol_OperationModeRoutine <<Entity>> {
+      - name: String
+      - targetType: RoutineTargetType
+      - targetId: Long
+      - action: RoutineAction
+      - triggerTime: String
+      - enabled: Boolean
+    }
+  }
+  package "Domain / Events" {
+    class "DeviceCreatedEvent" as Backend_devicecontrol_DeviceCreatedEvent <<record>> {
+      + Long userId
+      + Long deviceId
+      + String deviceName
+      + LocalDateTime occurredOn
+      + DeviceCreatedEvent(Long userId, Long deviceId, String deviceName, LocalDateTime occurredOn) : record
+      + DeviceCreatedEvent(Long userId, Long deviceId, String deviceName)
+    }
+    class "OperationModeActivatedEvent" as Backend_devicecontrol_OperationModeActivatedEvent <<record>> {
+      + Long userId
+      + Long modeId
+      + String modeName
+      + String evidence
+      + String explanation
+      + String recommendedAction
+      + LocalDateTime occurredOn
+    }
+  }
+  package "Domain / Model" {
+    enum "DeviceStatus" as Backend_devicecontrol_DeviceStatus <<enum>> {
+      + ON
+      + OFF
+      + MAINTENANCE
+    }
+    enum "OperationModeStatus" as Backend_devicecontrol_OperationModeStatus <<enum>> {
+      + DRAFT
+      + ACTIVE
+      + INACTIVE
+    }
+    enum "RoutineAction" as Backend_devicecontrol_RoutineAction <<enum>> {
+      + TURN_ON
+    }
+    enum "RoutineRepeatType" as Backend_devicecontrol_RoutineRepeatType <<enum>> {
+      + ONCE
+      + DAILY
+      + WEEKLY
+    }
+    enum "RoutineTargetType" as Backend_devicecontrol_RoutineTargetType <<enum>> {
+      + DEVICE
+      + GROUP
+      + ROOM
+    }
+  }
+  package "Domain / Queries" {
+    class "GetDeviceGroupsQuery" as Backend_devicecontrol_GetDeviceGroupsQuery <<record>> {
+      + Long userId
+      + GetDeviceGroupsQuery(Long userId) : record
+    }
+    class "GetDevicesQuery" as Backend_devicecontrol_GetDevicesQuery <<record>> {
+      + Long userId
+      + GetDevicesQuery(Long userId) : record
+    }
+    class "GetOperationModesQuery" as Backend_devicecontrol_GetOperationModesQuery <<record>> {
+      + Long userId
+      + GetOperationModesQuery(Long userId) : record
+    }
+    class "GetRoutinesQuery" as Backend_devicecontrol_GetRoutinesQuery <<record>> {
+      + Long userId
+      + GetRoutinesQuery(Long userId) : record
+    }
+    class "PreviewOperationModeQuery" as Backend_devicecontrol_PreviewOperationModeQuery <<record>> {
+      + Long userId
+      + Long modeId
+      + PreviewOperationModeQuery(Long userId, Long modeId) : record
+    }
+  }
+  package "Domain / Repositories" {
+    interface "DeviceGroupDeviceRepository" as Backend_devicecontrol_DeviceGroupDeviceRepository <<interface>> {
+    }
+    interface "DeviceGroupRepository" as Backend_devicecontrol_DeviceGroupRepository <<interface>> {
+    }
+    interface "DeviceRepository" as Backend_devicecontrol_DeviceRepository <<interface>> {
+    }
+    interface "OperationModeRepository" as Backend_devicecontrol_OperationModeRepository <<interface>> {
+    }
+    interface "RoutineRepository" as Backend_devicecontrol_RoutineRepository <<interface>> {
+    }
+  }
+  package "Domain / Services" {
+    class "DeviceGroupPolicyService" as Backend_devicecontrol_DeviceGroupPolicyService <<Domain Service>> {
+      + canCreateGroup(String name, List<Long> deviceIds) : boolean
+    }
+    class "DevicePolicyService" as Backend_devicecontrol_DevicePolicyService <<Domain Service>> {
+      + validateDeviceData(String name, String type, BigDecimal powerWatts) : void
+      + canToggleDevice(String status) : boolean
+    }
+    class "DevicePowerPolicyService" as Backend_devicecontrol_DevicePowerPolicyService <<Domain Service>> {
+      - HIGH_POWER_THRESHOLD: BigDecimal
+      + isHighPowerDevice(BigDecimal powerWatts) : boolean
+      + resolvePowerCategory(BigDecimal powerWatts) : String
+    }
+    class "RoutineConflictCheckerService" as Backend_devicecontrol_RoutineConflictCheckerService <<Domain Service>> {
+      + hasConflict(List<Routine> routines, Routine candidate) : boolean
+    }
+    class "RoutinePolicyService" as Backend_devicecontrol_RoutinePolicyService <<Domain Service>> {
+      - ALLOWED_ACTIONS: Set<String>
+      + validateRoutineData(String name, String action, LocalTime executionTime) : void
+    }
+  }
+  package "Domain / Value Objects" {
+    class "DeviceGroupName" as Backend_devicecontrol_DeviceGroupName <<record>> {
+      + String value
+      + DeviceGroupName(String value) : record
+    }
+    class "DeviceName" as Backend_devicecontrol_DeviceName <<record>> {
+      + String value
+      + DeviceName(String value) : record
+    }
+    class "DeviceSerialNumber" as Backend_devicecontrol_DeviceSerialNumber <<record>> {
+      + String value
+      + DeviceSerialNumber(String value) : record
+      - PATTERN: Pattern
+    }
+    class "PowerWatts" as Backend_devicecontrol_PowerWatts <<record>> {
+      + BigDecimal value
+      + PowerWatts(BigDecimal value) : record
+    }
+    class "RoutineName" as Backend_devicecontrol_RoutineName <<record>> {
+      + String value
+      + RoutineName(String value) : record
+    }
+  }
+}
+
+Backend_devicecontrol_CreateRoutineCommand ..> Backend_devicecontrol_RoutineAction
+Backend_devicecontrol_CreateRoutineCommand ..> Backend_devicecontrol_RoutineRepeatType
+Backend_devicecontrol_CreateRoutineCommand ..> Backend_devicecontrol_RoutineTargetType
+Backend_devicecontrol_DeviceGroupDeviceRepository ..> Backend_devicecontrol_DeviceGroupDevice
+Backend_devicecontrol_DeviceGroupRepository ..> Backend_devicecontrol_DeviceGroup
+Backend_devicecontrol_DeviceRepository ..> Backend_devicecontrol_Device
+Backend_devicecontrol_ExecuteGroupActionCommand ..> Backend_devicecontrol_DeviceStatus
+Backend_devicecontrol_OperationMode ..> Backend_devicecontrol_OperationModeRoutine
+Backend_devicecontrol_OperationMode ..> Backend_devicecontrol_OperationModeStatus
+Backend_devicecontrol_OperationModeRepository ..> Backend_devicecontrol_OperationMode
+Backend_devicecontrol_OperationModeRepository ..> Backend_devicecontrol_OperationModeStatus
+Backend_devicecontrol_OperationModeRoutine ..> Backend_devicecontrol_RoutineAction
+Backend_devicecontrol_OperationModeRoutine ..> Backend_devicecontrol_RoutineTargetType
+Backend_devicecontrol_OperationModeRoutineCommand ..> Backend_devicecontrol_RoutineAction
+Backend_devicecontrol_OperationModeRoutineCommand ..> Backend_devicecontrol_RoutineTargetType
+Backend_devicecontrol_RoutineConflictCheckerService ..> Backend_devicecontrol_Routine
+Backend_devicecontrol_RoutineRepository ..> Backend_devicecontrol_Routine
+Backend_devicecontrol_UpdateDeviceStatusCommand ..> Backend_devicecontrol_DeviceStatus
+
+' Layer relationship completion: every declared type participates in this layer diagram.
+Backend_devicecontrol_DeviceGroupDeviceRepository ..> Backend_devicecontrol_ActivateOperationModeCommand
+Backend_devicecontrol_DeviceGroupDeviceRepository ..> Backend_devicecontrol_AddDeviceToGroupCommand
+Backend_devicecontrol_DeviceGroupDeviceRepository ..> Backend_devicecontrol_ArchiveOperationModeCommand
+Backend_devicecontrol_DeviceGroupDeviceRepository ..> Backend_devicecontrol_CreateDeviceCommand
+Backend_devicecontrol_DeviceGroupDeviceRepository ..> Backend_devicecontrol_CreateDeviceGroupCommand
+Backend_devicecontrol_DeviceGroupDeviceRepository ..> Backend_devicecontrol_CreateOperationModeCommand
+Backend_devicecontrol_DeviceGroupDeviceRepository ..> Backend_devicecontrol_DeleteDeviceCommand
+Backend_devicecontrol_DeviceGroupDeviceRepository ..> Backend_devicecontrol_DeleteDeviceGroupCommand
+Backend_devicecontrol_DeviceGroupDeviceRepository ..> Backend_devicecontrol_DeleteRoutineCommand
+Backend_devicecontrol_DeviceGroupDeviceRepository ..> Backend_devicecontrol_ExecuteRoutineCommand
+Backend_devicecontrol_DeviceGroupDeviceRepository ..> Backend_devicecontrol_RemoveDeviceFromGroupCommand
+Backend_devicecontrol_DeviceGroupDeviceRepository ..> Backend_devicecontrol_ToggleDeviceCommand
+Backend_devicecontrol_DeviceGroupDeviceRepository ..> Backend_devicecontrol_ToggleRoutineCommand
+Backend_devicecontrol_DeviceGroupDeviceRepository ..> Backend_devicecontrol_UpdateDeviceCommand
+Backend_devicecontrol_DeviceGroupDeviceRepository ..> Backend_devicecontrol_UpdateDeviceGroupCommand
+Backend_devicecontrol_DeviceGroupDeviceRepository ..> Backend_devicecontrol_UpdateRoutineStatusCommand
+Backend_devicecontrol_DeviceGroupDeviceRepository ..> Backend_devicecontrol_DeviceCreatedEvent
+Backend_devicecontrol_DeviceGroupDeviceRepository ..> Backend_devicecontrol_OperationModeActivatedEvent
+Backend_devicecontrol_DeviceGroupDeviceRepository ..> Backend_devicecontrol_GetDeviceGroupsQuery
+Backend_devicecontrol_DeviceGroupDeviceRepository ..> Backend_devicecontrol_GetDevicesQuery
+Backend_devicecontrol_DeviceGroupDeviceRepository ..> Backend_devicecontrol_GetOperationModesQuery
+Backend_devicecontrol_DeviceGroupDeviceRepository ..> Backend_devicecontrol_GetRoutinesQuery
+Backend_devicecontrol_DeviceGroupDeviceRepository ..> Backend_devicecontrol_PreviewOperationModeQuery
+Backend_devicecontrol_DeviceGroupDeviceRepository ..> Backend_devicecontrol_DeviceGroupPolicyService
+Backend_devicecontrol_DeviceGroupDeviceRepository ..> Backend_devicecontrol_DevicePolicyService
+Backend_devicecontrol_DeviceGroupDeviceRepository ..> Backend_devicecontrol_DevicePowerPolicyService
+Backend_devicecontrol_DeviceGroupDeviceRepository ..> Backend_devicecontrol_RoutinePolicyService
+Backend_devicecontrol_DeviceGroupDeviceRepository ..> Backend_devicecontrol_DeviceGroupName
+Backend_devicecontrol_DeviceGroupDeviceRepository ..> Backend_devicecontrol_DeviceName
+Backend_devicecontrol_DeviceGroupDeviceRepository ..> Backend_devicecontrol_DeviceSerialNumber
+Backend_devicecontrol_DeviceGroupDeviceRepository ..> Backend_devicecontrol_PowerWatts
+Backend_devicecontrol_DeviceGroupDeviceRepository ..> Backend_devicecontrol_RoutineName
+
+@enduml

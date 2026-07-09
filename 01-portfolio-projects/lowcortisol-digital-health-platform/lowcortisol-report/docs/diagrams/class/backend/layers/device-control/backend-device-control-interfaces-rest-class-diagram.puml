@@ -1,0 +1,266 @@
+@startuml
+title LowCortisol Platform - Device Control Backend Interfaces REST Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Device Control / Interfaces REST" {
+  package "Interfaces / REST Assemblers" {
+    class "CreateDeviceCommandFromResourceAssembler" as Backend_devicecontrol_CreateDeviceCommandFromResourceAssembler <<Assembler>> {
+      + toCommandFromResource(CreateDeviceResource resource, Long userId) : CreateDeviceCommand
+    }
+    class "CreateDeviceGroupCommandFromResourceAssembler" as Backend_devicecontrol_CreateDeviceGroupCommandFromResourceAssembler <<Assembler>> {
+      + toCommandFromResource(CreateDeviceGroupResource resource, Long userId) : CreateDeviceGroupCommand
+    }
+    class "CreateOperationModeCommandFromResourceAssembler" as Backend_devicecontrol_CreateOperationModeCommandFromResourceAssembler <<Assembler>> {
+      + toCommandFromResource(CreateOperationModeResource resource, Long userId) : CreateOperationModeCommand
+      - toRoutineCommands(List<OperationModeRoutineResource> resources) : List<OperationModeRoutineCommand>
+      - toRoutineCommand(OperationModeRoutineResource resource) : OperationModeRoutineCommand
+    }
+    class "CreateRoutineCommandFromResourceAssembler" as Backend_devicecontrol_CreateRoutineCommandFromResourceAssembler <<Assembler>> {
+      + toCommandFromResource(CreateRoutineResource resource, Long userId) : CreateRoutineCommand
+    }
+    class "DeviceGroupResourceFromResultAssembler" as Backend_devicecontrol_DeviceGroupResourceFromResultAssembler <<Assembler>> {
+      + toResourceFromResult(DeviceGroupDetails details) : DeviceGroupResource
+    }
+    class "DeviceResourceFromEntityAssembler" as Backend_devicecontrol_DeviceResourceFromEntityAssembler <<Assembler>> {
+      + toResourceFromEntity(Device device) : DeviceResource
+    }
+    class "ExecuteGroupActionCommandFromResourceAssembler" as Backend_devicecontrol_ExecuteGroupActionCommandFromResourceAssembler <<Assembler>> {
+      + toCommandFromResource(ExecuteGroupActionResource resource) : ExecuteGroupActionCommand
+    }
+    class "RoutineResourceFromResultAssembler" as Backend_devicecontrol_RoutineResourceFromResultAssembler <<Assembler>> {
+      + toResourceFromResult(RoutineDetails details) : RoutineResource
+    }
+    class "UpdateDeviceGroupCommandFromResourceAssembler" as Backend_devicecontrol_UpdateDeviceGroupCommandFromResourceAssembler <<Assembler>> {
+      + toCommandFromResource(UpdateDeviceGroupResource resource) : UpdateDeviceGroupCommand
+    }
+    class "UpdateDeviceStatusCommandFromResourceAssembler" as Backend_devicecontrol_UpdateDeviceStatusCommandFromResourceAssembler <<Assembler>> {
+      + toCommandFromResource(UpdateDeviceStatusResource resource) : UpdateDeviceStatusCommand
+    }
+    class "UpdateRoutineStatusCommandFromResourceAssembler" as Backend_devicecontrol_UpdateRoutineStatusCommandFromResourceAssembler <<Assembler>> {
+      + toCommandFromResource(UpdateRoutineStatusResource resource) : UpdateRoutineStatusCommand
+    }
+  }
+  package "Interfaces / REST Controllers" {
+    class "DeviceControlController" as Backend_devicecontrol_DeviceControlController <<REST Controller>> {
+      - commandService: DeviceControlCommandService
+      - queryService: DeviceControlQueryService
+      - currentUserProvider: CurrentUserProvider
+      + getDevices() : List<DeviceResource>
+      + createDevice(CreateDeviceResource request) : DeviceResource
+      + getRoutines() : List<RoutineResource>
+      + getDeviceGroups() : List<DeviceGroupResource>
+      + deleteDeviceGroup(Long groupId) : void
+      + getOperationModes() : List<OperationModeResource>
+      + createOperationMode(CreateOperationModeResource request) : OperationModeResource
+    }
+  }
+  package "Interfaces / REST Resources" {
+    class "CreateDeviceGroupResource" as Backend_devicecontrol_CreateDeviceGroupResource <<record>> {
+      + String name
+      + String description
+      + List<Long> deviceIds
+    }
+    class "CreateDeviceResource" as Backend_devicecontrol_CreateDeviceResource <<record>> {
+      + String name
+      + String room
+      + String type
+      + BigDecimal powerWatts
+    }
+    class "CreateOperationModeResource" as Backend_devicecontrol_CreateOperationModeResource <<record>> {
+      + Long locationId
+      + String name
+      + String description
+      + List<Long> roomIds
+      + List<Long> groupIds
+      + List<Long> deviceIds
+      + List<Long> turnOnDeviceIds
+      + List<Long> turnOffDeviceIds
+      + List<Long> keepOnDeviceIds
+      + List<Long> routineIds
+      + List<Long> routinesToEnableIds
+      + List<Long> routinesToDisableIds
+      + List<Long> goalIds
+      + List<OperationModeRoutineResource> internalRoutines
+      + Boolean allDay
+      + String startsAt
+      + String endsAt
+      + Long ruleProfileId
+      + Long preferenceId
+      + Boolean applyRuleProfile
+      + Boolean applyNotificationPreference
+      + Boolean applyRoutines
+      + Boolean preserveCriticalSound
+    }
+    class "CreateRoutineResource" as Backend_devicecontrol_CreateRoutineResource <<record>> {
+      + Long deviceId
+      + Long groupId
+      + RoutineTargetType targetType
+      + Long targetId
+      + String name
+      + RoutineAction action
+      + String time
+      + RoutineRepeatType repeatType
+      + String daysOfWeek
+      + Integer intervalDays
+      + String startsOn
+    }
+    class "CsvIds" as Backend_devicecontrol_CsvIds <<Resource>> {
+      - CsvIds()
+    }
+    class "DeviceGroupResource" as Backend_devicecontrol_DeviceGroupResource <<record>> {
+      + Long id
+      + Long userId
+      + String name
+      + String description
+      + List<Long> deviceIds
+      + LocalDate createdAt
+      + from(DeviceGroup group) : DeviceGroupResource
+      + from(DeviceGroup group, List<Long> deviceIds) : DeviceGroupResource
+    }
+    class "DeviceResource" as Backend_devicecontrol_DeviceResource <<record>> {
+      + Long id
+      + Long userId
+      + String name
+      + String room
+      + String type
+      + BigDecimal powerWatts
+      + String status
+      + from(Device device) : DeviceResource
+    }
+    class "ExecuteGroupActionResource" as Backend_devicecontrol_ExecuteGroupActionResource <<record>> {
+      + DeviceStatus status
+    }
+    class "OperationModeActivationResource" as Backend_devicecontrol_OperationModeActivationResource <<record>> {
+      + OperationModeResource mode
+      + List<Long> turnedOnDeviceIds
+      + List<Long> turnedOffDeviceIds
+      + List<Long> ignoredRemovedDeviceIds
+      + List<Long> ignoredMaintenanceDeviceIds
+      + List<Long> enabledRoutineIds
+      + List<Long> disabledRoutineIds
+      + String evidence
+      + String explanation
+      + String recommendedAction
+      + from(OperationModeActivationResult result) : OperationModeActivationResource
+    }
+    class "OperationModePreviewResource" as Backend_devicecontrol_OperationModePreviewResource <<record>> {
+      + Long modeId
+      + Long locationId
+      + String locationName
+      + List<Long> affectedDeviceIds
+      + List<Long> ignoredRemovedDeviceIds
+      + List<Long> ignoredMaintenanceDeviceIds
+      + List<Long> roomIds
+      + List<Long> groupIds
+      + List<Long> routineIds
+      + List<Long> goalIds
+      + Long ruleProfileId
+      + Long preferenceId
+      + String evidence
+      + String explanation
+      + String recommendedAction
+      + from(OperationModePreviewResult result) : OperationModePreviewResource
+    }
+    class "OperationModeResource" as Backend_devicecontrol_OperationModeResource <<record>> {
+      + Long id
+      + Long userId
+      + Long locationId
+      + String name
+      + String description
+      + String status
+      + List<Long> roomIds
+      + List<Long> groupIds
+      + List<Long> deviceIds
+      + List<Long> turnOnDeviceIds
+      + List<Long> turnOffDeviceIds
+      + List<Long> keepOnDeviceIds
+      + List<Long> routineIds
+      + List<Long> routinesToEnableIds
+      + List<Long> routinesToDisableIds
+      + List<Long> goalIds
+      + List<OperationModeRoutineResource> internalRoutines
+      + Boolean allDay
+      + String startsAt
+      + String endsAt
+      + Long ruleProfileId
+      + Long preferenceId
+      + Boolean applyRuleProfile
+      + Boolean applyNotificationPreference
+    }
+    class "OperationModeRoutineResource" as Backend_devicecontrol_OperationModeRoutineResource <<record>> {
+      + String name
+      + String targetType
+      + Long targetId
+      + String action
+      + String triggerTime
+      + Boolean enabled
+      + from(OperationModeRoutine routine) : OperationModeRoutineResource
+    }
+    class "RoutineResource" as Backend_devicecontrol_RoutineResource <<record>> {
+      + Long id
+      + Long userId
+      + Long deviceId
+      + Long groupId
+      + RoutineTargetType targetType
+      + Long targetId
+      + String targetName
+      + String name
+      + RoutineAction action
+      + String time
+      + RoutineRepeatType repeatType
+      + String daysOfWeek
+      + Integer intervalDays
+      + String startsOn
+      + Integer applicableDeviceCount
+      + Integer blockedDeviceCount
+      + Boolean enabled
+      + from(Routine routine) : RoutineResource
+    }
+    class "UpdateDeviceGroupResource" as Backend_devicecontrol_UpdateDeviceGroupResource <<record>> {
+      + String name
+      + String description
+      + List<Long> deviceIds
+    }
+    class "UpdateDeviceStatusResource" as Backend_devicecontrol_UpdateDeviceStatusResource <<record>> {
+      + DeviceStatus status
+    }
+    class "UpdateRoutineStatusResource" as Backend_devicecontrol_UpdateRoutineStatusResource <<record>> {
+      + Boolean enabled
+    }
+  }
+}
+
+Backend_devicecontrol_CreateDeviceCommandFromResourceAssembler ..> Backend_devicecontrol_CreateDeviceResource
+Backend_devicecontrol_CreateDeviceGroupCommandFromResourceAssembler ..> Backend_devicecontrol_CreateDeviceGroupResource
+Backend_devicecontrol_CreateOperationModeCommandFromResourceAssembler ..> Backend_devicecontrol_CreateOperationModeResource
+Backend_devicecontrol_CreateOperationModeCommandFromResourceAssembler ..> Backend_devicecontrol_OperationModeRoutineResource
+Backend_devicecontrol_CreateRoutineCommandFromResourceAssembler ..> Backend_devicecontrol_CreateRoutineResource
+Backend_devicecontrol_DeviceControlController ..> Backend_devicecontrol_CreateDeviceGroupResource
+Backend_devicecontrol_DeviceControlController ..> Backend_devicecontrol_CreateDeviceResource
+Backend_devicecontrol_DeviceControlController ..> Backend_devicecontrol_CreateOperationModeResource
+Backend_devicecontrol_DeviceControlController ..> Backend_devicecontrol_CreateRoutineResource
+Backend_devicecontrol_DeviceControlController ..> Backend_devicecontrol_DeviceGroupResource
+Backend_devicecontrol_DeviceControlController ..> Backend_devicecontrol_DeviceResource
+Backend_devicecontrol_DeviceControlController ..> Backend_devicecontrol_ExecuteGroupActionResource
+Backend_devicecontrol_DeviceControlController ..> Backend_devicecontrol_OperationModeActivationResource
+Backend_devicecontrol_DeviceControlController ..> Backend_devicecontrol_OperationModePreviewResource
+Backend_devicecontrol_DeviceControlController ..> Backend_devicecontrol_OperationModeResource
+Backend_devicecontrol_DeviceControlController ..> Backend_devicecontrol_RoutineResource
+Backend_devicecontrol_DeviceControlController ..> Backend_devicecontrol_UpdateDeviceGroupResource
+Backend_devicecontrol_DeviceControlController ..> Backend_devicecontrol_UpdateDeviceStatusResource
+Backend_devicecontrol_DeviceControlController ..> Backend_devicecontrol_UpdateRoutineStatusResource
+Backend_devicecontrol_DeviceGroupResourceFromResultAssembler ..> Backend_devicecontrol_DeviceGroupResource
+Backend_devicecontrol_DeviceResourceFromEntityAssembler ..> Backend_devicecontrol_DeviceResource
+Backend_devicecontrol_ExecuteGroupActionCommandFromResourceAssembler ..> Backend_devicecontrol_ExecuteGroupActionResource
+Backend_devicecontrol_RoutineResourceFromResultAssembler ..> Backend_devicecontrol_RoutineResource
+Backend_devicecontrol_UpdateDeviceGroupCommandFromResourceAssembler ..> Backend_devicecontrol_UpdateDeviceGroupResource
+Backend_devicecontrol_UpdateDeviceStatusCommandFromResourceAssembler ..> Backend_devicecontrol_UpdateDeviceStatusResource
+Backend_devicecontrol_UpdateRoutineStatusCommandFromResourceAssembler ..> Backend_devicecontrol_UpdateRoutineStatusResource
+Backend_devicecontrol_DeviceControlController ..> Backend_devicecontrol_CsvIds
+
+
+@enduml

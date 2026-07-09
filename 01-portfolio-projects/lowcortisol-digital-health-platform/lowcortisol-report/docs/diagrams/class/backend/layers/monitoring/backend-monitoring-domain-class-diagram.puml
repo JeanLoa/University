@@ -1,0 +1,183 @@
+@startuml
+title LowCortisol Platform - Monitoring Backend Domain Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Monitoring / Domain" {
+  package "Domain / Aggregates" {
+    class "ConsumptionReading" as Backend_consumptionmonitoring_ConsumptionReading <<Aggregate>> {
+      - userId: Long
+      - deviceId: Long
+      - deviceName: String
+      - recordedAt: LocalDateTime
+      - watts: BigDecimal
+      - kilowattHours: BigDecimal
+      - estimatedCost: BigDecimal
+      - sampleSeconds: Integer
+      - status: ConsumptionReadingStatus
+    }
+  }
+  package "Domain / Commands" {
+    class "CreateConsumptionReadingCommand" as Backend_consumptionmonitoring_CreateConsumptionReadingCommand <<record>> {
+      + Long userId
+      + Long deviceId
+      + String deviceName
+      + BigDecimal watts
+    }
+    class "ExportConsumptionReadingsCommand" as Backend_consumptionmonitoring_ExportConsumptionReadingsCommand <<record>> {
+      + Long userId
+      + LocalDateTime startDate
+      + LocalDateTime endDate
+    }
+    class "FilterConsumptionReadingsCommand" as Backend_consumptionmonitoring_FilterConsumptionReadingsCommand <<record>> {
+      + Long userId
+      + Long deviceId
+      + LocalDateTime startDate
+      + LocalDateTime endDate
+    }
+    class "GetConsumptionStatisticsCommand" as Backend_consumptionmonitoring_GetConsumptionStatisticsCommand <<record>> {
+      + Long userId
+      + LocalDateTime startDate
+      + LocalDateTime endDate
+    }
+    class "UpdateConsumptionSamplingSettingsCommand" as Backend_consumptionmonitoring_UpdateConsumptionSamplingSettingsCommand <<record>> {
+      + Integer sampleSeconds
+      + UpdateConsumptionSamplingSettingsCommand(Integer sampleSeconds) : record
+    }
+  }
+  package "Domain / Events" {
+    class "ConsumptionThresholdExceededEvent" as Backend_consumptionmonitoring_ConsumptionThresholdExceededEvent <<record>> {
+      + Long userId
+      + Long deviceId
+      + BigDecimal watts
+      + LocalDateTime occurredOn
+      + ConsumptionThresholdExceededEvent(Long userId, Long deviceId, BigDecimal watts, LocalDateTime occurredOn) : record
+      + ConsumptionThresholdExceededEvent(Long userId, Long deviceId, BigDecimal watts)
+    }
+  }
+  package "Domain / Factories" {
+    class "ConsumptionReadingFactory" as Backend_consumptionmonitoring_ConsumptionReadingFactory <<Class>> {
+    }
+  }
+  package "Domain / Model" {
+    class "ConsumptionDeviceUsageState" as Backend_consumptionmonitoring_ConsumptionDeviceUsageState <<Class>> {
+      - userId: Long
+      - deviceId: Long
+      - startedAt: LocalDateTime
+      - lastRecordedAt: LocalDateTime
+    }
+    enum "ConsumptionReadingStatus" as Backend_consumptionmonitoring_ConsumptionReadingStatus <<enum>> {
+      + NORMAL
+    }
+  }
+  package "Domain / Queries" {
+    class "GetConsumptionDashboardSummaryQuery" as Backend_consumptionmonitoring_GetConsumptionDashboardSummaryQuery <<record>> {
+      + Long userId
+      + GetConsumptionDashboardSummaryQuery(Long userId) : record
+    }
+    class "GetConsumptionReadingsByUserQuery" as Backend_consumptionmonitoring_GetConsumptionReadingsByUserQuery <<record>> {
+      + Long userId
+      + LocalDateTime start
+      + LocalDateTime end
+    }
+    class "GetConsumptionSamplingSettingsQuery" as Backend_consumptionmonitoring_GetConsumptionSamplingSettingsQuery <<record>> {
+      + GetConsumptionSamplingSettingsQuery() : record
+    }
+  }
+  package "Domain / Repositories" {
+    interface "ConsumptionDeviceUsageStateRepository" as Backend_consumptionmonitoring_ConsumptionDeviceUsageStateRepository <<interface>> {
+    }
+    interface "ConsumptionReadingRepository" as Backend_consumptionmonitoring_ConsumptionReadingRepository <<interface>> {
+    }
+  }
+  package "Domain / Services" {
+    class "ConsumptionConsumptionSimulatorService" as Backend_consumptionmonitoring_ConsumptionConsumptionSimulatorService <<Domain Service>> {
+      + simulateWatts(Device device) : BigDecimal
+    }
+    class "ConsumptionReadingFilterService" as Backend_consumptionmonitoring_ConsumptionReadingFilterService <<Domain Service>> {
+      + filterByDevice(List<ConsumptionReading> readings, Long deviceId) : List<ConsumptionReading>
+    }
+    class "ConsumptionReadingPolicyService" as Backend_consumptionmonitoring_ConsumptionReadingPolicyService <<Domain Service>> {
+      + validateReading(Long userId, Long deviceId, String deviceName, BigDecimal watts) : void
+      + isHighConsumption(BigDecimal watts) : boolean
+      + isLowConsumption(BigDecimal watts) : boolean
+    }
+    class "ConsumptionRecommendationService" as Backend_consumptionmonitoring_ConsumptionRecommendationService <<Domain Service>> {
+      + resolveRecommendation(List<ConsumptionReading> readings) : String
+    }
+    class "ConsumptionStatisticsService" as Backend_consumptionmonitoring_ConsumptionStatisticsService <<Domain Service>> {
+      + calculateTotalWatts(List<ConsumptionReading> readings) : BigDecimal
+      + calculateAverageWatts(List<ConsumptionReading> readings) : BigDecimal
+    }
+    class "ConsumptionUsageClassifierService" as Backend_consumptionmonitoring_ConsumptionUsageClassifierService <<Domain Service>> {
+      + classify(BigDecimal watts) : String
+    }
+  }
+  package "Domain / Specifications" {
+    class "HighConsumptionSpecification" as Backend_consumptionmonitoring_HighConsumptionSpecification <<Class>> {
+      - threshold: ConsumptionThreshold
+      + HighConsumptionSpecification()
+      + HighConsumptionSpecification(BigDecimal thresholdWatts)
+      + isSatisfiedBy(BigDecimal watts) : boolean
+    }
+  }
+  package "Domain / Value Objects" {
+    class "ConsumptionCost" as Backend_consumptionmonitoring_ConsumptionCost <<record>> {
+      + Money value
+      + ConsumptionCost(Money value) : record
+      + ConsumptionCost(BigDecimal amount)
+    }
+    class "ConsumptionThreshold" as Backend_consumptionmonitoring_ConsumptionThreshold <<record>> {
+      + Watts watts
+      + ConsumptionThreshold(Watts watts) : record
+      + ConsumptionThreshold(BigDecimal value)
+      + isExceededBy(Watts reading) : boolean
+    }
+    class "KilowattHours" as Backend_consumptionmonitoring_KilowattHours <<record>> {
+      + BigDecimal value
+      + KilowattHours(BigDecimal value) : record
+    }
+    class "SampleSeconds" as Backend_consumptionmonitoring_SampleSeconds <<record>> {
+      + Integer value
+      + SampleSeconds(Integer value) : record
+    }
+    class "Watts" as Backend_consumptionmonitoring_Watts <<record>> {
+      + BigDecimal value
+      + Watts(BigDecimal value) : record
+    }
+  }
+}
+
+Backend_consumptionmonitoring_ConsumptionDeviceUsageStateRepository ..> Backend_consumptionmonitoring_ConsumptionDeviceUsageState
+Backend_consumptionmonitoring_ConsumptionReadingFactory ..> Backend_consumptionmonitoring_ConsumptionReading
+Backend_consumptionmonitoring_ConsumptionReadingFactory ..> Backend_consumptionmonitoring_ConsumptionReadingStatus
+Backend_consumptionmonitoring_ConsumptionReadingFactory ..> Backend_consumptionmonitoring_HighConsumptionSpecification
+Backend_consumptionmonitoring_ConsumptionReadingFactory ..> Backend_consumptionmonitoring_KilowattHours
+Backend_consumptionmonitoring_ConsumptionReadingFactory ..> Backend_consumptionmonitoring_SampleSeconds
+Backend_consumptionmonitoring_ConsumptionReadingFactory ..> Backend_consumptionmonitoring_Watts
+Backend_consumptionmonitoring_ConsumptionReadingFilterService ..> Backend_consumptionmonitoring_ConsumptionReading
+Backend_consumptionmonitoring_ConsumptionReadingRepository ..> Backend_consumptionmonitoring_ConsumptionReading
+Backend_consumptionmonitoring_ConsumptionRecommendationService ..> Backend_consumptionmonitoring_ConsumptionReading
+Backend_consumptionmonitoring_ConsumptionStatisticsService ..> Backend_consumptionmonitoring_ConsumptionReading
+Backend_consumptionmonitoring_HighConsumptionSpecification ..> Backend_consumptionmonitoring_ConsumptionThreshold
+Backend_consumptionmonitoring_HighConsumptionSpecification ..> Backend_consumptionmonitoring_Watts
+
+' Layer relationship completion: every declared type participates in this layer diagram.
+Backend_consumptionmonitoring_ConsumptionDeviceUsageStateRepository ..> Backend_consumptionmonitoring_CreateConsumptionReadingCommand
+Backend_consumptionmonitoring_ConsumptionDeviceUsageStateRepository ..> Backend_consumptionmonitoring_ExportConsumptionReadingsCommand
+Backend_consumptionmonitoring_ConsumptionDeviceUsageStateRepository ..> Backend_consumptionmonitoring_FilterConsumptionReadingsCommand
+Backend_consumptionmonitoring_ConsumptionDeviceUsageStateRepository ..> Backend_consumptionmonitoring_GetConsumptionStatisticsCommand
+Backend_consumptionmonitoring_ConsumptionDeviceUsageStateRepository ..> Backend_consumptionmonitoring_UpdateConsumptionSamplingSettingsCommand
+Backend_consumptionmonitoring_ConsumptionDeviceUsageStateRepository ..> Backend_consumptionmonitoring_ConsumptionThresholdExceededEvent
+Backend_consumptionmonitoring_ConsumptionDeviceUsageStateRepository ..> Backend_consumptionmonitoring_GetConsumptionDashboardSummaryQuery
+Backend_consumptionmonitoring_ConsumptionDeviceUsageStateRepository ..> Backend_consumptionmonitoring_GetConsumptionReadingsByUserQuery
+Backend_consumptionmonitoring_ConsumptionDeviceUsageStateRepository ..> Backend_consumptionmonitoring_GetConsumptionSamplingSettingsQuery
+Backend_consumptionmonitoring_ConsumptionDeviceUsageStateRepository ..> Backend_consumptionmonitoring_ConsumptionConsumptionSimulatorService
+Backend_consumptionmonitoring_ConsumptionDeviceUsageStateRepository ..> Backend_consumptionmonitoring_ConsumptionReadingPolicyService
+Backend_consumptionmonitoring_ConsumptionDeviceUsageStateRepository ..> Backend_consumptionmonitoring_ConsumptionUsageClassifierService
+Backend_consumptionmonitoring_ConsumptionDeviceUsageStateRepository ..> Backend_consumptionmonitoring_ConsumptionCost
+
+@enduml

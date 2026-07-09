@@ -1,0 +1,238 @@
+@startuml
+title LowCortisol Platform - Notification Backend Interfaces REST Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Notification / Interfaces REST" {
+  package "Interfaces / REST Assemblers" {
+    class "AlertResourceFromEntityAssembler" as Backend_notification_AlertResourceFromEntityAssembler <<Assembler>> {
+      + toResourceFromEntity(Alert alert) : AlertResource
+    }
+    class "AlertRuleProfileResourceFromEntityAssembler" as Backend_notification_AlertRuleProfileResourceFromEntityAssembler <<Assembler>> {
+      + toResourceFromEntity(AlertRuleProfile profile) : AlertRuleProfileResource
+    }
+    class "AlertRuleResourceFromEntityAssembler" as Backend_notification_AlertRuleResourceFromEntityAssembler <<Assembler>> {
+      + toResourceFromEntity(AlertRule rule) : AlertRuleResource
+    }
+    class "CreateAlertCommandFromResourceAssembler" as Backend_notification_CreateAlertCommandFromResourceAssembler <<Assembler>> {
+      + toCommandFromResource(CreateAlertResource resource, Long userId) : CreateAlertCommand
+    }
+    class "CreateAlertRuleCommandFromResourceAssembler" as Backend_notification_CreateAlertRuleCommandFromResourceAssembler <<Assembler>> {
+      + toCommandFromResource(CreateAlertRuleResource resource, Long userId) : CreateAlertRuleCommand
+    }
+    class "CreateAlertRuleProfileCommandFromResourceAssembler" as Backend_notification_CreateAlertRuleProfileCommandFromResourceAssembler <<Assembler>> {
+      + toCommandFromResource(CreateAlertRuleProfileResource resource, Long userId) : CreateAlertRuleProfileCommand
+    }
+    class "NotificationPreferenceResourceFromEntityAssembler" as Backend_notification_NotificationPreferenceResourceFromEntityAssembler <<Assembler>> {
+      + toResourceFromEntity(NotificationPreference preference) : NotificationPreferenceResource
+    }
+    class "UpdateNotificationPreferenceCommandFromResourceAssembler" as Backend_notification_UpdateNotificationPreferenceCommandFromResourceAssembler <<Assembler>> {
+      + toCommandFromResource(UpdateNotificationPreferenceResource resource, Long userId) : UpdateNotificationPreferenceCommand
+    }
+  }
+  package "Interfaces / REST Controllers" {
+    class "NotificationController" as Backend_notification_NotificationController <<REST Controller>> {
+      - commandService: NotificationCommandService
+      - queryService: NotificationQueryService
+      - currentUserProvider: CurrentUserProvider
+      + getAlerts() : List<AlertResource>
+      + createAlert(CreateAlertResource request) : AlertResource
+      + markAsRead(Long alertId) : AlertResource
+      + resolveAlert(Long alertId) : AlertResource
+      + deleteAlert(Long alertId) : void
+      + getRules() : List<AlertRuleResource>
+      + createRule(CreateAlertRuleResource request) : AlertRuleResource
+      + toggleRule(Long ruleId) : AlertRuleResource
+      + deleteRule(Long ruleId) : void
+      + getRuleProfiles() : List<AlertRuleProfileResource>
+      + createRuleProfile(CreateAlertRuleProfileResource request) : AlertRuleProfileResource
+      + activateRuleProfile(Long profileId) : AlertRuleProfileResource
+      + evaluateRules(EvaluateAlertRulesResource request) : RuleEvaluationResultResource
+      + getPreference() : NotificationPreferenceResource
+      + updatePreference(UpdateNotificationPreferenceResource request) : NotificationPreferenceResource
+    }
+  }
+  package "Interfaces / REST Resources" {
+    class "AlertResource" as Backend_notification_AlertResource <<record>> {
+      + Long id
+      + Long userId
+      + String title
+      + String message
+      + String level
+      + String sourceType
+      + String sourceId
+      + String sourceLabel
+      + String eventType
+      + String threadKey
+      + String evidence
+      + String explanation
+      + String recommendedAction
+      + Integer severityScore
+      + Integer repeatCount
+      + Boolean active
+      + Boolean resolved
+      + Boolean readStatus
+      + String firstDetectedAt
+      + String lastTriggeredAt
+      + String dismissedUntil
+      + String expiresAt
+      + Boolean expired
+      + Boolean silenced
+    }
+    class "AlertRuleProfileResource" as Backend_notification_AlertRuleProfileResource <<record>> {
+      + Long id
+      + Long userId
+      + String name
+      + String description
+      + String scopeType
+      + String scopeId
+      + String mode
+      + String sensitivity
+      + Boolean active
+      + from(AlertRuleProfile profile) : AlertRuleProfileResource
+    }
+    class "AlertRuleResource" as Backend_notification_AlertRuleResource <<record>> {
+      + Long id
+      + Long userId
+      + String name
+      + String metric
+      + String conditionType
+      + BigDecimal threshold
+      + String level
+      + String scopeType
+      + String scopeId
+      + String evaluatorType
+      + Integer weight
+      + String profileName
+      + Boolean enabled
+      + from(AlertRule rule) : AlertRuleResource
+    }
+    class "CreateAlertResource" as Backend_notification_CreateAlertResource <<record>> {
+      + String title
+      + String message
+      + String level
+      + String sourceType
+      + String sourceId
+      + String sourceLabel
+      + String eventType
+      + String threadKey
+      + String evidence
+      + String explanation
+      + String recommendedAction
+      + Integer severityScore
+      + String expiresAt
+    }
+    class "CreateAlertRuleProfileResource" as Backend_notification_CreateAlertRuleProfileResource <<record>> {
+      + String name
+      + String description
+      + String scopeType
+      + String scopeId
+      + String mode
+      + String sensitivity
+    }
+    class "CreateAlertRuleResource" as Backend_notification_CreateAlertRuleResource <<record>> {
+      + String name
+      + String metric
+      + String conditionType
+      + BigDecimal threshold
+      + String level
+      + String scopeType
+      + String scopeId
+      + String evaluatorType
+      + Integer weight
+      + String profileName
+    }
+    class "EvaluateAlertRulesResource" as Backend_notification_EvaluateAlertRulesResource <<record>> {
+      + String scopeType
+      + String scopeId
+      + BigDecimal observedValue
+    }
+    class "NotificationPreferenceResource" as Backend_notification_NotificationPreferenceResource <<record>> {
+      + Long id
+      + Long userId
+      + Boolean emailEnabled
+      + Boolean pushEnabled
+      + Boolean criticalOnly
+      + String minimumLevel
+      + String scopeType
+      + String scopeId
+      + Boolean inAppEnabled
+      + Boolean toastEnabled
+      + Boolean dashboardEnabled
+      + String allowedLevels
+      + String allowedSourceTypes
+      + Boolean quietHoursEnabled
+      + String quietHoursStart
+      + String quietHoursEnd
+      + Boolean criticalBreaksQuietHours
+      + Boolean groupSimilarAlerts
+      + Boolean remindersEnabled
+      + Integer cooldownMinutes
+      + Integer maxAlertsPerHour
+      + Boolean routineNightSilence
+      + Boolean goalDeadlineAlerts
+      + Boolean maintenanceDeviceAlerts
+    }
+    class "RuleEvaluationResultResource" as Backend_notification_RuleEvaluationResultResource <<record>> {
+      + Long userId
+      + String scopeType
+      + String scopeId
+      + String level
+      + Integer severityScore
+      + String evidence
+      + String explanation
+      + String recommendedAction
+      + String sourceType
+      + String sourceId
+      + String eventType
+      + String threadKey
+      + Integer activeEvaluatorCount
+      + Integer totalWeight
+      + from(RuleEvaluationResult result) : RuleEvaluationResultResource
+    }
+    class "UpdateNotificationPreferenceResource" as Backend_notification_UpdateNotificationPreferenceResource <<record>> {
+      + Boolean emailEnabled
+      + Boolean pushEnabled
+      + Boolean criticalOnly
+      + String minimumLevel
+      + String scopeType
+      + String scopeId
+      + Boolean inAppEnabled
+      + Boolean toastEnabled
+      + Boolean dashboardEnabled
+      + String allowedLevels
+      + String allowedSourceTypes
+      + Boolean quietHoursEnabled
+      + String quietHoursStart
+      + String quietHoursEnd
+      + Boolean criticalBreaksQuietHours
+      + Boolean groupSimilarAlerts
+      + Boolean remindersEnabled
+      + Integer cooldownMinutes
+      + Integer maxAlertsPerHour
+      + Boolean routineNightSilence
+      + Boolean goalDeadlineAlerts
+      + Boolean maintenanceDeviceAlerts
+      + Boolean systemRecommendations
+      + Boolean dailySummaryEnabled
+    }
+  }
+}
+
+Backend_notification_AlertResourceFromEntityAssembler ..> Backend_notification_AlertResource
+Backend_notification_AlertRuleProfileResourceFromEntityAssembler ..> Backend_notification_AlertRuleProfileResource
+Backend_notification_AlertRuleResourceFromEntityAssembler ..> Backend_notification_AlertRuleResource
+Backend_notification_CreateAlertCommandFromResourceAssembler ..> Backend_notification_CreateAlertResource
+Backend_notification_CreateAlertRuleCommandFromResourceAssembler ..> Backend_notification_CreateAlertRuleResource
+Backend_notification_CreateAlertRuleProfileCommandFromResourceAssembler ..> Backend_notification_CreateAlertRuleProfileResource
+Backend_notification_NotificationPreferenceResourceFromEntityAssembler ..> Backend_notification_NotificationPreferenceResource
+Backend_notification_UpdateNotificationPreferenceCommandFromResourceAssembler ..> Backend_notification_UpdateNotificationPreferenceResource
+Backend_notification_NotificationController ..> Backend_notification_EvaluateAlertRulesResource
+
+' Layer relationship completion: every declared type participates in this layer diagram.
+Backend_notification_NotificationController ..> Backend_notification_RuleEvaluationResultResource
+
+@enduml

@@ -1,0 +1,26 @@
+@startuml
+title LowCortisol Platform - Plan Backend Bounded Context Layers
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Plan Backend Bounded Context" {
+  class "Application" as Backend_plan_Application <<layer>>
+  class "Domain" as Backend_plan_Domain <<layer>>
+  class "Infrastructure" as Backend_plan_Infrastructure <<layer>>
+  class "Interfaces REST" as Backend_plan_Interfaces_REST <<layer>>
+}
+
+Backend_plan_Interfaces_REST ..> Backend_plan_Application : commands / queries
+Backend_plan_Application ..> Backend_plan_Domain : model and policies
+Backend_plan_Application ..> Backend_plan_Infrastructure : repository ports / adapters
+Backend_plan_Infrastructure ..> Backend_plan_Domain : persistence mapping
+Backend_plan_Interfaces_REST ..> Backend_plan_Domain : resources from aggregates
+
+note bottom of Backend_plan_Application
+Detailed class diagrams for each layer are available in docs/diagrams/class/backend/layers/plan.
+end note
+
+@enduml

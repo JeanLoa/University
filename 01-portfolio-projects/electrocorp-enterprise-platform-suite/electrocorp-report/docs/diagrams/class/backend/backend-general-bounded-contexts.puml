@@ -1,0 +1,49 @@
+@startuml
+title ElectroCorp Platform - Backend Bounded Contexts
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+class "IAM" as BackendIAM <<Bounded Context>> {}
+class "Billing" as BackendBilling <<Bounded Context>> {}
+class "Workplace" as BackendWorkplace <<Bounded Context>> {}
+class "Device Control" as BackendDeviceControl <<Bounded Context>> {}
+class "Energy Monitoring" as BackendEnergyMonitoring <<Bounded Context>> {}
+class "Notifications" as BackendNotifications <<Bounded Context>> {}
+class "Reporting" as BackendReporting <<Bounded Context>> {}
+class "Service Management" as BackendServiceManagement <<Bounded Context>> {}
+class "Shared Kernel" as BackendSharedKernel <<Bounded Context>> {}
+class "Integration Events" as BackendIntegrationEvents <<Pattern>> {}
+
+BackendIAM ..> BackendBilling : user account / subscription owner
+BackendIAM ..> BackendWorkplace : user owns locations
+BackendWorkplace ..> BackendDeviceControl : room-device assignments
+BackendDeviceControl ..> BackendEnergyMonitoring : device readings source
+BackendEnergyMonitoring ..> BackendNotifications : reading thresholds
+BackendDeviceControl ..> BackendNotifications : device state alerts
+BackendIAM ..> BackendIntegrationEvents : UserRegistered
+BackendBilling ..> BackendIntegrationEvents : Subscription / Payment
+BackendWorkplace ..> BackendIntegrationEvents : DeviceAssignedToRoom
+BackendDeviceControl ..> BackendIntegrationEvents : DeviceCreated / ModeActivated
+BackendEnergyMonitoring ..> BackendIntegrationEvents : ThresholdExceeded
+BackendServiceManagement ..> BackendIntegrationEvents : TicketsCreated
+BackendIntegrationEvents ..> BackendNotifications : creates alerts
+BackendIntegrationEvents ..> BackendReporting : records activity
+BackendEnergyMonitoring ..> BackendReporting : consumption metrics
+BackendWorkplace ..> BackendReporting : site and room summaries
+BackendDeviceControl ..> BackendReporting : device and routine summaries
+BackendDeviceControl ..> BackendServiceManagement : device incidents
+BackendWorkplace ..> BackendServiceManagement : location maintenance
+BackendIAM ..> BackendServiceManagement : requester identity
+BackendIAM ..> BackendSharedKernel : shared value objects
+BackendBilling ..> BackendSharedKernel : shared value objects
+BackendWorkplace ..> BackendSharedKernel : shared value objects
+BackendDeviceControl ..> BackendSharedKernel : shared value objects
+BackendEnergyMonitoring ..> BackendSharedKernel : shared value objects
+BackendNotifications ..> BackendSharedKernel : shared value objects
+BackendReporting ..> BackendSharedKernel : shared value objects
+BackendServiceManagement ..> BackendSharedKernel : shared value objects
+
+@enduml

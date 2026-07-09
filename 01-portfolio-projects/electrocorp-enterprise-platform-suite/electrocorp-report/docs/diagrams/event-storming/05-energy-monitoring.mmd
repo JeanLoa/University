@@ -1,0 +1,35 @@
+flowchart LR
+  classDef actor fill:#ffe066,stroke:#d4a100,color:#3d2f00;
+  classDef command fill:#6db3f2,stroke:#1c6fb8,color:#08243d;
+  classDef aggregate fill:#fff2ae,stroke:#c9a900,color:#4a3b00;
+  classDef event fill:#ffb84d,stroke:#d47500,color:#4a2600;
+  classDef integration fill:#ff8c42,stroke:#c0501a,color:#3d1500;
+  classDef policy fill:#d8b4fe,stroke:#8b5cf6,color:#3b0764;
+  classDef readmodel fill:#b5e7a0,stroke:#4f9a2f,color:#1f3d0f;
+  classDef external fill:#ffb6c1,stroke:#d63b6a,color:#4a0a1c;
+
+  USER([🎬 User]):::actor
+  DEV_IOT[🌐 Smart Plug / IoT Device]:::external
+
+  C_READING[⚡ CreateEnergyReading]:::command
+  C_FILTER[⚡ FilterEnergyReadings]:::command
+  C_STATS[⚡ GetEnergyStatistics]:::command
+  C_EXPORT[⚡ ExportEnergyReadings]:::command
+  C_SAMPLING[⚡ UpdateEnergySamplingSettings]:::command
+
+  A_READING[📦 EnergyReading]:::aggregate
+  POL_THRESHOLD[🟣 publishThresholdExceededIfNeeded: consumption &gt; threshold]:::policy
+  E_THRESHOLD[🟠 EnergyThresholdExceeded]:::event
+  IE_THRESHOLD[🔗 EnergyThresholdExceededIntegrationEvent]:::integration
+  RM_LIVE[🟢 Real-time consumption - Watts]:::readmodel
+  RM_HIST[🟢 History and statistics]:::readmodel
+
+  DEV_IOT -->|telemetry watts| C_READING --> A_READING
+  A_READING --> RM_LIVE
+  A_READING --> POL_THRESHOLD -->|exceeds limit| E_THRESHOLD --> IE_THRESHOLD
+  USER --> C_FILTER --> RM_HIST
+  USER --> C_STATS --> RM_HIST
+  USER --> C_EXPORT --> RM_HIST
+  USER --> C_SAMPLING --> A_READING
+
+  IE_THRESHOLD --> OUT([🔗 to Notifications + Reporting]):::integration

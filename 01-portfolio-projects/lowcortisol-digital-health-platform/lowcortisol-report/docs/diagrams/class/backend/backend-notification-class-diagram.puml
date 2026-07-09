@@ -1,0 +1,26 @@
+@startuml
+title LowCortisol Platform - Notification Backend Bounded Context Layers
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Notification Backend Bounded Context" {
+  class "Application" as Backend_notification_Application <<layer>>
+  class "Domain" as Backend_notification_Domain <<layer>>
+  class "Infrastructure" as Backend_notification_Infrastructure <<layer>>
+  class "Interfaces REST" as Backend_notification_Interfaces_REST <<layer>>
+}
+
+Backend_notification_Interfaces_REST ..> Backend_notification_Application : commands / queries
+Backend_notification_Application ..> Backend_notification_Domain : model and policies
+Backend_notification_Application ..> Backend_notification_Infrastructure : repository ports / adapters
+Backend_notification_Infrastructure ..> Backend_notification_Domain : persistence mapping
+Backend_notification_Interfaces_REST ..> Backend_notification_Domain : resources from aggregates
+
+note bottom of Backend_notification_Application
+Detailed class diagrams for each layer are available in docs/diagrams/class/backend/layers/notification.
+end note
+
+@enduml

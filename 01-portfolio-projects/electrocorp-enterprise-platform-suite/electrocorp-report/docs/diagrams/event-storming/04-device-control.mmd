@@ -1,0 +1,50 @@
+flowchart LR
+  classDef actor fill:#ffe066,stroke:#d4a100,color:#3d2f00;
+  classDef command fill:#6db3f2,stroke:#1c6fb8,color:#08243d;
+  classDef aggregate fill:#fff2ae,stroke:#c9a900,color:#4a3b00;
+  classDef event fill:#ffb84d,stroke:#d47500,color:#4a2600;
+  classDef integration fill:#ff8c42,stroke:#c0501a,color:#3d1500;
+  classDef readmodel fill:#b5e7a0,stroke:#4f9a2f,color:#1f3d0f;
+  classDef external fill:#ffb6c1,stroke:#d63b6a,color:#4a0a1c;
+
+  USER([🎬 User]):::actor
+  DEV_IOT[🌐 Smart Plug / IoT Device]:::external
+
+  C_PAIR[⚡ PairDevice]:::command
+  C_CDEV[⚡ CreateDevice]:::command
+  C_UDEV[⚡ UpdateDevice]:::command
+  C_TOGGLE[⚡ ToggleDevice / UpdateStatus]:::command
+  C_DDEV[⚡ DeleteDevice]:::command
+  C_CGROUP[⚡ CreateDeviceGroup]:::command
+  C_GACTION[⚡ ExecuteGroupAction]:::command
+  C_CROUTINE[⚡ CreateRoutine]:::command
+  C_EROUTINE[⚡ ExecuteRoutine / ToggleRoutine]:::command
+  C_COPMODE[⚡ CreateOperationMode]:::command
+  C_AOPMODE[⚡ ActivateOperationMode]:::command
+
+  A_DEV[📦 Device]:::aggregate
+  A_DGROUP[📦 DeviceGroup]:::aggregate
+  A_ROUTINE[📦 Routine]:::aggregate
+  A_OPMODE[📦 OperationMode]:::aggregate
+
+  E_DEV_CREATED[🟠 DeviceCreated]:::event
+  E_OPMODE_ACT[🟠 OperationModeActivated]:::event
+  IE_DEV_CREATED[🔗 DeviceCreatedIntegrationEvent]:::integration
+  IE_OPMODE_ACT[🔗 OperationModeActivatedIntegrationEvent]:::integration
+  RM_DASH[🟢 Devices dashboard ON/OFF]:::readmodel
+
+  USER --> C_PAIR --> A_DEV
+  USER --> C_CDEV --> A_DEV --> E_DEV_CREATED --> IE_DEV_CREATED
+  USER --> C_UDEV --> A_DEV
+  USER --> C_TOGGLE --> A_DEV --> RM_DASH
+  A_DEV -->|physical command| DEV_IOT
+  USER --> C_DDEV --> A_DEV
+  USER --> C_CGROUP --> A_DGROUP
+  USER --> C_GACTION --> A_DGROUP -->|batch action| A_DEV
+  USER --> C_CROUTINE --> A_ROUTINE
+  USER --> C_EROUTINE --> A_ROUTINE -->|triggers| A_DEV
+  USER --> C_COPMODE --> A_OPMODE
+  USER --> C_AOPMODE --> A_OPMODE --> E_OPMODE_ACT --> IE_OPMODE_ACT
+
+  IE_DEV_CREATED --> OUT([🔗 to Notifications + Reporting]):::integration
+  IE_OPMODE_ACT --> OUT

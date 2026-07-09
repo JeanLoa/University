@@ -1,0 +1,116 @@
+@startuml
+title ElectroCorp Web App - Notifications Frontend Application Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Notifications / Application" {
+  package "Application / Commands" {
+    interface "CreateAlertCommand" as Frontend_notifications_CreateAlertCommand <<interface>> {
+      + title: string
+      + message: string
+      + level: AlertLevel
+      + sourceType?: AlertSourceType
+      + sourceId?: string | null
+      + sourceLabel?: string | null
+      + eventType?: AlertEventType
+      + threadKey?: string
+      + evidence?: string | null
+      + explanation?: string | null
+      + recommendedAction?: string | null
+      + severityScore?: number
+      + expiresAt?: string | null
+    }
+    interface "CreateAlertRuleCommand" as Frontend_notifications_CreateAlertRuleCommand <<interface>> {
+      + name: string
+      + metric: AlertRuleMetric
+      + condition: AlertRuleCondition
+      + threshold: number
+      + level: AlertLevel
+      + scopeType?: RuleScopeType
+      + scopeId?: string | null
+      + evaluatorType?: RuleEvaluatorType
+      + weight?: number
+      + profileName?: string
+    }
+    interface "MarkAlertAsReadCommand" as Frontend_notifications_MarkAlertAsReadCommand <<interface>> {
+      + alertId: number
+    }
+    interface "UpdateAlertRuleStatusCommand" as Frontend_notifications_UpdateAlertRuleStatusCommand <<interface>> {
+      + alertRuleId: number
+      + enabled: boolean
+    }
+    interface "UpdateNotificationPreferenceCommand" as Frontend_notifications_UpdateNotificationPreferenceCommand <<interface>> {
+      + emailEnabled: boolean
+      + pushEnabled: boolean
+      + inAppEnabled?: boolean
+      + toastEnabled?: boolean
+      + dashboardEnabled?: boolean
+      + criticalOnly: boolean
+      + minimumLevel: AlertLevel
+      + scopeType?: NotificationPreferenceScope
+      + scopeId?: string | null
+      + allowedLevels?: string
+      + allowedSourceTypes?: string
+      + quietHoursEnabled?: boolean
+      + quietHoursStart?: string
+      + quietHoursEnd?: string
+      + criticalBreaksQuietHours?: boolean
+      + groupSimilarAlerts?: boolean
+      + remindersEnabled?: boolean
+      + cooldownMinutes?: number
+    }
+  }
+  package "Application / Facades and Services" {
+    class "NotificationsFacade" as Frontend_notifications_NotificationsFacade <<Facade>> {
+      - alertAssembler
+      - alertRuleAssembler
+      - notificationPreferenceAssembler
+      + new: NotificationPreferenceAssembler()
+      + get: alerts()
+      + get: alertRules()
+      + get: alertRuleProfiles()
+      + get: ruleEvaluationResult()
+      + get: notificationPreference()
+      + get: notificationClassificationPolicy()
+      + get: loading()
+      + get: error()
+      + get: unreadAlerts()
+      + get: criticalAlerts()
+      + get: enabledAlertRules()
+      + get: sortedAlerts()
+      + constructor: (
+      - alertsApi: AlertsApiService
+    }
+  }
+  package "Application / Stores" {
+    class "NotificationsStore" as Frontend_notifications_NotificationsStore <<Store>> {
+      - alertsSignal
+      - alertRulesSignal
+      - alertRuleProfilesSignal
+      - ruleEvaluationResultSignal
+      - notificationPreferenceSignal
+      + signal: <NotificationPreference | null>(null)
+      - notificationClassificationPolicySignal
+      + signal: <NotificationClassificationPolicy>(
+      - loadingSignal
+      - errorSignal
+      + constructor(alertPriorityService: AlertPriorityService)
+      + setAlerts(value: Alert[]) : void
+      + prependAlert(value: Alert) : void
+      + updateAlert(value: Alert) : void
+    }
+  }
+}
+
+Frontend_notifications_NotificationsFacade ..> Frontend_notifications_CreateAlertCommand
+Frontend_notifications_NotificationsFacade ..> Frontend_notifications_CreateAlertRuleCommand
+Frontend_notifications_NotificationsFacade ..> Frontend_notifications_MarkAlertAsReadCommand
+Frontend_notifications_NotificationsFacade ..> Frontend_notifications_NotificationsStore
+Frontend_notifications_NotificationsFacade ..> Frontend_notifications_UpdateAlertRuleStatusCommand
+Frontend_notifications_NotificationsFacade ..> Frontend_notifications_UpdateNotificationPreferenceCommand
+
+
+@enduml

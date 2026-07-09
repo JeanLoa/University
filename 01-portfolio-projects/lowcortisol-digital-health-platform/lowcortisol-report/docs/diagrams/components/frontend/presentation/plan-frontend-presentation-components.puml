@@ -1,0 +1,64 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+skinparam wrapWidth 220
+skinparam maxMessageSize 130
+skinparam nodesep 70
+skinparam ranksep 80
+skinparam ArrowColor #8A8A8A
+skinparam ArrowFontColor #666666
+skinparam ArrowFontStyle bold
+skinparam ArrowThickness 1
+skinparam rectangleRoundCorner 0
+skinparam rectangleBorderThickness 0
+skinparam rectangleFontColor #FFFFFF
+skinparam rectangleFontStyle plain
+skinparam rectangle {
+  BorderThickness 0
+  MinimumWidth 190
+  Padding 12
+}
+skinparam rectangle<<BoundedContext>> {
+  BackgroundColor transparent
+  BorderColor #4A4A4A
+  BorderThickness 2
+  BorderStyle dashed
+  FontColor #333333
+  FontStyle bold
+  MinimumWidth 760
+  Padding 18
+}
+hide stereotype
+left to right direction
+
+title LowCortisol - Plan Frontend Presentation Components Diagram
+
+rectangle "<b>Plan Presentation Layer</b>\n<i>[Vue Presentation Surface]</i>" <<BoundedContext>> {
+  rectangle "<b>Plans Page</b>\n<i>[Page / Routed View]</i>\n\nShows active subscription, capacity, plan catalog, payments and service requests." as PlansPage #58A9E8
+  rectangle "<b>Plan Card</b>\n<i>[UI Component]</i>\n\nDisplays plan name, price, limits and benefits." as PlanCard #58A9E8
+  rectangle "<b>Checkout Form</b>\n<i>[UI Component]</i>\n\nCollects payment data before subscribing or changing plan." as CheckoutForm #58A9E8
+  rectangle "<b>Capacity Summary</b>\n<i>[UI Component]</i>\n\nShows used sites and devices against the active plan." as CapacitySummary #58A9E8
+  rectangle "<b>Payments Summary</b>\n<i>[UI Component]</i>\n\nShows payment history and total paid." as PaymentsSummary #58A9E8
+  rectangle "<b>Service Requests Summary</b>\n<i>[UI Component]</i>\n\nShows subscription-related requests." as ServiceRequestsSummary #58A9E8
+  rectangle "<b>Plan Store</b>\n<i>[Application Store]</i>\n\nExposes plan state and actions to the page." as Store #3498DB
+}
+
+rectangle "<b>Shared UI Components</b>\n<i>[Shared]</i>\n\nCards, buttons, badges, modals, loading and empty states." as Shared #7F8C8D
+rectangle "<b>Plan Routes</b>\n<i>[Vue Router]</i>\n\nActivates the /plans route." as Routes #7F8C8D
+
+Routes --> PlansPage : Activates
+PlansPage --> Store : Reads state / sends actions
+PlansPage --> PlanCard : Composes
+PlansPage --> CheckoutForm : Opens modal
+PlansPage --> CapacitySummary : Composes
+PlansPage --> PaymentsSummary : Composes
+PlansPage --> ServiceRequestsSummary : Composes
+PlanCard ..> Shared : Uses
+CheckoutForm ..> Shared : Uses
+CapacitySummary ..> Shared : Uses
+PaymentsSummary ..> Shared : Uses
+ServiceRequestsSummary ..> Shared : Uses
+
+@enduml

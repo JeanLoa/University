@@ -1,0 +1,26 @@
+@startuml
+title ElectroCorp Web App - Reporting Frontend Bounded Context Layers
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Reporting Frontend Bounded Context" {
+  class "Domain" as Frontend_reporting_Domain <<layer>>
+  class "Application" as Frontend_reporting_Application <<layer>>
+  class "Infrastructure" as Frontend_reporting_Infrastructure <<layer>>
+  class "Presentation" as Frontend_reporting_Presentation <<layer>>
+}
+
+Frontend_reporting_Presentation ..> Frontend_reporting_Application : user actions / state
+Frontend_reporting_Application ..> Frontend_reporting_Domain : models and rules
+Frontend_reporting_Application ..> Frontend_reporting_Infrastructure : API services / adapters
+Frontend_reporting_Infrastructure ..> Frontend_reporting_Domain : resources and mappers
+Frontend_reporting_Presentation ..> Frontend_reporting_Domain : view models
+
+note bottom of Frontend_reporting_Application
+Detailed class diagrams for each layer are available in docs/diagrams/class/frontend/layers/reporting.
+end note
+
+@enduml

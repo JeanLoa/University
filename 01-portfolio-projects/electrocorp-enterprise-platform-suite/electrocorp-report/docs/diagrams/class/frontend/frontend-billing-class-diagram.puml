@@ -1,0 +1,26 @@
+@startuml
+title ElectroCorp Web App - Billing Frontend Bounded Context Layers
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Billing Frontend Bounded Context" {
+  class "Domain" as Frontend_billing_Domain <<layer>>
+  class "Application" as Frontend_billing_Application <<layer>>
+  class "Infrastructure" as Frontend_billing_Infrastructure <<layer>>
+  class "Presentation" as Frontend_billing_Presentation <<layer>>
+}
+
+Frontend_billing_Presentation ..> Frontend_billing_Application : user actions / state
+Frontend_billing_Application ..> Frontend_billing_Domain : models and rules
+Frontend_billing_Application ..> Frontend_billing_Infrastructure : API services / adapters
+Frontend_billing_Infrastructure ..> Frontend_billing_Domain : resources and mappers
+Frontend_billing_Presentation ..> Frontend_billing_Domain : view models
+
+note bottom of Frontend_billing_Application
+Detailed class diagrams for each layer are available in docs/diagrams/class/frontend/layers/billing.
+end note
+
+@enduml

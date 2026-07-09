@@ -1,0 +1,107 @@
+@startuml
+title LowCortisol Platform - IAM Backend Interfaces REST Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "IAM / Interfaces REST" {
+  package "Interfaces / REST Assemblers" {
+    class "AuthResourceFromResultAssembler" as Backend_iam_AuthResourceFromResultAssembler <<Assembler>> {
+      - AuthResourceFromResultAssembler()
+      + toResourceFromResult(AuthenticationResult result) : AuthResource
+    }
+    class "RecoverPasswordCommandFromResourceAssembler" as Backend_iam_RecoverPasswordCommandFromResourceAssembler <<Assembler>> {
+      - RecoverPasswordCommandFromResourceAssembler()
+      + toCommandFromResource(RecoverPasswordResource resource) : RecoverPasswordCommand
+    }
+    class "SignInCommandFromResourceAssembler" as Backend_iam_SignInCommandFromResourceAssembler <<Assembler>> {
+      - SignInCommandFromResourceAssembler()
+      + toCommandFromResource(SignInResource resource) : SignInCommand
+    }
+    class "SignUpCommandFromResourceAssembler" as Backend_iam_SignUpCommandFromResourceAssembler <<Assembler>> {
+      - SignUpCommandFromResourceAssembler()
+      + toCommandFromResource(SignUpResource resource) : SignUpCommand
+    }
+    class "UpdateProfileCommandFromResourceAssembler" as Backend_iam_UpdateProfileCommandFromResourceAssembler <<Assembler>> {
+      - UpdateProfileCommandFromResourceAssembler()
+      + toCommandFromResource(UpdateProfileResource resource) : UpdateProfileCommand
+    }
+    class "UserResourceFromEntityAssembler" as Backend_iam_UserResourceFromEntityAssembler <<Assembler>> {
+      - UserResourceFromEntityAssembler()
+      + toResourceFromEntity(User entity) : UserResource
+    }
+  }
+  package "Interfaces / REST Controllers" {
+    class "AuthController" as Backend_iam_AuthController <<REST Controller>> {
+      - authApplicationService: AuthApplicationService
+      - currentUserProvider: CurrentUserProvider
+      + signUp(SignUpResource request) : AuthResource
+      + signIn(SignInResource request) : AuthResource
+      + signOut() : void
+      + recoverPassword(RecoverPasswordResource request) : void
+      + me() : UserResource
+    }
+    class "UserController" as Backend_iam_UserController <<REST Controller>> {
+      - userApplicationService: UserApplicationService
+      - currentUserProvider: CurrentUserProvider
+      + getCurrentUserProfile() : UserResource
+      + updateCurrentUserProfile(UpdateProfileResource request) : UserResource
+      + deleteCurrentUserAccount() : void
+      + getProfile(Long userId) : UserResource
+      + updateProfile(Long userId, UpdateProfileResource request) : UserResource
+      + deleteAccount(Long userId) : void
+    }
+  }
+  package "Interfaces / REST Resources" {
+    class "AuthResource" as Backend_iam_AuthResource <<record>> {
+      + UserResource user
+      + String token
+    }
+    class "RecoverPasswordResource" as Backend_iam_RecoverPasswordResource <<record>> {
+      + String email
+    }
+    class "SignInResource" as Backend_iam_SignInResource <<record>> {
+      + String email
+      + String password
+    }
+    class "SignUpResource" as Backend_iam_SignUpResource <<record>> {
+      + String fullName
+      + String email
+      + (min = 8
+    }
+    class "UpdateProfileResource" as Backend_iam_UpdateProfileResource <<record>> {
+      + String fullName
+      + String email
+    }
+    class "UserResource" as Backend_iam_UserResource <<record>> {
+      + Long id
+      + String fullName
+      + String email
+      + Long accessProfileId
+      + String accessProfileName
+      + String status
+      + from(User user) : UserResource
+    }
+  }
+}
+
+Backend_iam_AuthController ..> Backend_iam_AuthResourceFromResultAssembler
+Backend_iam_AuthController ..> Backend_iam_RecoverPasswordCommandFromResourceAssembler
+Backend_iam_AuthController ..> Backend_iam_SignInCommandFromResourceAssembler
+Backend_iam_AuthController ..> Backend_iam_SignUpCommandFromResourceAssembler
+Backend_iam_AuthController ..> Backend_iam_UserResourceFromEntityAssembler
+Backend_iam_AuthResourceFromResultAssembler ..> Backend_iam_AuthResource
+Backend_iam_RecoverPasswordCommandFromResourceAssembler ..> Backend_iam_RecoverPasswordResource
+Backend_iam_SignInCommandFromResourceAssembler ..> Backend_iam_SignInResource
+Backend_iam_SignUpCommandFromResourceAssembler ..> Backend_iam_SignUpResource
+Backend_iam_UpdateProfileCommandFromResourceAssembler ..> Backend_iam_UpdateProfileResource
+Backend_iam_UserController ..> Backend_iam_UpdateProfileCommandFromResourceAssembler
+Backend_iam_UserController ..> Backend_iam_UpdateProfileResource
+Backend_iam_UserController ..> Backend_iam_UserResource
+Backend_iam_UserController ..> Backend_iam_UserResourceFromEntityAssembler
+Backend_iam_UserResourceFromEntityAssembler ..> Backend_iam_UserResource
+
+
+@enduml

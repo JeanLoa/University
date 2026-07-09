@@ -1,0 +1,40 @@
+flowchart LR
+  classDef actor fill:#ffe066,stroke:#d4a100,color:#3d2f00;
+  classDef command fill:#6db3f2,stroke:#1c6fb8,color:#08243d;
+  classDef aggregate fill:#fff2ae,stroke:#c9a900,color:#4a3b00;
+  classDef event fill:#ffb84d,stroke:#d47500,color:#4a2600;
+  classDef integration fill:#ff8c42,stroke:#c0501a,color:#3d1500;
+  classDef policy fill:#d8b4fe,stroke:#8b5cf6,color:#3b0764;
+  classDef readmodel fill:#b5e7a0,stroke:#4f9a2f,color:#1f3d0f;
+  classDef external fill:#ffb6c1,stroke:#d63b6a,color:#4a0a1c;
+
+  USER([🎬 User]):::actor
+  EXT_PAY[🌐 Payment Gateway]:::external
+
+  C_CHECKOUT[⚡ CheckoutSubscription]:::command
+  C_SUBSCRIBE[⚡ Subscribe]:::command
+  C_PAYMENT[⚡ ProcessPayment]:::command
+  C_CANCEL[⚡ CancelSubscription]:::command
+
+  POL_VALIDATE[🟣 Validate payment details]:::policy
+  A_PLAN[📦 Plan]:::aggregate
+  A_SUB[📦 Subscription]:::aggregate
+  A_PAY[📦 Payment]:::aggregate
+  A_INV[📦 Invoice]:::aggregate
+
+  E_SUB_ACT[🟠 SubscriptionActivated]:::event
+  E_PAY_REG[🟠 PaymentRegistered]:::event
+  IE_SUB_ACT[🔗 SubscriptionActivatedIntegrationEvent]:::integration
+  IE_PAY_REG[🔗 PaymentRegisteredIntegrationEvent]:::integration
+  RM_HIST[🟢 Payments and invoices history]:::readmodel
+
+  USER --> C_CHECKOUT --> POL_VALIDATE -->|charge| EXT_PAY
+  EXT_PAY -->|approved| C_SUBSCRIBE --> A_SUB
+  A_PLAN -.plan capabilities.-> A_SUB
+  C_CHECKOUT --> C_PAYMENT --> A_PAY --> A_INV --> RM_HIST
+  A_SUB --> E_SUB_ACT --> IE_SUB_ACT
+  A_PAY --> E_PAY_REG --> IE_PAY_REG
+  USER --> C_CANCEL --> A_SUB
+
+  IE_SUB_ACT --> OUT([🔗 to Notifications + Reporting]):::integration
+  IE_PAY_REG --> OUT

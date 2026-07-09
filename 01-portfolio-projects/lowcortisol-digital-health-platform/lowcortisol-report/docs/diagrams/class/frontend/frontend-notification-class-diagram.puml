@@ -1,0 +1,26 @@
+@startuml
+title LowCortisol WebApp - Notification Frontend Bounded Context Layers
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Notification Frontend Bounded Context" {
+  class "Domain" as Frontend_notification_Domain <<layer>>
+  class "Application" as Frontend_notification_Application <<layer>>
+  class "Infrastructure" as Frontend_notification_Infrastructure <<layer>>
+  class "Presentation" as Frontend_notification_Presentation <<layer>>
+}
+
+Frontend_notification_Presentation ..> Frontend_notification_Application : user actions / state
+Frontend_notification_Application ..> Frontend_notification_Domain : models and rules
+Frontend_notification_Application ..> Frontend_notification_Infrastructure : API services / adapters
+Frontend_notification_Infrastructure ..> Frontend_notification_Domain : resources and mappers
+Frontend_notification_Presentation ..> Frontend_notification_Domain : view models
+
+note bottom of Frontend_notification_Application
+Detailed class diagrams for each layer are available in docs/diagrams/class/frontend/layers/notification.
+end note
+
+@enduml

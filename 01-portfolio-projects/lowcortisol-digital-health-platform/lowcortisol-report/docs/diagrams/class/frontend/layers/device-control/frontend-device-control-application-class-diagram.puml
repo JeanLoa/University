@@ -1,0 +1,131 @@
+@startuml
+title LowCortisol WebApp - Device Control Frontend Application Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Device Control / Application" {
+  package "Application / Commands" {
+    interface "CreateDeviceCommand" as Frontend_device_control_CreateDeviceCommand <<interface>> {
+      + name: string
+      + room?: string | null
+      + type: DeviceType
+      + powerWatts: number
+    }
+    interface "CreateDeviceGroupCommand" as Frontend_device_control_CreateDeviceGroupCommand <<interface>> {
+      + name: string
+      + description: string
+      + deviceIds: number[]
+    }
+    interface "CreateOperationModeCommand" as Frontend_device_control_CreateOperationModeCommand <<interface>> {
+      + locationId: number
+      + name: string
+      + description: string
+      + roomIds: number[]
+      + groupIds: number[]
+      + deviceIds: number[]
+      + turnOnDeviceIds: number[]
+      + turnOffDeviceIds: number[]
+      + keepOnDeviceIds: number[]
+      + routineIds?: number[]
+      + routinesToEnableIds?: number[]
+      + routinesToDisableIds?: number[]
+      + goalIds: number[]
+      + internalRoutines: OperationModeRoutine[]
+      + allDay: boolean
+      + startsAt: string
+      + endsAt: string
+      + ruleProfileId: number | null
+    }
+    interface "CreateRoutineCommand" as Frontend_device_control_CreateRoutineCommand <<interface>> {
+      + name: string
+      + action: RoutineAction
+      + time: string
+      + targetType: RoutineTargetType
+      + targetId: number
+      + deviceId?: number | null
+      + groupId?: number | null
+      + repeatType?: RoutineRepeatType
+      + daysOfWeek?: string | null
+      + intervalDays?: number | null
+      + startsOn?: string | null
+    }
+    interface "ExecuteGroupActionCommand" as Frontend_device_control_ExecuteGroupActionCommand <<interface>> {
+      + groupId: number
+      + status: DeviceStatus
+    }
+    interface "UpdateDeviceGroupCommand" as Frontend_device_control_UpdateDeviceGroupCommand <<interface>> {
+      + groupId: number
+      + name: string
+      + description: string
+      + deviceIds: number[]
+    }
+    interface "UpdateDeviceStatusCommand" as Frontend_device_control_UpdateDeviceStatusCommand <<interface>> {
+      + deviceId: number
+      + status: DeviceStatus
+    }
+    interface "UpdateRoutineStatusCommand" as Frontend_device_control_UpdateRoutineStatusCommand <<interface>> {
+      + routineId: number
+      + enabled: boolean
+    }
+  }
+  package "Application / Facades and Services" {
+    class "DeviceControlFacade" as Frontend_device_control_DeviceControlFacade <<Facade>> {
+      - deviceAssembler
+      - routineAssembler
+      - deviceGroupAssembler
+      - operationModeAssembler
+      + get: devices()
+      + get: routines()
+      + get: deviceGroups()
+      + get: operationModes()
+      + get: loading()
+      + get: error()
+      + get: activeDevices()
+      + get: totalCurrentWatts()
+      + get: enabledRoutines()
+      + constructor: (
+      - devicesApi: DevicesApiService
+      - routinesApi: RoutinesApiService
+      - deviceGroupsApi: DeviceGroupsApiService
+      - operationModesApi: OperationModesApiService
+    }
+  }
+  package "Application / Stores" {
+    class "DeviceControlStore" as Frontend_device_control_DeviceControlStore <<Store>> {
+      - devicesSignal
+      - routinesSignal
+      - deviceGroupsSignal
+      - operationModesSignal
+      - loadingSignal
+      - errorSignal
+      + setDevices(value: Device[]) : void
+      + prependDevice(value: Device) : void
+      + updateDevice(value: Device) : void
+      + removeDevice(deviceId: number) : void
+      + setRoutines(value: Routine[]) : void
+      + prependRoutine(value: Routine) : void
+      + updateRoutine(value: Routine) : void
+      + removeRoutine(routineId: number) : void
+      + setDeviceGroups(value: DeviceGroup[]) : void
+      + prependDeviceGroup(value: DeviceGroup) : void
+      + updateDeviceGroup(value: DeviceGroup) : void
+      + removeDeviceGroup(groupId: number) : void
+    }
+  }
+}
+
+Frontend_device_control_DeviceControlFacade ..> Frontend_device_control_CreateDeviceCommand
+Frontend_device_control_DeviceControlFacade ..> Frontend_device_control_CreateDeviceGroupCommand
+Frontend_device_control_DeviceControlFacade ..> Frontend_device_control_CreateOperationModeCommand
+Frontend_device_control_DeviceControlFacade ..> Frontend_device_control_CreateRoutineCommand
+Frontend_device_control_DeviceControlFacade ..> Frontend_device_control_DeviceControlStore
+Frontend_device_control_DeviceControlFacade ..> Frontend_device_control_ExecuteGroupActionCommand
+Frontend_device_control_DeviceControlFacade ..> Frontend_device_control_UpdateDeviceGroupCommand
+Frontend_device_control_DeviceControlFacade ..> Frontend_device_control_UpdateDeviceStatusCommand
+Frontend_device_control_DeviceControlFacade ..> Frontend_device_control_UpdateRoutineStatusCommand
+
+
+@enduml

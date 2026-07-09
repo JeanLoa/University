@@ -1,0 +1,94 @@
+@startuml
+title LowCortisol Platform - PostgreSQL Database General Overview
+left to right direction
+hide circle
+skinparam linetype ortho
+skinparam shadowing false
+skinparam packageStyle rectangle
+skinparam nodesep 95
+skinparam ranksep 95
+skinparam entity {
+  BackgroundColor #F8FBFF
+  BorderColor #64748B
+}
+
+' Bounded contexts are intentionally compact: the header is only the context name,
+' and the tables are listed as attributes to keep the overview readable.
+entity "IAM" as db_iam <<bounded context>> {
+  users
+}
+
+entity "Workplace" as db_workplace <<bounded context>> {
+  sites
+  rooms
+  device_groups
+}
+
+entity "Device Control" as db_device_control <<bounded context>> {
+  devices
+  sensors
+  valves
+  device_commands
+  command_executions
+  command_audit_entries
+  valve_operations
+}
+
+entity "Monitoring" as db_monitoring <<bounded context>> {
+  consumption_readings
+  thresholds
+  anomalies
+}
+
+entity "Notification" as db_notification <<bounded context>> {
+  alerts
+  alert_deliveries
+  incidents
+  incident_actions
+  incident_assignments
+  notification_channels
+}
+
+entity "Plan" as db_plan <<bounded context>> {
+  plans
+  plan_features
+  subscriptions
+  payments
+  service_requests
+}
+
+entity "Support" as db_support <<bounded context>> {
+  support_tickets
+  support_messages
+  support_conversations
+  support_agents
+  knowledge_articles
+}
+
+' Layout guides reduce relation lines crossing through bounded context boxes.
+db_iam -[hidden]down- db_workplace
+db_workplace -[hidden]right- db_device_control
+db_device_control -[hidden]right- db_monitoring
+db_monitoring -[hidden]down- db_notification
+db_notification -[hidden]right- db_plan
+db_plan -[hidden]right- db_support
+
+' Context references are ID-based to keep bounded contexts independent.
+db_workplace ..> db_device_control : site_id / room_id / device_group_id
+db_device_control ..> db_monitoring : sensor_id / device_group_id
+db_monitoring ..> db_notification : anomaly_id / site_id
+db_notification ..> db_device_control : incident mitigation target ids
+db_iam ..> db_notification : requested_by / assigned_to
+db_plan ..> db_workplace : workplace_id / usage count
+db_plan ..> db_device_control : device usage count
+db_support ..> db_iam : user_id
+db_support ..> db_workplace : site_id
+
+note bottom
+This overview reflects the backend EF Core PostgreSQL model currently implemented.
+Plan and Support are implemented backend bounded contexts with EF Core tables.
+Reports are product functionality over monitoring data, not a separate backend database context.
+Detailed table-level database diagrams are split by implemented bounded context.
+end note
+
+@enduml

@@ -1,0 +1,66 @@
+@startuml
+title ElectroCorp Web App - Energy Monitoring Frontend Application Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Energy Monitoring / Application" {
+  package "Application / Commands" {
+    interface "ExportEnergyReadingsCommand" as Frontend_energy_monitoring_ExportEnergyReadingsCommand <<interface>> {
+      + fileName: string
+      + readings?: EnergyReading[]
+    }
+  }
+  package "Application / Criteria" {
+    interface "EnergyReadingsFilterCriteria" as Frontend_energy_monitoring_EnergyReadingsFilterCriteria <<interface>> {
+      + startDate: string
+      + endDate: string
+    }
+  }
+  package "Application / Facades and Services" {
+    class "EnergyMonitoringFacade" as Frontend_energy_monitoring_EnergyMonitoringFacade <<Facade>> {
+      - energyReadingAssembler
+      - toInputDate(date: Date) : string
+      + get: readings()
+      + get: filteredReadings()
+      + get: visibleReadings()
+      + get: dashboardSummary()
+      + get: loading()
+      + get: error()
+      + get: totalWatts()
+      + get: averageWatts()
+      + get: highestReading()
+      + get: highReadingsCount()
+      + get: normalReadingsCount()
+      + get: recommendationKey()
+      + get: groupedByDevice()
+      + constructor: (
+      - energyReadingsApi: EnergyReadingsApiService
+      - billingFacade: BillingFacade
+    }
+  }
+  package "Application / Stores" {
+    class "EnergyMonitoringStore" as Frontend_energy_monitoring_EnergyMonitoringStore <<Store>> {
+      - readingsSignal
+      - filteredReadingsSignal
+      - filterActiveSignal
+      - dashboardSummarySignal
+      + signal: <EnergyDashboardSummaryResponse | null>(null)
+      - loadingSignal
+      - errorSignal
+      + constructor: (
+      - statisticsService: EnergyStatisticsService
+      - recommendationService: EnergyRecommendationService
+      + setReadings(value: EnergyReading[]) : void
+    }
+  }
+}
+
+Frontend_energy_monitoring_EnergyMonitoringFacade ..> Frontend_energy_monitoring_EnergyMonitoringStore
+Frontend_energy_monitoring_EnergyMonitoringFacade ..> Frontend_energy_monitoring_EnergyReadingsFilterCriteria
+Frontend_energy_monitoring_EnergyMonitoringFacade ..> Frontend_energy_monitoring_ExportEnergyReadingsCommand
+
+
+@enduml

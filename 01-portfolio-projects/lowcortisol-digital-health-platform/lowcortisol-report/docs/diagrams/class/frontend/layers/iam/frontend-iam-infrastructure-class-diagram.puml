@@ -1,0 +1,109 @@
+@startuml
+title LowCortisol WebApp - IAM Frontend Infrastructure Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "IAM / Infrastructure" {
+  package "Infrastructure / API Services" {
+    class "AccessProfilesApiService" as Frontend_iam_AccessProfilesApiService <<API Service>> {
+      + constructor: (
+      + http: HttpClient
+      + apiBaseUrl: string
+    }
+    class "AuthApiService" as Frontend_iam_AuthApiService <<API Service>> {
+      - authUrl: string
+      + constructor: (
+      - http: HttpClient
+      - apiBaseUrl: string
+      + signIn(resource: SignInResource) : Observable<AuthResponse>
+      + signUp(resource: SignUpResource) : Observable<AuthResponse>
+      + signOut() : Observable<void>
+      + me() : Observable<UserResponse>
+      + recoverPassword(email: string) : Observable<void>
+    }
+    class "IamApiService" as Frontend_iam_IamApiService <<API Service>> {
+      + constructor(authApi: AuthApiService)
+    }
+    class "UsersApiService" as Frontend_iam_UsersApiService <<API Service>> {
+      + constructor: (
+      + http: HttpClient
+      + apiBaseUrl: string
+      + getCurrentProfile() : Observable<UserResponse>
+      + updateCurrentProfile(resource: UserResource) : Observable<UserResponse>
+      + deleteCurrentAccount() : Observable<void>
+      + updateProfile(userId: number, resource: UserResource) : Observable<UserResponse>
+      + deleteAccount(userId: number) : Observable<void>
+    }
+  }
+  package "Infrastructure / Assemblers" {
+    class "AccessProfileAssembler" as Frontend_iam_AccessProfileAssembler <<Assembler>> {
+      + override: toEntity(response: AccessProfileResponse): AccessProfile
+      + override: toResource(entity: AccessProfile): AccessProfileResource
+    }
+    class "UserAssembler" as Frontend_iam_UserAssembler <<Assembler>> {
+      + override: toEntity(response: UserResponse): User
+      + override: toResource(entity: User): UserResource
+    }
+  }
+  package "Infrastructure / Resources" {
+    interface "AccessProfileResource" as Frontend_iam_AccessProfileResource <<interface>> {
+      + name: AccessProfileName
+      + description: string
+    }
+    interface "SignInResource" as Frontend_iam_SignInResource <<interface>> {
+      + email: string
+      + password: string
+    }
+    interface "SignUpResource" as Frontend_iam_SignUpResource <<interface>> {
+      + fullName: string
+      + email: string
+      + password: string
+    }
+    interface "UserResource" as Frontend_iam_UserResource <<interface>> {
+      + fullName: string
+      + email: string
+      + accessProfileId?: number
+    }
+  }
+  package "Infrastructure / Responses" {
+    interface "AccessProfileResponse" as Frontend_iam_AccessProfileResponse <<interface>> {
+      + name: AccessProfileName
+      + description: string
+    }
+    interface "AuthResponse" as Frontend_iam_AuthResponse <<interface>> {
+      + user: UserResponse
+      + token: string
+      + message?: string
+    }
+    interface "UserResponse" as Frontend_iam_UserResponse <<interface>> {
+      + fullName: string
+      + email: string
+      + accessProfileId: number
+      + accessProfileName: string
+      + createdAt: string
+    }
+  }
+}
+
+Frontend_iam_AccessProfileAssembler ..> Frontend_iam_AccessProfileResource
+Frontend_iam_AccessProfileAssembler ..> Frontend_iam_AccessProfileResponse
+Frontend_iam_AccessProfilesApiService ..> Frontend_iam_AccessProfileAssembler
+Frontend_iam_AccessProfilesApiService ..> Frontend_iam_AccessProfileResource
+Frontend_iam_AccessProfilesApiService ..> Frontend_iam_AccessProfileResponse
+Frontend_iam_AuthApiService ..> Frontend_iam_AuthResponse
+Frontend_iam_AuthApiService ..> Frontend_iam_SignInResource
+Frontend_iam_AuthApiService ..> Frontend_iam_SignUpResource
+Frontend_iam_AuthApiService ..> Frontend_iam_UserResponse
+Frontend_iam_AuthResponse ..> Frontend_iam_UserResponse
+Frontend_iam_IamApiService ..> Frontend_iam_AuthApiService
+Frontend_iam_UserAssembler ..> Frontend_iam_UserResource
+Frontend_iam_UserAssembler ..> Frontend_iam_UserResponse
+Frontend_iam_UsersApiService ..> Frontend_iam_UserAssembler
+Frontend_iam_UsersApiService ..> Frontend_iam_UserResource
+Frontend_iam_UsersApiService ..> Frontend_iam_UserResponse
+
+
+@enduml

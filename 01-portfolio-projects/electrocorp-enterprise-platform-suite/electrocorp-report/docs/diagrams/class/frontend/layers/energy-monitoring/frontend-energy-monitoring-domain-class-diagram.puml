@@ -1,0 +1,58 @@
+@startuml
+title ElectroCorp Web App - Energy Monitoring Frontend Domain Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Energy Monitoring / Domain" {
+  package "Domain / Model" {
+    class "EnergyReading" as Frontend_energy_monitoring_EnergyReading <<Entity>> {
+      - _userId: number
+      - _deviceId: number
+      - _deviceName: string
+      - _watts: number
+      - _kilowattHours: number
+      - _estimatedCost: number
+      - _sampleSeconds: number
+      - _recordedAt: string
+      - _status: EnergyReadingStatus
+      + constructor: (props:
+      + get: userId(): number
+      + get: deviceId(): number
+      + get: deviceName(): string
+      + get: watts(): number
+      + get: kilowattHours(): number
+      + get: estimatedCost(): number
+      + get: sampleSeconds(): number
+      + get: recordedAt(): string
+    }
+    class "EnergyReadingStatus" as Frontend_energy_monitoring_EnergyReadingStatus <<type>> {
+      + 'NORMAL' | 'HIGH'
+    }
+  }
+  package "Domain / Services" {
+    class "EnergyRecommendationService" as Frontend_energy_monitoring_EnergyRecommendationService <<Domain Service>> {
+      + constructor(statisticsService: EnergyStatisticsService)
+      + getRecommendationKey(readings: EnergyReading[]) : string
+    }
+    class "EnergyStatisticsService" as Frontend_energy_monitoring_EnergyStatisticsService <<Domain Service>> {
+      + calculateTotalWatts(readings: EnergyReading[]) : number
+      + calculateAverageWatts(readings: EnergyReading[]) : number
+      + findHighestReading(readings: EnergyReading[]) : EnergyReading | null
+      + countHighReadings(readings: EnergyReading[]) : number
+      + countNormalReadings(readings: EnergyReading[]) : number
+      + groupByDevice(readings: EnergyReading[]) : Record<string, number>
+    }
+  }
+}
+
+Frontend_energy_monitoring_EnergyRecommendationService ..> Frontend_energy_monitoring_EnergyReading
+Frontend_energy_monitoring_EnergyRecommendationService ..> Frontend_energy_monitoring_EnergyStatisticsService
+Frontend_energy_monitoring_EnergyStatisticsService ..> Frontend_energy_monitoring_EnergyReading
+
+' Layer relationship completion: every declared type participates in this layer diagram.
+Frontend_energy_monitoring_EnergyRecommendationService ..> Frontend_energy_monitoring_EnergyReadingStatus
+
+@enduml

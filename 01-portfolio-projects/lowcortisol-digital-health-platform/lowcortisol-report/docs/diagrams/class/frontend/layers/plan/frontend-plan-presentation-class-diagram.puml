@@ -1,0 +1,43 @@
+@startuml
+title LowCortisol WebApp - Plan Frontend Presentation Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Plan / Presentation" {
+  class "PlanPageComponent" as Frontend_plan_PlanPageComponent <<Page>> {
+    + loadPlans()
+    + openCheckout(plan)
+    + handleSubscribe(plan)
+    + handleCancelSubscription()
+    + getSubscriptionStatusLabel(status)
+  }
+
+  class "PlanCardComponent" as Frontend_plan_PlanCardComponent <<Component>> {
+    + plan
+    + active
+    + buy(plan)
+  }
+
+  class "CheckoutFormComponent" as Frontend_plan_CheckoutFormComponent <<Component>> {
+    + plan
+    + submitPayment()
+    + close()
+  }
+}
+
+class "Plan Routes" as Frontend_plan_Routes <<Vue Router>>
+class "Plan Store" as Frontend_plan_Store <<Store>>
+class "Shared UI" as Frontend_plan_SharedUi <<Shared>>
+
+Frontend_plan_Routes --> Frontend_plan_PlanPageComponent
+Frontend_plan_PlanPageComponent --> Frontend_plan_Store
+Frontend_plan_PlanPageComponent --> Frontend_plan_PlanCardComponent
+Frontend_plan_PlanPageComponent --> Frontend_plan_CheckoutFormComponent
+Frontend_plan_PlanPageComponent ..> Frontend_plan_SharedUi
+Frontend_plan_PlanCardComponent ..> Frontend_plan_SharedUi
+Frontend_plan_CheckoutFormComponent ..> Frontend_plan_SharedUi
+
+@enduml

@@ -1,0 +1,32 @@
+@startuml
+title LowCortisol WebApp - Frontend Bounded Contexts
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+class "IAM" as FrontendIAM <<Bounded Context>> {}
+class "Plan" as FrontendPlan <<Bounded Context>> {}
+class "Workplace" as FrontendWorkplace <<Bounded Context>> {}
+class "Device Control" as FrontendDeviceControl <<Bounded Context>> {}
+class "Monitoring" as FrontendMonitoring <<Bounded Context>> {}
+class "Notification" as FrontendNotification <<Bounded Context>> {}
+class "Report Experience" as FrontendReport <<Feature Area>> {}
+class "Support" as FrontendSupport <<Bounded Context>> {}
+class "Shared UI / Kernel" as FrontendShared <<Bounded Context>> {}
+
+FrontendIAM ..> FrontendShared : guards / session / layout
+FrontendPlan ..> FrontendIAM : authenticated customer
+FrontendPlan ..> FrontendShared : plan access guard
+FrontendWorkplace ..> FrontendShared : layout and state
+FrontendWorkplace ..> FrontendDeviceControl : device assignment views
+FrontendDeviceControl ..> FrontendMonitoring : valve and sensor consumption context
+FrontendDeviceControl ..> FrontendNotification : mitigation target state
+FrontendMonitoring ..> FrontendReport : readings and report metrics
+FrontendNotification ..> FrontendShared : badges / toast feedback
+FrontendReport ..> FrontendShared : date range, charts and cards
+FrontendSupport ..> FrontendWorkplace : location and device incidents
+FrontendSupport ..> FrontendShared : ticket UI primitives
+
+@enduml

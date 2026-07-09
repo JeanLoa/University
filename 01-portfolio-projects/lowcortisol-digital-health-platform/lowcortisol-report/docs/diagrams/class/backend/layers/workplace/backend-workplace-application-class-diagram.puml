@@ -1,0 +1,43 @@
+@startuml
+title LowCortisol Platform - Workplace Backend Application Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Workplace / Application" {
+  package "Application / Services" {
+    class "WorkplaceApplicationService" as Backend_workplace_WorkplaceApplicationService <<Application Service>> {
+      - locationRepository: LocationRepository
+      - roomRepository: RoomRepository
+      - assignmentRepository: DeviceAssignmentRepository
+      - deviceRepository: DeviceRepository
+      + getLocations(Long userId) : List<Location>
+      + createLocation(CreateLocationCommand command) : Location
+      + getRooms(Long userId, Long locationId) : List<Room>
+      + getRoomsByUserId(Long userId) : List<Room>
+      + createRoom(Long userId, CreateRoomCommand command) : Room
+      + getAssignments(Long userId, Long locationId) : List<DeviceAssignment>
+      + getAssignmentsByUserId(Long userId) : List<DeviceAssignment>
+      + getAssignmentsByDeviceId(Long userId, Long deviceId) : List<DeviceAssignment>
+      + assignDevice(Long userId, AssignDeviceCommand command) : DeviceAssignment
+      + updateLocation(Long userId, Long locationId, String name, String address, String type) : Location
+      + deleteLocation(Long userId, Long locationId) : void
+      + updateRoom(Long userId, Long roomId, Long locationId, String name, String floor) : Room
+      + deleteRoom(Long userId, Long roomId) : void
+      + moveAssignment(Long userId, Long assignmentId, Long locationId, Long roomId) : DeviceAssignment
+      + deleteAssignment(Long userId, Long assignmentId) : void
+      - getLocationForUser(Long locationId, Long userId) : Location
+      - validateRoomBelongsToLocation(Long roomId, Long locationId) : void
+    }
+  }
+}
+
+
+
+
+' Single-class layer participation.
+Backend_workplace_WorkplaceApplicationService ..> Backend_workplace_WorkplaceApplicationService
+
+@enduml

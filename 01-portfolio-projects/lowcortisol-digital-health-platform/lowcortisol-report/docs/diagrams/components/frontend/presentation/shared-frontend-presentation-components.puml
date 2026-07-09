@@ -1,0 +1,96 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+skinparam wrapWidth 220
+skinparam maxMessageSize 130
+skinparam nodesep 70
+skinparam ranksep 80
+skinparam ArrowColor #8A8A8A
+skinparam ArrowFontColor #666666
+skinparam ArrowFontStyle bold
+skinparam ArrowThickness 1
+skinparam rectangleRoundCorner 0
+skinparam rectangleBorderThickness 0
+skinparam rectangleFontColor #FFFFFF
+skinparam rectangleFontStyle plain
+skinparam rectangle {
+  BorderThickness 0
+  MinimumWidth 190
+  Padding 12
+}
+skinparam database {
+  MinimumWidth 210
+  Padding 12
+}
+skinparam rectangle<<SystemBoundary>> {
+  BackgroundColor transparent
+  BorderColor #4A4A4A
+  BorderThickness 2
+  BorderStyle dashed
+  FontColor #333333
+  FontStyle bold
+  MinimumWidth 760
+  Padding 18
+}
+skinparam rectangle<<BoundedContext>> {
+  BackgroundColor transparent
+  BorderColor #4A4A4A
+  BorderThickness 2
+  BorderStyle dashed
+  FontColor #333333
+  FontStyle bold
+  MinimumWidth 760
+  Padding 18
+}
+skinparam databaseBackgroundColor #C9332B
+skinparam databaseBorderColor #C9332B
+skinparam databaseFontColor #FFFFFF
+skinparam databaseFontStyle plain
+hide stereotype
+left to right direction
+
+title LowCortisol - Shared Frontend Presentation Components Diagram
+
+rectangle "<b>Shared Presentation Layer</b>\n<i>[Vue Presentation Surface]</i>" <<BoundedContext>> {
+  rectangle "<b>App Layout Component</b>\n<i>[Page / Routed View]</i>\n\nOwns screen-level layout and user interaction for this feature." as Page0 #58A9E8
+  rectangle "<b>Shared UI Components</b>\n<i>[Page / Routed View]</i>\n\nOwns screen-level layout and user interaction for this feature." as Page1 #58A9E8
+  rectangle "<b>Language Switcher Component</b>\n<i>[Page / Routed View]</i>\n\nOwns screen-level layout and user interaction for this feature." as Page2 #58A9E8
+  rectangle "<b>Topbar View</b>\n<i>[UI Component]</i>\n\nDisplays reusable interaction or visual state for the page flow." as Ui0 #58A9E8
+  rectangle "<b>Sidebar Navigation</b>\n<i>[UI Component]</i>\n\nDisplays reusable interaction or visual state for the page flow." as Ui1 #58A9E8
+  rectangle "<b>Language Selector</b>\n<i>[UI Component]</i>\n\nDisplays reusable interaction or visual state for the page flow." as Ui2 #58A9E8
+  rectangle "<b>Theme Shell</b>\n<i>[UI Component]</i>\n\nDisplays reusable interaction or visual state for the page flow." as Ui3 #58A9E8
+  rectangle "<b>Shared Facade</b>\n<i>[Application Facade]</i>\n\nReceives UI events and exposes state for presentation components." as Facade #3498DB
+}
+rectangle "<b>Shared UI Components</b>\n<i>[Shared]</i>\n\nCards, buttons, empty states, badges, layout and loading states." as Shared #7F8C8D
+rectangle "<b>Shared Routes</b>\n<i>[Vue Router]</i>\n\nActivates routed pages for this presentation layer." as Routes #7F8C8D
+
+Routes --> Page0 : Activates
+Page0 --> Facade : Reads state / sends actions
+Routes --> Page1 : Activates
+Page1 --> Facade : Reads state / sends actions
+Routes --> Page2 : Activates
+Page2 --> Facade : Reads state / sends actions
+Page0 --> Ui0 : Composes
+Ui0 ..> Shared : Uses
+Page1 --> Ui1 : Composes
+Ui1 ..> Shared : Uses
+Page2 --> Ui2 : Composes
+Ui2 ..> Shared : Uses
+Page0 --> Ui3 : Composes
+Ui3 ..> Shared : Uses
+Facade ..> Shared : Uses session / preferences
+
+legend right
+  <b>Legend</b>
+  |<#0B5593> person |
+  |<#0B6FB3> system |
+  |<#3498DB> container |
+  |<#58A9E8> component |
+  |<#F39C12> infrastructure / external |
+  |<#C9332B> database |
+  |<#7F8C8D> external container |
+endlegend
+
+@enduml

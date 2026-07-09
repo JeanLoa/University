@@ -1,0 +1,52 @@
+@startuml
+title LowCortisol Platform - IAM Database Diagram
+left to right direction
+hide circle
+skinparam linetype ortho
+skinparam shadowing false
+skinparam packageStyle rectangle
+
+package "IAM" {
+  entity "users" as users {
+    PK id : uuid
+    first_name : varchar(80)
+    last_name : varchar(80)
+    email : varchar(160) <<unique>>
+    password_hash : varchar(255)
+    role : varchar(40)
+    is_active : boolean
+    created_at : timestamp
+    updated_at : timestamp
+  }
+}
+
+package "External References" {
+  entity "subscriptions" as subscriptions <<Plan>> {
+    PK id
+    user_id
+  }
+  entity "payments" as payments <<Plan>> {
+    PK id
+    subscription_id
+  }
+  entity "support_tickets" as support_tickets <<Support>> {
+    PK id
+    user_id
+  }
+  entity "alert_deliveries" as alert_deliveries <<Notification>> {
+    PK id
+    recipient_user_id
+  }
+}
+
+users ||..o{ subscriptions : user_id
+subscriptions ||..o{ payments : subscription_id
+users ||..o{ support_tickets : user_id
+users ||..o{ alert_deliveries : recipient_user_id
+
+note right of users
+IAM owns authentication users only.
+Authorization is not activated on existing endpoints yet.
+end note
+
+@enduml

@@ -1,0 +1,60 @@
+@startuml
+title LowCortisol Platform - Device Control Backend Infrastructure Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Device Control / Infrastructure" {
+  package "Infrastructure / EF Core" {
+    class "DeviceControlJpaTableNames" as Backend_devicecontrol_DeviceControlJpaTableNames <<Class>> {
+      + DEVICES: String
+      + ROUTINES: String
+      + DEVICE_GROUPS: String
+      + DEVICE_GROUP_DEVICES: String
+      - DeviceControlJpaTableNames()
+    }
+    class "DeviceControlQueryHints" as Backend_devicecontrol_DeviceControlQueryHints <<Class>> {
+      + FIND_ACTIVE_DEVICES: String
+      + FIND_ENABLED_ROUTINES: String
+      + FIND_GROUP_RELATIONS: String
+      - DeviceControlQueryHints()
+    }
+    class "DeviceControlSchemaRepairService" as Backend_devicecontrol_DeviceControlSchemaRepairService <<Class>> {
+      - DEVICES_TABLE: String
+      - STATUS_CONSTRAINT: String
+      - jdbcTemplate: JdbcTemplate
+      + run(ApplicationArguments args) : void
+      - tableExists(String tableName) : boolean
+      - dropStatusCheckConstraints() : void
+      - quoteIdentifier(String identifier) : String
+    }
+  }
+  package "Infrastructure / EF Core Repositories" {
+    interface "JpaDeviceGroupDeviceRepository" as Backend_devicecontrol_JpaDeviceGroupDeviceRepository <<interface>> {
+    }
+    interface "JpaDeviceGroupRepository" as Backend_devicecontrol_JpaDeviceGroupRepository <<interface>> {
+    }
+    interface "JpaDeviceRepository" as Backend_devicecontrol_JpaDeviceRepository <<interface>> {
+    }
+    interface "JpaOperationModeRepository" as Backend_devicecontrol_JpaOperationModeRepository <<interface>> {
+    }
+    interface "JpaRoutineRepository" as Backend_devicecontrol_JpaRoutineRepository <<interface>> {
+    }
+  }
+}
+
+
+
+' Layer relationship completion: every declared type participates in this layer diagram.
+Backend_devicecontrol_JpaDeviceGroupDeviceRepository ..> Backend_devicecontrol_DeviceControlJpaTableNames
+Backend_devicecontrol_JpaDeviceGroupDeviceRepository ..> Backend_devicecontrol_DeviceControlQueryHints
+Backend_devicecontrol_JpaDeviceGroupDeviceRepository ..> Backend_devicecontrol_DeviceControlSchemaRepairService
+Backend_devicecontrol_JpaDeviceGroupDeviceRepository ..> Backend_devicecontrol_DeviceControlJpaTableNames
+Backend_devicecontrol_JpaDeviceGroupDeviceRepository ..> Backend_devicecontrol_JpaDeviceGroupRepository
+Backend_devicecontrol_JpaDeviceGroupDeviceRepository ..> Backend_devicecontrol_JpaDeviceRepository
+Backend_devicecontrol_JpaDeviceGroupDeviceRepository ..> Backend_devicecontrol_JpaOperationModeRepository
+Backend_devicecontrol_JpaDeviceGroupDeviceRepository ..> Backend_devicecontrol_JpaRoutineRepository
+
+@enduml

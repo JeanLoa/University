@@ -1,0 +1,77 @@
+@startuml
+title ElectroCorp Web App - Billing Frontend Application Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Billing / Application" {
+  package "Application / Commands" {
+    interface "CancelSubscriptionCommand" as Frontend_billing_CancelSubscriptionCommand <<interface>> {
+      + subscriptionId: number
+    }
+    interface "DownloadInvoiceCommand" as Frontend_billing_DownloadInvoiceCommand <<interface>> {
+      + invoiceId: number
+    }
+    interface "PaymentFormCommand" as Frontend_billing_PaymentFormCommand <<interface>> {
+      + planCode: PlanCode
+      + holderName: string
+      + cardNumber: string
+      + expirationDate: string
+      + cvv: string
+    }
+  }
+  package "Application / Facades and Services" {
+    class "BillingFacade" as Frontend_billing_BillingFacade <<Facade>> {
+      - planAssembler
+      - subscriptionAssembler
+      - paymentAssembler
+      - invoiceAssembler
+      + get: plans()
+      + get: activeSubscription()
+      + get: payments()
+      + get: invoices()
+      + get: lastPayment()
+      + get: loading()
+      + get: error()
+      + get: hasActiveSubscription()
+      + get: activePlanCode()
+      + get: activePlan()
+      + constructor: (
+      - plansApi: PlansApiService
+      - subscriptionsApi: SubscriptionsApiService
+      - paymentsApi: PaymentsApiService
+    }
+  }
+  package "Application / Stores" {
+    class "BillingStore" as Frontend_billing_BillingStore <<Store>> {
+      - plansSignal
+      - activeSubscriptionSignal
+      - paymentsSignal
+      - invoicesSignal
+      - lastPaymentSignal
+      - loadingSignal
+      - errorSignal
+      + hasActiveSubscription
+      + setPlans(value: Plan[]) : void
+      + setActiveSubscription(value: Subscription | null) : void
+      + setPayments(value: Payment[]) : void
+      + setInvoices(value: Invoice[]) : void
+      + setLastPayment(value: Payment | null) : void
+      + prependPayment(value: Payment) : void
+      + prependInvoice(value: Invoice) : void
+      + setLoading(value: boolean) : void
+      + setError(value: string | null) : void
+      + clearMessages() : void
+    }
+  }
+}
+
+Frontend_billing_BillingFacade ..> Frontend_billing_BillingStore
+Frontend_billing_BillingFacade ..> Frontend_billing_CancelSubscriptionCommand
+Frontend_billing_BillingFacade ..> Frontend_billing_DownloadInvoiceCommand
+Frontend_billing_BillingFacade ..> Frontend_billing_PaymentFormCommand
+
+
+@enduml

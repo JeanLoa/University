@@ -1,0 +1,26 @@
+@startuml
+title LowCortisol Platform - IAM Backend Bounded Context Layers
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "IAM Backend Bounded Context" {
+  class "Application" as Backend_iam_Application <<layer>>
+  class "Domain" as Backend_iam_Domain <<layer>>
+  class "Infrastructure" as Backend_iam_Infrastructure <<layer>>
+  class "Interfaces REST" as Backend_iam_Interfaces_REST <<layer>>
+}
+
+Backend_iam_Interfaces_REST ..> Backend_iam_Application : commands / queries
+Backend_iam_Application ..> Backend_iam_Domain : model and policies
+Backend_iam_Application ..> Backend_iam_Infrastructure : repository ports / adapters
+Backend_iam_Infrastructure ..> Backend_iam_Domain : persistence mapping
+Backend_iam_Interfaces_REST ..> Backend_iam_Domain : resources from aggregates
+
+note bottom of Backend_iam_Application
+Detailed class diagrams for each layer are available in docs/diagrams/class/backend/layers/iam.
+end note
+
+@enduml

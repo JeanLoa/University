@@ -1,0 +1,42 @@
+flowchart LR
+  classDef actor fill:#ffe066,stroke:#d4a100,color:#3d2f00;
+  classDef command fill:#6db3f2,stroke:#1c6fb8,color:#08243d;
+  classDef aggregate fill:#fff2ae,stroke:#c9a900,color:#4a3b00;
+  classDef event fill:#ffb84d,stroke:#d47500,color:#4a2600;
+  classDef integration fill:#ff8c42,stroke:#c0501a,color:#3d1500;
+  classDef readmodel fill:#b5e7a0,stroke:#4f9a2f,color:#1f3d0f;
+  classDef external fill:#ffb6c1,stroke:#d63b6a,color:#4a0a1c;
+
+  USER([🎬 User]):::actor
+  EXT_OSM[🌐 OpenStreetMap / Nominatim]:::external
+
+  C_CLOC[⚡ CreateLocation]:::command
+  C_ULOC[⚡ UpdateLocation]:::command
+  C_DLOC[⚡ DeleteLocation]:::command
+  C_CROOM[⚡ CreateRoom]:::command
+  C_UROOM[⚡ UpdateRoom]:::command
+  C_DROOM[⚡ DeleteRoom]:::command
+  C_ASSIGN[⚡ AssignDevice]:::command
+  C_REMOVE[⚡ RemoveDeviceAssignment]:::command
+
+  A_LOC[📦 Location]:::aggregate
+  A_ROOM[📦 Room]:::aggregate
+  A_DASSIGN[📦 DeviceAssignment]:::aggregate
+
+  E_DEV_ASSIGNED[🟠 DeviceAssignedToRoom]:::event
+  IE_DEV_ASSIGNED[🔗 DeviceAssignedToRoomIntegrationEvent]:::integration
+  RM_MAP[🟢 Sites map and occupancy]:::readmodel
+
+  USER --> C_CLOC
+  EXT_OSM -->|address autocomplete / geocoding| C_CLOC --> A_LOC
+  USER --> C_ULOC --> A_LOC
+  USER --> C_DLOC --> A_LOC
+  A_LOC --> C_CROOM --> A_ROOM
+  USER --> C_UROOM --> A_ROOM
+  USER --> C_DROOM --> A_ROOM
+  USER --> C_ASSIGN --> A_DASSIGN --> E_DEV_ASSIGNED --> IE_DEV_ASSIGNED
+  A_ROOM --> A_DASSIGN
+  USER --> C_REMOVE --> A_DASSIGN
+  A_DASSIGN --> RM_MAP
+
+  IE_DEV_ASSIGNED --> OUT([🔗 to Notifications + Reporting]):::integration

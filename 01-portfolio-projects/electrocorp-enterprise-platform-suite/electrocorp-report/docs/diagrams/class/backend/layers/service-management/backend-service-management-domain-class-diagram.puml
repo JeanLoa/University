@@ -1,0 +1,172 @@
+@startuml
+title ElectroCorp Platform - Service Management Backend Domain Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Service Management / Domain" {
+  package "Domain / Aggregates" {
+    class "MaintenanceTicket" as Backend_servicemanagement_MaintenanceTicket <<Aggregate>> {
+      - userId: Long
+      - deviceId: Long
+      - deviceName: String
+      - type: String
+      - description: String
+      - scheduledDate: LocalDate
+      - status: String
+    }
+    class "SupportTicket" as Backend_servicemanagement_SupportTicket <<Aggregate>> {
+      - userId: Long
+      - subject: String
+      - description: String
+      - priority: String
+      - status: String
+      + resolve() : void
+      + isOpen() : boolean
+    }
+  }
+  package "Domain / Commands" {
+    class "CreateMaintenanceTicketCommand" as Backend_servicemanagement_CreateMaintenanceTicketCommand <<record>> {
+      + Long userId
+      + Long deviceId
+      + String deviceName
+      + String type
+      + String description
+      + LocalDate scheduledDate
+    }
+    class "CreateSupportTicketCommand" as Backend_servicemanagement_CreateSupportTicketCommand <<record>> {
+      + Long userId
+      + String subject
+      + String description
+      + String priority
+    }
+    class "DeleteMaintenanceTicketCommand" as Backend_servicemanagement_DeleteMaintenanceTicketCommand <<record>> {
+      + Long userId
+      + Long ticketId
+    }
+    class "DeleteSupportTicketCommand" as Backend_servicemanagement_DeleteSupportTicketCommand <<record>> {
+      + Long userId
+      + Long ticketId
+    }
+    class "ScheduleMaintenanceTicketCommand" as Backend_servicemanagement_ScheduleMaintenanceTicketCommand <<record>> {
+      + Long userId
+      + Long ticketId
+      + LocalDate scheduledDate
+    }
+    class "UpdateTicketStatusCommand" as Backend_servicemanagement_UpdateTicketStatusCommand <<record>> {
+      + String status
+      + UpdateTicketStatusCommand(String status) : record
+    }
+  }
+  package "Domain / Events" {
+    class "MaintenanceTicketCreatedEvent" as Backend_servicemanagement_MaintenanceTicketCreatedEvent <<record>> {
+      + Long userId
+      + Long ticketId
+      + Long deviceId
+      + LocalDateTime occurredOn
+      + MaintenanceTicketCreatedEvent(Long userId, Long ticketId, Long deviceId, LocalDateTime occurredOn) : record
+      + MaintenanceTicketCreatedEvent(Long userId, Long ticketId, Long deviceId)
+    }
+    class "SupportTicketCreatedEvent" as Backend_servicemanagement_SupportTicketCreatedEvent <<record>> {
+      + Long userId
+      + Long ticketId
+      + String priority
+      + LocalDateTime occurredOn
+      + SupportTicketCreatedEvent(Long userId, Long ticketId, String priority, LocalDateTime occurredOn) : record
+      + SupportTicketCreatedEvent(Long userId, Long ticketId, String priority)
+    }
+  }
+  package "Domain / Factories" {
+    class "SupportTicketFactory" as Backend_servicemanagement_SupportTicketFactory <<Class>> {
+      + create(Long userId, String subject, String description, String priority) : SupportTicket
+    }
+  }
+  package "Domain / Repositories" {
+    interface "MaintenanceTicketRepository" as Backend_servicemanagement_MaintenanceTicketRepository <<interface>> {
+    }
+    interface "SupportTicketRepository" as Backend_servicemanagement_SupportTicketRepository <<interface>> {
+    }
+  }
+  package "Domain / Services" {
+    class "MaintenanceSchedulePolicyService" as Backend_servicemanagement_MaintenanceSchedulePolicyService <<Domain Service>> {
+      + validateScheduleDate(LocalDate scheduledDate) : void
+      + isScheduledForToday(LocalDate scheduledDate) : boolean
+      + isOverdue(LocalDate scheduledDate, String status) : boolean
+    }
+    class "MaintenanceTicketPolicyService" as Backend_servicemanagement_MaintenanceTicketPolicyService <<Domain Service>> {
+      + normalizeType(String type) : String
+    }
+    class "SupportTicketPolicyService" as Backend_servicemanagement_SupportTicketPolicyService <<Domain Service>> {
+      + validateSupportTicket(String subject, String description) : void
+    }
+    class "TicketPriorityPolicyService" as Backend_servicemanagement_TicketPriorityPolicyService <<Domain Service>> {
+      - ALLOWED_PRIORITIES: Set<String>
+      + isValidPriority(String priority) : boolean
+    }
+    class "TicketStatusPolicyService" as Backend_servicemanagement_TicketStatusPolicyService <<Domain Service>> {
+      - ALLOWED_STATUSES: Set<String>
+      + isValidStatus(String status) : boolean
+    }
+    class "TicketSummaryService" as Backend_servicemanagement_TicketSummaryService <<Domain Service>> {
+      + countOpenSupportTickets(List<SupportTicket> tickets) : long
+      + countUrgentSupportTickets(List<SupportTicket> tickets) : long
+      + countOpenMaintenanceTickets(List<MaintenanceTicket> tickets) : long
+      + countScheduledMaintenanceTickets(List<MaintenanceTicket> tickets) : long
+    }
+  }
+  package "Domain / Specifications" {
+    class "OpenTicketSpecification" as Backend_servicemanagement_OpenTicketSpecification <<Class>> {
+      + isSatisfiedBy(String status) : boolean
+    }
+  }
+  package "Domain / Value Objects" {
+    class "Priority" as Backend_servicemanagement_Priority <<record>> {
+      + String value
+      + Priority(String value) : record
+      - ALLOWED: Set<String>
+    }
+    class "TicketCode" as Backend_servicemanagement_TicketCode <<record>> {
+      + String value
+      + TicketCode(String value) : record
+      - PATTERN: Pattern
+    }
+    class "TicketDescription" as Backend_servicemanagement_TicketDescription <<record>> {
+      + String value
+      + TicketDescription(String value) : record
+    }
+    class "TicketTitle" as Backend_servicemanagement_TicketTitle <<record>> {
+      + String value
+      + TicketTitle(String value) : record
+    }
+  }
+}
+
+Backend_servicemanagement_MaintenanceTicketRepository ..> Backend_servicemanagement_MaintenanceTicket
+Backend_servicemanagement_SupportTicketFactory ..> Backend_servicemanagement_Priority
+Backend_servicemanagement_SupportTicketFactory ..> Backend_servicemanagement_SupportTicket
+Backend_servicemanagement_SupportTicketFactory ..> Backend_servicemanagement_TicketDescription
+Backend_servicemanagement_SupportTicketFactory ..> Backend_servicemanagement_TicketTitle
+Backend_servicemanagement_SupportTicketRepository ..> Backend_servicemanagement_SupportTicket
+Backend_servicemanagement_TicketSummaryService ..> Backend_servicemanagement_MaintenanceTicket
+Backend_servicemanagement_TicketSummaryService ..> Backend_servicemanagement_SupportTicket
+
+' Layer relationship completion: every declared type participates in this layer diagram.
+Backend_servicemanagement_MaintenanceTicketRepository ..> Backend_servicemanagement_CreateMaintenanceTicketCommand
+Backend_servicemanagement_MaintenanceTicketRepository ..> Backend_servicemanagement_CreateSupportTicketCommand
+Backend_servicemanagement_MaintenanceTicketRepository ..> Backend_servicemanagement_DeleteMaintenanceTicketCommand
+Backend_servicemanagement_MaintenanceTicketRepository ..> Backend_servicemanagement_DeleteSupportTicketCommand
+Backend_servicemanagement_MaintenanceTicketRepository ..> Backend_servicemanagement_ScheduleMaintenanceTicketCommand
+Backend_servicemanagement_MaintenanceTicketRepository ..> Backend_servicemanagement_UpdateTicketStatusCommand
+Backend_servicemanagement_MaintenanceTicketRepository ..> Backend_servicemanagement_MaintenanceTicketCreatedEvent
+Backend_servicemanagement_MaintenanceTicketRepository ..> Backend_servicemanagement_SupportTicketCreatedEvent
+Backend_servicemanagement_MaintenanceTicketRepository ..> Backend_servicemanagement_MaintenanceSchedulePolicyService
+Backend_servicemanagement_MaintenanceTicketRepository ..> Backend_servicemanagement_MaintenanceTicketPolicyService
+Backend_servicemanagement_MaintenanceTicketRepository ..> Backend_servicemanagement_SupportTicketPolicyService
+Backend_servicemanagement_MaintenanceTicketRepository ..> Backend_servicemanagement_TicketPriorityPolicyService
+Backend_servicemanagement_MaintenanceTicketRepository ..> Backend_servicemanagement_TicketStatusPolicyService
+Backend_servicemanagement_MaintenanceTicketRepository ..> Backend_servicemanagement_OpenTicketSpecification
+Backend_servicemanagement_MaintenanceTicketRepository ..> Backend_servicemanagement_TicketCode
+
+@enduml

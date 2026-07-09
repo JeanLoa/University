@@ -1,0 +1,39 @@
+flowchart LR
+  classDef actor fill:#ffe066,stroke:#d4a100,color:#3d2f00;
+  classDef command fill:#6db3f2,stroke:#1c6fb8,color:#08243d;
+  classDef aggregate fill:#fff2ae,stroke:#c9a900,color:#4a3b00;
+  classDef integration fill:#ff8c42,stroke:#c0501a,color:#3d1500;
+  classDef policy fill:#d8b4fe,stroke:#8b5cf6,color:#3b0764;
+  classDef readmodel fill:#b5e7a0,stroke:#4f9a2f,color:#1f3d0f;
+
+  USER([🎬 User]):::actor
+  CRON([⏰ Monthly Scheduler - cron America/Lima]):::actor
+  BUS[🔗 9 Integration Events from other contexts]:::integration
+
+  POL_REP[🟣 ReportingIntegrationEventHandler: record Activity]:::policy
+  POL_MONTHLY[🟣 MonthlyConsumptionReportScheduler]:::policy
+  A_REPEVENT[📦 ReportingEvent]:::aggregate
+  A_REPORT[📦 ConsumptionReport]:::aggregate
+  A_GOAL[📦 EnergyGoal]:::aggregate
+
+  C_RECORD[⚡ RecordReportingEvent]:::command
+  C_CREATE[⚡ CreateConsumptionReport]:::command
+  C_GEN[⚡ GenerateConsumptionReport]:::command
+  C_EXPORT[⚡ ExportReport]:::command
+  C_CGOAL[⚡ CreateEnergyGoal]:::command
+  C_UGOAL[⚡ UpdateEnergyGoal]:::command
+  C_DGOAL[⚡ DeleteEnergyGoal]:::command
+
+  RM_ACT[🟢 Activity log]:::readmodel
+  RM_REPORTS[🟢 Consumption reports]:::readmodel
+  RM_GOALS[🟢 Energy goals]:::readmodel
+
+  BUS --> POL_REP --> C_RECORD --> A_REPEVENT --> RM_ACT
+  USER --> C_CREATE --> A_REPORT
+  USER --> C_GEN --> A_REPORT --> RM_REPORTS
+  USER --> C_EXPORT --> RM_REPORTS
+  CRON --> POL_MONTHLY --> A_REPORT
+  POL_MONTHLY -.notifies report ready.-> NOTIF([🔗 to Notifications]):::integration
+  USER --> C_CGOAL --> A_GOAL --> RM_GOALS
+  USER --> C_UGOAL --> A_GOAL
+  USER --> C_DGOAL --> A_GOAL

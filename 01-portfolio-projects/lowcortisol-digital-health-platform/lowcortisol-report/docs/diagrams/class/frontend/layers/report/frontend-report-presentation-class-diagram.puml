@@ -1,0 +1,135 @@
+@startuml
+title LowCortisol WebApp - Report Experience Presentation Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Report Experience / Presentation" {
+  package "Presentation / Components" {
+    interface "ConsumptionGoalInsight" as FrontendPresentation_report_ConsumptionGoalInsight <<interface>> {
+      + measuredKilowattHours: number
+      + estimatedCost: number
+      + devicesMeasured: number
+      + daysRemaining: number
+      + expectedProgressPercentage: number
+      + projectedKilowattHours: number
+      + statusLabel: string
+      + statusTone: 'good' | 'warning' | 'danger'
+      + recommendation: string
+    }
+    class "GoalProgressCardComponent" as FrontendPresentation_report_GoalProgressCardComponent <<Component>> {
+      + goal: !: ConsumptionGoal
+      + insight: !: ConsumptionGoalInsight
+      + remove
+      + constructor: (
+      - translate: TranslateService
+      - uiPreferences: UiPreferencesService
+      + get: progressPercentage(): number
+      + get: remainingKilowattHours(): number
+      + get: projectedPercentage(): number
+      + onRemove() : void
+      + formatNumber(value: number, decimals = 2) : string
+      + formatDate(value: string) : string
+      + activeWindowLabel() : string
+      + daysRemainingLabel() : string
+      - t(key: string, params?: Record<string, unknown>) : string
+      - currentLocale() : string
+    }
+    class "MonthlyComparisonChartComponent" as FrontendPresentation_report_MonthlyComparisonChartComponent <<Component>> {
+      - _reports: ConsumptionReport[]
+      + set: reports(value: ConsumptionReport[] | null)
+      + get: reports(): ConsumptionReport[]
+      + reportSelected
+      + selectedPeriod: ConsumptionReportPeriod
+      + chartReports: ConsumptionReport[]
+      + chartItems: DraggableBarCarouselItem[]
+      - chartMaxWatts
+      - languageChangeSubscription: Subscription
+      + periodOptions: DropdownOption[]
+      + constructor: (
+      - translate: TranslateService
+      - uiPreferences: UiPreferencesService
+      + ngOnDestroy() : void
+      + get: filteredReports(): ConsumptionReport[]
+      + getBarPercentage(totalWatts: number) : number
+      + selectReport(report: ConsumptionReport) : void
+      + selectCarouselItem(item: DraggableBarCarouselItem) : void
+    }
+    class "ReportCardComponent" as FrontendPresentation_report_ReportCardComponent <<Component>> {
+      + report: !: ConsumptionReport
+      + exported
+      + remove
+      + constructor: (
+      - translate: TranslateService
+      - uiPreferences: UiPreferencesService
+      + onExport() : void
+      + onRemove() : void
+      + getCleanTitle() : string
+      + periodLabel(period: ConsumptionReportPeriod) : string
+      + formatWatts(value: number) : string
+      + formatDate(value: string) : string
+      - t(key: string, params?: Record<string, unknown>) : string
+      - currentLocale() : string
+      - dateFromInput(value: string) : Date
+    }
+  }
+  package "Presentation / Pages" {
+    class "ConsumptionGoalsPageComponent" as FrontendPresentation_report_ConsumptionGoalsPageComponent <<Component>> {
+      + createModalOpen
+      + title
+      + targetKilowattHours: number | null
+      + deadline
+      + scopeType: ConsumptionGoalScopeType
+      + scopeTargetId
+      + activeFrom
+      + activeTo
+      + scopeOptions: DropdownOption[]
+      + constructor: (
+      + reportFacade: ReportFacade
+      + deviceControlFacade: DeviceControlFacade
+      + workplaceFacade: WorkplaceFacade
+      - activeWorkplaceContext: ActiveWorkplaceContextService
+      - confirmDialogService: ConfirmDialogService
+      - toastService: ToastService
+      - translate: TranslateService
+      - uiPreferences: UiPreferencesService
+    }
+    class "ReportsPageComponent" as FrontendPresentation_report_ReportsPageComponent <<Component>> {
+      + title
+      + period: ConsumptionReportPeriod
+      + selectedReport: ConsumptionReport | null
+      + isReportDetailClosing
+      + rangeOptions: TimeRangeOption[]
+      - lockedScrollY
+      - reportDetailCloseTimeout: ReturnType<typeof setTimeout> | null
+      - reportDetailCloseAnimationMs
+      - languageChangeSubscription: Subscription
+      + periods: ConsumptionReportPeriod[]
+      + constructor: (
+      + reportFacade: ReportFacade
+      - changeDetectorRef: ChangeDetectorRef
+      - toastService: ToastService
+      - translate: TranslateService
+      - uiPreferences: UiPreferencesService
+      - document: Document
+      + ngOnInit() : Promise<void>
+    }
+  }
+  package "Presentation / Routes" {
+    class "REPORTING_ROUTES" as FrontendPresentation_report_REPORTING_ROUTES <<Routes>> {
+      + route: /consumption/reports
+    }
+  }
+}
+
+FrontendPresentation_report_ConsumptionGoalsPageComponent ..> FrontendPresentation_report_ConsumptionGoalInsight
+FrontendPresentation_report_ConsumptionGoalsPageComponent ..> FrontendPresentation_report_GoalProgressCardComponent
+FrontendPresentation_report_ReportsPageComponent ..> FrontendPresentation_report_MonthlyComparisonChartComponent
+FrontendPresentation_report_ReportsPageComponent ..> FrontendPresentation_report_ReportCardComponent
+
+' Relationship completion: every declared type participates in the frontend diagram.
+FrontendPresentation_report_ConsumptionGoalsPageComponent ..> FrontendPresentation_report_REPORTING_ROUTES
+
+@enduml

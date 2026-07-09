@@ -1,0 +1,64 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+skinparam wrapWidth 220
+skinparam maxMessageSize 130
+skinparam nodesep 70
+skinparam ranksep 80
+skinparam ArrowColor #8A8A8A
+skinparam ArrowFontColor #666666
+skinparam ArrowFontStyle bold
+skinparam ArrowThickness 1
+skinparam rectangleRoundCorner 0
+skinparam rectangleBorderThickness 0
+skinparam rectangleFontColor #FFFFFF
+skinparam rectangleFontStyle plain
+skinparam rectangle {
+  BorderThickness 0
+  MinimumWidth 190
+  Padding 12
+}
+skinparam rectangle<<BoundedContext>> {
+  BackgroundColor transparent
+  BorderColor #4A4A4A
+  BorderThickness 2
+  BorderStyle dashed
+  FontColor #333333
+  FontStyle bold
+  MinimumWidth 760
+  Padding 18
+}
+hide stereotype
+left to right direction
+
+title LowCortisol - Support Frontend Presentation Components Diagram
+
+rectangle "<b>Support Presentation Layer</b>\n<i>[Vue Presentation Surface]</i>" <<BoundedContext>> {
+  rectangle "<b>Support Page</b>\n<i>[Page / Routed View]</i>\n\nShows tickets, ticket detail, help articles and support agents." as SupportPage #58A9E8
+  rectangle "<b>Support Ticket Card</b>\n<i>[UI Component]</i>\n\nDisplays ticket title, category, priority and status." as TicketCard #58A9E8
+  rectangle "<b>Create Support Ticket Modal</b>\n<i>[UI Component]</i>\n\nCaptures title, description, category and related site." as CreateTicketModal #58A9E8
+  rectangle "<b>Conversation Panel</b>\n<i>[UI Component]</i>\n\nDisplays messages and lets the user send replies." as ConversationPanel #58A9E8
+  rectangle "<b>Knowledge Article Card</b>\n<i>[UI Component]</i>\n\nShows article summary and helpful count." as ArticleCard #58A9E8
+  rectangle "<b>Knowledge Article Detail Modal</b>\n<i>[UI Component]</i>\n\nDisplays help article detail." as ArticleModal #58A9E8
+  rectangle "<b>Support Store</b>\n<i>[Application Store]</i>\n\nExposes tickets, agents, articles, conversations and summary." as Store #3498DB
+}
+
+rectangle "<b>Shared UI Components</b>\n<i>[Shared]</i>\n\nCards, buttons, badges, modals, loading and empty states." as Shared #7F8C8D
+rectangle "<b>Support Routes</b>\n<i>[Vue Router]</i>\n\nActivates the /support route." as Routes #7F8C8D
+
+Routes --> SupportPage : Activates
+SupportPage --> Store : Reads state / sends actions
+SupportPage --> TicketCard : Composes
+SupportPage --> CreateTicketModal : Opens modal
+SupportPage --> ConversationPanel : Composes
+SupportPage --> ArticleCard : Composes
+SupportPage --> ArticleModal : Opens modal
+TicketCard ..> Shared : Uses
+CreateTicketModal ..> Shared : Uses
+ConversationPanel ..> Shared : Uses
+ArticleCard ..> Shared : Uses
+ArticleModal ..> Shared : Uses
+
+@enduml

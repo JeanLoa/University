@@ -1,0 +1,132 @@
+@startuml
+title ElectroCorp Platform - IAM Backend Application Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "IAM / Application" {
+  package "Application / Command Services" {
+    interface "AuthCommandService" as Backend_iam_AuthCommandService <<Command Service>> {
+      + signUp(SignUpCommand command) : AuthenticationResult
+      + signIn(SignInCommand command) : AuthenticationResult
+      + signOut() : void
+      + recoverPassword(RecoverPasswordCommand command) : void
+      + resetPassword(ResetPasswordCommand command) : void
+    }
+    interface "UserCommandService" as Backend_iam_UserCommandService <<Command Service>> {
+      + updateProfile(Long userId, UpdateProfileCommand command) : User
+      + assignAccessProfile(AssignAccessProfileCommand command) : User
+      + updateUiPreference(Long userId, UpdateUiPreferenceCommand command) : UserUiPreference
+      + deleteAccount(Long userId) : void
+    }
+  }
+  package "Application / Query Services" {
+    interface "AuthenticatedUserQueryService" as Backend_iam_AuthenticatedUserQueryService <<Query Service>> {
+      + getAuthenticatedUser(Long userId) : User
+    }
+    interface "UserQueryService" as Backend_iam_UserQueryService <<Query Service>> {
+      + getProfile(Long userId) : User
+      + getUsers() : List<User>
+      + getUiPreference(Long userId) : UserUiPreference
+    }
+    interface "AccessProfileQueryService" as Backend_iam_AccessProfileQueryService <<Query Service>> {
+      + getAccessProfiles() : List<AccessProfileDetails>
+    }
+  }
+  package "Application / Ports" {
+    interface "PasswordRecoveryDeliveryPort" as Backend_iam_PasswordRecoveryDeliveryPort <<Port>> {
+      + sendPasswordResetLink(User user, String rawToken) : void
+    }
+  }
+  package "Application / Event Handlers" {
+    class "UserRegisteredEventHandler" as Backend_iam_UserRegisteredEventHandler <<Event Handler>> {
+      - integrationEventPublisher: IntegrationEventPublisher
+      + on(UserRegisteredEvent event) : void
+    }
+  }
+  package "Application / Security Ports" {
+    interface "HashingService" as Backend_iam_HashingService <<Port>> {
+      + hash(String rawPassword) : String
+      + matches(String rawPassword, String encodedPassword) : boolean
+    }
+    interface "TokenService" as Backend_iam_TokenService <<Port>> {
+      + generateToken(User user) : String
+      + validateAndGetUserId(String token) : Optional<Long>
+    }
+    interface "PasswordResetTokenService" as Backend_iam_PasswordResetTokenService <<Port>> {
+      + generateToken() : String
+      + hashToken(String rawToken) : String
+    }
+    class "AccessAuthorizationService" as Backend_iam_AccessAuthorizationService <<Application Service>> {
+      - accessProfilePolicyService: AccessProfilePolicyService
+      + hasPermission(User user, AccessPermission permission) : boolean
+      + requirePermission(User user, AccessPermission permission) : void
+    }
+  }
+  package "Application / Results" {
+    class "AuthenticationResult" as Backend_iam_AuthenticationResult <<record>> {
+      + User user
+      + String token
+    }
+    class "AccessProfileDetails" as Backend_iam_AccessProfileDetails <<record>> {
+      + AccessProfile profile
+      + Set<AccessPermission> permissions
+    }
+  }
+  package "Application / Services" {
+    class "AuthApplicationService" as Backend_iam_AuthApplicationService <<Application Service>> {
+      - userRepository: UserRepository
+      - accessProfileRepository: AccessProfileRepository
+      - hashingService: HashingService
+      - tokenService: TokenService
+      - domainEventPublisher: DomainEventPublisher
+      - passwordResetTokenRepository: PasswordResetTokenRepository
+      - passwordResetTokenService: PasswordResetTokenService
+      - passwordRecoveryDeliveryPort: PasswordRecoveryDeliveryPort
+      - passwordPolicyService: PasswordPolicyService
+      + signUp(SignUpCommand command) : AuthenticationResult
+      + signIn(SignInCommand command) : AuthenticationResult
+      + getAuthenticatedUser(Long userId) : User
+      + signOut() : void
+      + recoverPassword(RecoverPasswordCommand command) : void
+      + resetPassword(ResetPasswordCommand command) : void
+    }
+    class "UserApplicationService" as Backend_iam_UserApplicationService <<Application Service>> {
+      - userRepository: UserRepository
+      - accessProfileRepository: AccessProfileRepository
+      - userUiPreferenceRepository: UserUiPreferenceRepository
+      - accessProfilePolicyService: AccessProfilePolicyService
+      + getProfile(Long userId) : User
+      + getUsers() : List<User>
+      + getUiPreference(Long userId) : UserUiPreference
+      + updateProfile(Long userId, UpdateProfileCommand command) : User
+      + assignAccessProfile(AssignAccessProfileCommand command) : User
+      + updateUiPreference(Long userId, UpdateUiPreferenceCommand command) : UserUiPreference
+      + deleteAccount(Long userId) : void
+    }
+    class "AccessProfileApplicationService" as Backend_iam_AccessProfileApplicationService <<Application Service>> {
+      - accessProfileRepository: AccessProfileRepository
+      - accessProfilePolicyService: AccessProfilePolicyService
+      + getAccessProfiles() : List<AccessProfileDetails>
+    }
+  }
+}
+
+Backend_iam_AuthApplicationService ..|> Backend_iam_AuthCommandService
+Backend_iam_AuthApplicationService ..|> Backend_iam_AuthenticatedUserQueryService
+Backend_iam_UserApplicationService ..|> Backend_iam_UserCommandService
+Backend_iam_UserApplicationService ..|> Backend_iam_UserQueryService
+Backend_iam_AccessProfileApplicationService ..|> Backend_iam_AccessProfileQueryService
+
+Backend_iam_AuthApplicationService ..> Backend_iam_HashingService
+Backend_iam_AuthApplicationService ..> Backend_iam_TokenService
+Backend_iam_AuthApplicationService ..> Backend_iam_PasswordResetTokenService
+Backend_iam_AuthApplicationService ..> Backend_iam_PasswordRecoveryDeliveryPort
+Backend_iam_AuthApplicationService ..> Backend_iam_AuthenticationResult
+Backend_iam_UserRegisteredEventHandler ..> Backend_iam_AuthApplicationService : after commit
+Backend_iam_UserApplicationService ..> Backend_iam_AccessAuthorizationService
+Backend_iam_AccessProfileApplicationService ..> Backend_iam_AccessProfileDetails
+
+@enduml

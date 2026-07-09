@@ -1,0 +1,101 @@
+@startuml
+title ElectroCorp Web App - Reporting Frontend Infrastructure Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Reporting / Infrastructure" {
+  package "Infrastructure / API Services" {
+    class "ConsumptionReportsApiService" as Frontend_reporting_ConsumptionReportsApiService <<API Service>> {
+      + constructor: (
+      + http: HttpClient
+      + apiBaseUrl: string
+      + findAllForCurrentUser() : Observable<ConsumptionReportResponse[]>
+    }
+    class "EnergyGoalsApiService" as Frontend_reporting_EnergyGoalsApiService <<API Service>> {
+      + constructor: (
+      + http: HttpClient
+      + apiBaseUrl: string
+      + findAllForCurrentUser() : Observable<EnergyGoalResponse[]>
+    }
+  }
+  package "Infrastructure / Assemblers" {
+    class "ConsumptionReportAssembler" as Frontend_reporting_ConsumptionReportAssembler <<Assembler>> {
+      + override: toEntity(response: ConsumptionReportResponse): ConsumptionReport
+      + override: toResource(entity: ConsumptionReport): ConsumptionReportResource
+      - resolvePeriod: (
+      + startDate: string
+      + endDate: string
+    }
+    class "EnergyGoalAssembler" as Frontend_reporting_EnergyGoalAssembler <<Assembler>> {
+      + override: toEntity(response: EnergyGoalResponse): EnergyGoal
+      + override: toResource(entity: EnergyGoal): EnergyGoalResource
+      - resolveTargetKilowattHours(primary: number | undefined, legacyMisnamedKilowattHours: number | undefined) : number
+      - resolveCurrentKilowattHours(primary: number | undefined, legacyMisnamedKilowattHours: number | undefined) : number
+      - normalizeLegacyTarget(value: number) : number
+    }
+  }
+  package "Infrastructure / Resources" {
+    interface "ConsumptionReportResource" as Frontend_reporting_ConsumptionReportResource <<interface>> {
+      + userId?: number
+      + startDate: string
+      + endDate: string
+    }
+    interface "EnergyGoalResource" as Frontend_reporting_EnergyGoalResource <<interface>> {
+      + userId?: number
+      + title: string
+      + targetKilowattHours: number
+      + currentKilowattHours: number
+      + deadline: string
+      + status: EnergyGoalStatus
+      + createdAt?: string
+      + scopeType?: EnergyGoalScopeType
+      + scopeId?: number | null
+      + scopeName?: string | null
+      + activeFrom?: string | null
+      + activeTo?: string | null
+    }
+  }
+  package "Infrastructure / Responses" {
+    interface "ConsumptionReportResponse" as Frontend_reporting_ConsumptionReportResponse <<interface>> {
+      + userId: number
+      + totalWatts: number
+      + averageWatts: number
+      + highestWatts: number
+      + startDate: string
+      + endDate: string
+    }
+    interface "EnergyGoalResponse" as Frontend_reporting_EnergyGoalResponse <<interface>> {
+      + userId: number
+      + title: string
+      + targetKilowattHours: number
+      + currentKilowattHours: number
+      + targetWatts?: number
+      + currentWatts?: number
+      + deadline: string
+      + status: EnergyGoalStatus
+      + createdAt: string
+      + scopeType?: EnergyGoalScopeType | null
+      + scopeId?: number | null
+      + scopeName?: string | null
+      + activeFrom?: string | null
+      + activeTo?: string | null
+    }
+  }
+}
+
+Frontend_reporting_ConsumptionReportAssembler ..> Frontend_reporting_ConsumptionReportResource
+Frontend_reporting_ConsumptionReportAssembler ..> Frontend_reporting_ConsumptionReportResponse
+Frontend_reporting_ConsumptionReportsApiService ..> Frontend_reporting_ConsumptionReportAssembler
+Frontend_reporting_ConsumptionReportsApiService ..> Frontend_reporting_ConsumptionReportResource
+Frontend_reporting_ConsumptionReportsApiService ..> Frontend_reporting_ConsumptionReportResponse
+Frontend_reporting_EnergyGoalAssembler ..> Frontend_reporting_EnergyGoalResource
+Frontend_reporting_EnergyGoalAssembler ..> Frontend_reporting_EnergyGoalResponse
+Frontend_reporting_EnergyGoalsApiService ..> Frontend_reporting_EnergyGoalAssembler
+Frontend_reporting_EnergyGoalsApiService ..> Frontend_reporting_EnergyGoalResource
+Frontend_reporting_EnergyGoalsApiService ..> Frontend_reporting_EnergyGoalResponse
+
+
+@enduml

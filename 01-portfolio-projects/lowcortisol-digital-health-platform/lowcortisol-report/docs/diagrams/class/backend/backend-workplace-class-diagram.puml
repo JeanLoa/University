@@ -1,0 +1,26 @@
+@startuml
+title LowCortisol Platform - Workplace Backend Bounded Context Layers
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Workplace Backend Bounded Context" {
+  class "Application" as Backend_workplace_Application <<layer>>
+  class "Domain" as Backend_workplace_Domain <<layer>>
+  class "Infrastructure" as Backend_workplace_Infrastructure <<layer>>
+  class "Interfaces REST" as Backend_workplace_Interfaces_REST <<layer>>
+}
+
+Backend_workplace_Interfaces_REST ..> Backend_workplace_Application : commands / queries
+Backend_workplace_Application ..> Backend_workplace_Domain : model and policies
+Backend_workplace_Application ..> Backend_workplace_Infrastructure : repository ports / adapters
+Backend_workplace_Infrastructure ..> Backend_workplace_Domain : persistence mapping
+Backend_workplace_Interfaces_REST ..> Backend_workplace_Domain : resources from aggregates
+
+note bottom of Backend_workplace_Application
+Detailed class diagrams for each layer are available in docs/diagrams/class/backend/layers/workplace.
+end note
+
+@enduml

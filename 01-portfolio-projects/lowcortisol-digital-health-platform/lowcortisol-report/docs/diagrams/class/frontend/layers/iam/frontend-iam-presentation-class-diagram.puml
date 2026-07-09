@@ -1,0 +1,111 @@
+@startuml
+title LowCortisol WebApp - IAM Frontend Presentation Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "IAM Presentation" {
+  package "Presentation / Pages" {
+    class "AccountPageComponent" as FrontendPresentation_iam_AccountPageComponent <<Component>> {
+      + constructor: (
+      + iamFacade: IamFacade
+      - uiPreferences: UiPreferencesService
+      - translate: TranslateService
+      + get: userInitials(): string
+      + formatDate(value: string | undefined) : string
+      + currentLocale() : string
+      - t(key: string) : string
+    }
+    class "LoginPageComponent" as FrontendPresentation_iam_LoginPageComponent <<Component>> {
+      + email
+      + password
+      + constructor: (
+      + iamFacade: IamFacade
+      - toastService: ToastService
+      + onSubmit() : Promise<void>
+    }
+    class "PlatformPageComponent" as FrontendPresentation_iam_PlatformPageComponent <<Component>> {
+      + languageOptions: DropdownOption[]
+      + constructor: (
+      + uiPreferences: UiPreferencesService
+      - toastService: ToastService
+      - translate: TranslateService
+      + get: currentLanguage(): string
+      + get: currentLanguageLabel(): string
+      + get: currentThemeLabel(): string
+      + selectLanguage(value: string) : void
+      + setDarkMode(enabled: boolean) : void
+      - t(key: string) : string
+    }
+    class "ProfilePageComponent" as FrontendPresentation_iam_ProfilePageComponent <<Component>> {
+      + fullName
+      + email
+      + constructor: (
+      + iamFacade: IamFacade
+      - toastService: ToastService
+      - translate: TranslateService
+      + ngOnInit() : void
+      + onUpdateProfile() : Promise<void>
+      + hasPendingChanges() : boolean
+      - t(key: string) : string
+    }
+    class "RecoverPasswordPageComponent" as FrontendPresentation_iam_RecoverPasswordPageComponent <<Component>> {
+      + email
+      + constructor: (
+      + iamFacade: IamFacade
+      - toastService: ToastService
+      + onSubmit() : Promise<void>
+    }
+    class "RegisterPageComponent" as FrontendPresentation_iam_RegisterPageComponent <<Component>> {
+      + fullName
+      + email
+      + password
+      + selectedLandingPlan: LandingSelectedPlan | null
+      + constructor: (
+      + iamFacade: IamFacade
+      + planFacade: PlanFacade
+      - route: ActivatedRoute
+      - router: Router
+      - toastService: ToastService
+      + ngOnInit() : void
+      + get: passwordRequirements()
+      + get: passwordIsValid(): boolean
+      + get: registrationIsLoading(): boolean
+      + onSubmit() : Promise<void>
+      - activateSelectedLandingPlan() : Promise<void>
+      - isPlanCode(value: string | null) : value is PlanCode
+      - getDefaultPlanName(planCode: PlanCode) : string
+    }
+    class "SecurityPageComponent" as FrontendPresentation_iam_SecurityPageComponent <<Component>> {
+      + constructor: (
+      + iamFacade: IamFacade
+      - toastService: ToastService
+      - confirmDialog: ConfirmDialogService
+      - translate: TranslateService
+      + get: email(): string
+      + sendRecovery() : Promise<void>
+      + onDeleteAccount() : Promise<void>
+      - t(key: string) : string
+    }
+  }
+  package "Presentation / Routes" {
+    class "IAM_ROUTES" as FrontendPresentation_iam_IAM_ROUTES <<Routes>> {
+      + route: /iam/login
+    }
+  }
+}
+
+
+' Relationship completion: every declared type participates in the frontend diagram.
+FrontendPresentation_iam_AccountPageComponent ..> FrontendPresentation_iam_LoginPageComponent
+FrontendPresentation_iam_AccountPageComponent ..> FrontendPresentation_iam_LoginPageComponent
+FrontendPresentation_iam_AccountPageComponent ..> FrontendPresentation_iam_PlatformPageComponent
+FrontendPresentation_iam_AccountPageComponent ..> FrontendPresentation_iam_ProfilePageComponent
+FrontendPresentation_iam_AccountPageComponent ..> FrontendPresentation_iam_RecoverPasswordPageComponent
+FrontendPresentation_iam_AccountPageComponent ..> FrontendPresentation_iam_RegisterPageComponent
+FrontendPresentation_iam_AccountPageComponent ..> FrontendPresentation_iam_SecurityPageComponent
+FrontendPresentation_iam_AccountPageComponent ..> FrontendPresentation_iam_IAM_ROUTES
+
+@enduml

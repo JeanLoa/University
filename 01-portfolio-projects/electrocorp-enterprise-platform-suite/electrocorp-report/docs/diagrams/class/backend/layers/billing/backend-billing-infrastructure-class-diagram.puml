@@ -1,0 +1,59 @@
+@startuml
+title ElectroCorp Platform - Billing Backend Infrastructure Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Billing / Infrastructure" {
+  package "Infrastructure / Bootstrap" {
+    class "BillingPlanCatalogInitializer" as Backend_billing_BillingPlanCatalogInitializer <<Class>> {
+      - planRepository: JpaPlanRepository
+      + run(ApplicationArguments args) : void
+      - defaultPlans() : List<Plan>
+    }
+  }
+  package "Infrastructure / JPA" {
+    class "BillingJpaTableNames" as Backend_billing_BillingJpaTableNames <<Class>> {
+      + PLANS: String
+      + SUBSCRIPTIONS: String
+      + PAYMENTS: String
+      + INVOICES: String
+      - BillingJpaTableNames()
+    }
+  }
+  package "Infrastructure / JPA Repositories" {
+    interface "JpaInvoiceRepository" as Backend_billing_JpaInvoiceRepository <<interface>> {
+    }
+    interface "JpaPaymentRepository" as Backend_billing_JpaPaymentRepository <<interface>> {
+    }
+    interface "JpaPlanRepository" as Backend_billing_JpaPlanRepository <<interface>> {
+    }
+    interface "JpaSubscriptionRepository" as Backend_billing_JpaSubscriptionRepository <<interface>> {
+    }
+  }
+  package "Infrastructure / Payments" {
+    class "StripePaymentGatewayAdapter" as Backend_billing_StripePaymentGatewayAdapter <<Adapter>> {
+      - restClient: RestClient
+      - stripeSecretKey: String
+      - paymentIntentsUrl: String
+      - paymentMethodToken: String
+      + StripePaymentGatewayAdapter(restClientBuilder: RestClient.Builder)
+      + charge(PaymentGatewayChargeRequest request) : PaymentGatewayChargeResult
+      - approveDemoCharge(PaymentGatewayChargeRequest request) : PaymentGatewayChargeResult
+      - buildPaymentIntentForm(PaymentGatewayChargeRequest request) : String
+    }
+  }
+}
+
+Backend_billing_BillingPlanCatalogInitializer ..> Backend_billing_JpaPlanRepository
+
+' Layer relationship completion: every declared type participates in this layer diagram.
+Backend_billing_JpaPlanRepository ..> Backend_billing_BillingJpaTableNames
+Backend_billing_JpaPlanRepository ..> Backend_billing_JpaInvoiceRepository
+Backend_billing_JpaPlanRepository ..> Backend_billing_JpaPaymentRepository
+Backend_billing_JpaPlanRepository ..> Backend_billing_JpaSubscriptionRepository
+Backend_billing_StripePaymentGatewayAdapter ..|> Backend_billing_PaymentGatewayPort
+
+@enduml

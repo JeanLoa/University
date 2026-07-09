@@ -1,0 +1,138 @@
+@startuml
+title ElectroCorp Web App - Notifications Frontend Presentation Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Notifications Presentation" {
+  package "Presentation / Components" {
+    interface "AlertContextItem" as FrontendPresentation_notifications_AlertContextItem <<interface>> {
+      + label: string
+      + value: string
+    }
+    class "AlertListComponent" as FrontendPresentation_notifications_AlertListComponent <<Component>> {
+      + alerts: AlertListItem[]
+      + markAsRead
+      + remove
+      + dismissForTenMinutes
+      - actionDelayMs
+      - enterAnimationMs
+      - removeRecoveryMs
+      - readGlowMs
+      - hasRenderedAlerts
+      - knownAlertIds
+      - enteringAlerts
+      - selectedDetailByAlert
+      - markingAsRead
+      - removingAlerts
+      + constructor: (
+      - changeDetectorRef: ChangeDetectorRef
+      - translate: TranslateService
+      + ngOnChanges() : void
+    }
+    class "AlertListItem" as FrontendPresentation_notifications_AlertListItem <<type>> {
+      + Alert: &
+      + visualLevel?: string
+    }
+    class "AlertRuleCardComponent" as FrontendPresentation_notifications_AlertRuleCardComponent <<Component>> {
+      + rule: !: AlertRule
+      + toggle
+      + remove
+      + constructor(translate: TranslateService)
+      + metricLabel() : string
+      + conditionLabel() : string
+      + levelLabel() : string
+      + thresholdLabel() : string
+      + get: statusLabelKey(): string
+      - t(key: string, params?: Record<string, unknown>) : string
+    }
+    class "NotificationPreferenceFormComponent" as FrontendPresentation_notifications_NotificationPreferenceFormComponent <<Component>> {
+      + preference: NotificationPreference | null
+      + classificationPolicy: NotificationClassificationPolicy
+      + DEFAULT_NOTIFICATION_CLASSIFICATION_POLICY
+      + saved
+      + classificationPolicyChanged
+      + new: EventEmitter<NotificationClassificationPolicy>()
+      + stableMax
+      + neutralMax
+      + warningMax
+      + previewScore
+      + previewSource: AlertSourceType
+      + emailEnabled
+      + pushEnabled
+      + inAppEnabled
+      + toastEnabled
+      + dashboardEnabled
+      + criticalOnly
+      + minimumLevel: AlertLevel
+    }
+  }
+  package "Presentation / Pages" {
+    class "AlertRulesPageComponent" as FrontendPresentation_notifications_AlertRulesPageComponent <<Component>> {
+      + newRuleName
+      + newRuleMetric: AlertRuleMetric
+      + newRuleCondition: AlertRuleCondition
+      + newRuleLevel: AlertLevel
+      + newRuleScope: RuleScopeType
+      + newRuleEvaluator: RuleEvaluatorType
+      + newRuleThreshold
+      + newRuleWeight
+      + observedValue
+      + isEvaluationResultDismissing
+      - evaluationResultDismissTimeout: ReturnType<typeof setTimeout> | null
+      - evaluationResultDismissMs
+      + metricOptions: DropdownOption[]
+      + conditionOptions: DropdownOption[]
+      + levelOptions: DropdownOption[]
+      + scopeOptions: DropdownOption[]
+      + evaluatorOptions: DropdownOption[]
+      + constructor: (
+    }
+    class "AlertsPageComponent" as FrontendPresentation_notifications_AlertsPageComponent <<Component>> {
+      + selectedFilter: AlertFilter
+      + filterOptions: DropdownOption[]
+      + constructor: (
+      + notificationsFacade: NotificationsFacade
+      - notificationChannelPolicy: NotificationChannelPolicyService
+      - toastService: ToastService
+      - translate: TranslateService
+      + ngOnInit() : Promise<void>
+      + refresh() : Promise<void>
+      + selectFilter(value: string) : void
+      + markAsRead(alertId: number) : Promise<void>
+      + deleteAlert(alertId: number) : Promise<void>
+      + dismissAlert(alert: AlertListItem) : Promise<void>
+      + get: inboxAlerts(): AlertListItem[]
+      + get: enrichedFilteredAlerts(): AlertListItem[]
+      + get: visibleAlertsCount(): number
+      + get: visibleUnreadCount(): number
+      + get: visibleCriticalCount(): number
+    }
+    class "NotificationPreferencesPageComponent" as FrontendPresentation_notifications_NotificationPreferencesPageComponent <<Component>> {
+      + constructor: (
+      + notificationsFacade: NotificationsFacade
+      - toastService: ToastService
+      - translate: TranslateService
+      + ngOnInit() : Promise<void>
+      + savePreference(command: UpdateNotificationPreferenceCommand) : Promise<void>
+    }
+  }
+  package "Presentation / Routes" {
+    class "NOTIFICATIONS_ROUTES" as FrontendPresentation_notifications_NOTIFICATIONS_ROUTES <<Routes>> {
+      + route: /alerts/inbox
+    }
+  }
+}
+
+FrontendPresentation_notifications_AlertRulesPageComponent ..> FrontendPresentation_notifications_AlertRuleCardComponent
+FrontendPresentation_notifications_AlertsPageComponent ..> FrontendPresentation_notifications_AlertListComponent
+FrontendPresentation_notifications_AlertsPageComponent ..> FrontendPresentation_notifications_AlertListItem
+FrontendPresentation_notifications_NotificationPreferencesPageComponent ..> FrontendPresentation_notifications_NotificationPreferenceFormComponent
+
+' Relationship completion: every declared type participates in the frontend diagram.
+FrontendPresentation_notifications_AlertRulesPageComponent ..> FrontendPresentation_notifications_AlertContextItem
+FrontendPresentation_notifications_AlertRulesPageComponent ..> FrontendPresentation_notifications_NOTIFICATIONS_ROUTES
+
+@enduml

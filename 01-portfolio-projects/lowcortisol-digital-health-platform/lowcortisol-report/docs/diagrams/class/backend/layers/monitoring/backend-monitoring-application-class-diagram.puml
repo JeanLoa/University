@@ -1,0 +1,106 @@
+@startuml
+title LowCortisol Platform - Monitoring Backend Application Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Monitoring / Application" {
+  package "Application / Command Services" {
+    interface "MonitoringCommandService" as Backend_consumptionmonitoring_MonitoringCommandService <<interface>> {
+    }
+  }
+  package "Application / Command Services Impl" {
+    class "MonitoringCommandServiceImpl" as Backend_consumptionmonitoring_MonitoringCommandServiceImpl <<Command Service>> {
+      - applicationService: MonitoringApplicationService
+      - settingsService: ConsumptionSamplingSettingsService
+      + handle(CreateConsumptionReadingCommand command) : ConsumptionReading
+      + handle(UpdateConsumptionSamplingSettingsCommand command) : Integer
+    }
+  }
+  package "Application / Query Services" {
+    interface "MonitoringQueryService" as Backend_consumptionmonitoring_MonitoringQueryService <<interface>> {
+    }
+  }
+  package "Application / Query Services Impl" {
+    class "MonitoringQueryServiceImpl" as Backend_consumptionmonitoring_MonitoringQueryServiceImpl <<Query Service>> {
+      - applicationService: MonitoringApplicationService
+      - settingsService: ConsumptionSamplingSettingsService
+      + handle(GetConsumptionReadingsByUserQuery query) : List<ConsumptionReading>
+      + handle(GetConsumptionDashboardSummaryQuery query) : ConsumptionDashboardSummaryResource
+      + handle(GetConsumptionSamplingSettingsQuery query) : Integer
+    }
+  }
+  package "Application / Services" {
+    class "MonitoringApplicationService" as Backend_consumptionmonitoring_MonitoringApplicationService <<Application Service>> {
+      - TARIFF_PER_KWH: BigDecimal
+      - consumptionReadingRepository: ConsumptionReadingRepository
+      - deviceRepository: DeviceRepository
+      - alertRepository: AlertRepository
+      - consumptionReadingRecorderService: ConsumptionReadingRecorderService
+      - consumptionSamplingSettingsService: ConsumptionSamplingSettingsService
+      + getReadings(Long userId) : List<ConsumptionReading>
+      + getReadings(Long userId, LocalDateTime start, LocalDateTime end) : List<ConsumptionReading>
+      + getDashboardSummary(Long userId) : ConsumptionDashboardSummaryResource
+      + createReading(CreateConsumptionReadingCommand command) : ConsumptionReading
+      - calculateAverageWatts(List<ConsumptionReading> readings) : BigDecimal
+      - calculateCostPerHour(BigDecimal watts) : BigDecimal
+      - projectMonthlyCost(BigDecimal todayEstimatedCost) : BigDecimal
+      - calculateEfficiencyScore(int totalReadings, int highReadings) : int
+      - resolveOperationalStatus(int efficiencyScore) : String
+      - buildTrend(List<ConsumptionReading> readings) : List<ConsumptionDashboardSummaryResource.TrendPoint>
+      - buildActiveDeviceDetails(List<Device> activeDevices) : List<ConsumptionDashboardSummaryResource.ActiveDevice>
+      - resolveRoom(Device device) : String
+      - alertLastTriggeredAt(Alert alert) : LocalDateTime
+      - safeKilowattHours(ConsumptionReading reading) : BigDecimal
+      - safeEstimatedCost(ConsumptionReading reading) : BigDecimal
+      - recordDueActiveDeviceIntervals(Long userId) : List<Device>
+    }
+    class "ConsumptionReadingRecorderService" as Backend_consumptionmonitoring_ConsumptionReadingRecorderService <<Application Service>> {
+      - DEFAULT_TARIFF_PER_KWH: BigDecimal
+      - MAX_SAMPLE_SECONDS: int
+      - usageStateRepository: ConsumptionDeviceUsageStateRepository
+      - consumptionReadingRepository: ConsumptionReadingRepository
+      - simulatorService: ConsumptionConsumptionSimulatorService
+      - notificationApplicationService: NotificationApplicationService
+      + recordStatusTransition(Device device, DeviceStatus previousStatus) : void
+      + recordActiveDeviceInterval(Device device) : ConsumptionReading
+      + recordActiveDeviceIntervalIfDue(Device device, int minimumSeconds) : ConsumptionReading
+      + closeUsage(Device device) : ConsumptionReading
+      - startUsage(Device device, LocalDateTime now) : ConsumptionDeviceUsageState
+      - closeUsage(Device device, LocalDateTime now) : ConsumptionReading
+      - calculateWatts(Device device) : BigDecimal
+      - calculateKilowattHours(BigDecimal watts, int sampleSeconds) : BigDecimal
+      - calculateEstimatedCost(BigDecimal kilowattHours) : BigDecimal
+      - publishRuleEvaluation(Device device, ConsumptionReading reading) : void
+    }
+    class "ConsumptionReadingSchedulerService" as Backend_consumptionmonitoring_ConsumptionReadingSchedulerService <<Application Service>> {
+      - deviceRepository: DeviceRepository
+      - recorderService: ConsumptionReadingRecorderService
+      - settingsService: ConsumptionSamplingSettingsService
+      + recordActiveDevicesConsumption() : void
+      + configureTasks(ScheduledTaskRegistrar taskRegistrar) : void
+    }
+    class "ConsumptionSamplingSettingsService" as Backend_consumptionmonitoring_ConsumptionSamplingSettingsService <<Application Service>> {
+      - DEFAULT_SECONDS: int
+      - MIN_SECONDS: int
+      - MAX_SECONDS: int
+      + getSampleSeconds() : int
+      + updateSampleSeconds(int seconds) : int
+    }
+  }
+}
+
+Backend_consumptionmonitoring_MonitoringCommandServiceImpl ..> Backend_consumptionmonitoring_MonitoringApplicationService
+Backend_consumptionmonitoring_MonitoringCommandServiceImpl ..> Backend_consumptionmonitoring_MonitoringCommandService
+Backend_consumptionmonitoring_MonitoringCommandServiceImpl ..> Backend_consumptionmonitoring_ConsumptionSamplingSettingsService
+Backend_consumptionmonitoring_MonitoringQueryServiceImpl ..> Backend_consumptionmonitoring_MonitoringApplicationService
+Backend_consumptionmonitoring_MonitoringQueryServiceImpl ..> Backend_consumptionmonitoring_MonitoringQueryService
+Backend_consumptionmonitoring_MonitoringQueryServiceImpl ..> Backend_consumptionmonitoring_ConsumptionSamplingSettingsService
+
+' Layer relationship completion: every declared type participates in this layer diagram.
+Backend_consumptionmonitoring_MonitoringCommandServiceImpl ..> Backend_consumptionmonitoring_ConsumptionReadingRecorderService
+Backend_consumptionmonitoring_MonitoringCommandServiceImpl ..> Backend_consumptionmonitoring_ConsumptionReadingSchedulerService
+
+@enduml

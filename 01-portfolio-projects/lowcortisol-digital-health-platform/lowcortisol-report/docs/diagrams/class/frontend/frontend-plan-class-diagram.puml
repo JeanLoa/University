@@ -1,0 +1,26 @@
+@startuml
+title LowCortisol WebApp - Plan Frontend Bounded Context Layers
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Plan Frontend Bounded Context" {
+  class "Domain" as Frontend_plan_Domain <<layer>>
+  class "Application" as Frontend_plan_Application <<layer>>
+  class "Infrastructure" as Frontend_plan_Infrastructure <<layer>>
+  class "Presentation" as Frontend_plan_Presentation <<layer>>
+}
+
+Frontend_plan_Presentation ..> Frontend_plan_Application : user actions / state
+Frontend_plan_Application ..> Frontend_plan_Domain : models and rules
+Frontend_plan_Application ..> Frontend_plan_Infrastructure : API services / adapters
+Frontend_plan_Infrastructure ..> Frontend_plan_Domain : resources and mappers
+Frontend_plan_Presentation ..> Frontend_plan_Domain : view models
+
+note bottom of Frontend_plan_Application
+Detailed class diagrams for each layer are available in docs/diagrams/class/frontend/layers/plan.
+end note
+
+@enduml

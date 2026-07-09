@@ -1,0 +1,66 @@
+@startuml
+title LowCortisol WebApp - Plan Frontend Application Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Plan / Application" {
+  package "Application Commands" {
+    class "SubscribeDto" as Frontend_plan_SubscribeDto <<Command DTO>> {
+      + userId
+      + workplaceId
+      + planId
+      + isValid()
+    }
+
+    class "CancelSubscriptionDto" as Frontend_plan_CancelSubscriptionDto <<Command DTO>> {
+      + subscriptionId
+      + reason
+    }
+
+    class "ProcessPaymentDto" as Frontend_plan_ProcessPaymentDto <<Command DTO>> {
+      + planId
+      + holderName
+      + cardNumber
+      + expirationDate
+      + cvv
+    }
+  }
+
+  package "Facade and Store" {
+    class "PlanFacade" as Frontend_plan_PlanFacade <<Facade>> {
+      - planApiService
+      + getPlans()
+      + getPlanById(planId)
+      + getActiveSubscription()
+      + subscribe(payload)
+      + changePlan(payload)
+      + cancelSubscription(payload)
+      + getPayments()
+      + getServiceRequest()
+      + getSummary()
+    }
+
+    class "PlanStore" as Frontend_plan_PlanStore <<Store>> {
+      + plans
+      + subscription
+      + payments
+      + serviceRequest
+      + summary
+      + loadPlans()
+      + subscribeToPlan(planId)
+      + changePlan(planId)
+      + cancelSubscription()
+      + activePlan()
+    }
+  }
+}
+
+Frontend_plan_PlanStore --> Frontend_plan_PlanFacade
+Frontend_plan_PlanFacade ..> Frontend_plan_SubscribeDto
+Frontend_plan_PlanFacade ..> Frontend_plan_CancelSubscriptionDto
+Frontend_plan_PlanFacade ..> Frontend_plan_ProcessPaymentDto
+
+@enduml

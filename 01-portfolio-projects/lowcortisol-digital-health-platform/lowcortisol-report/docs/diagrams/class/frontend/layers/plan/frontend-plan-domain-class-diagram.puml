@@ -1,0 +1,85 @@
+@startuml
+title LowCortisol WebApp - Plan Frontend Domain Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Plan / Domain" {
+  package "Domain Model" {
+    class "Plan" as Frontend_plan_Plan <<Entity>> {
+      + id
+      + code
+      + name
+      + price
+      + currency
+      + billingPeriod
+      + maxSites
+      + maxDevices
+      + features
+      + recommended
+    }
+
+    class "PlanFeature" as Frontend_plan_PlanFeature <<Entity>> {
+      + id
+      + planId
+      + name
+      + description
+      + enabled
+    }
+
+    class "Subscription" as Frontend_plan_Subscription <<Entity>> {
+      + id
+      + userId
+      + workplaceId
+      + planId
+      + status
+      + autoRenew
+      + changePlan(planId)
+      + cancel(reason)
+    }
+
+    class "Payment" as Frontend_plan_Payment <<Entity>> {
+      + id
+      + subscriptionId
+      + amount
+      + currency
+      + status
+      + paidAt
+    }
+
+    class "ServiceRequest" as Frontend_plan_ServiceRequest <<Entity>> {
+      + id
+      + subscriptionId
+      + type
+      + description
+      + status
+      + requestedAt
+    }
+  }
+
+  package "Domain Services" {
+    class "PlanPermissionService" as Frontend_plan_PlanPermissionService <<Domain Service>> {
+      + canAddSite(plan, currentSitesCount)
+      + canAddDevice(plan, currentDevicesCount)
+      + hasFeature(plan, featureName)
+    }
+
+    class "SubscriptionPolicyService" as Frontend_plan_SubscriptionPolicyService <<Domain Service>> {
+      + canSubscribe(plan)
+      + canChangePlan(subscription, plan)
+      + requiresPayment(plan)
+    }
+  }
+}
+
+Frontend_plan_Plan "1" o-- "*" Frontend_plan_PlanFeature
+Frontend_plan_Subscription --> Frontend_plan_Plan
+Frontend_plan_Payment --> Frontend_plan_Subscription
+Frontend_plan_ServiceRequest --> Frontend_plan_Subscription
+Frontend_plan_PlanPermissionService ..> Frontend_plan_Plan
+Frontend_plan_SubscriptionPolicyService ..> Frontend_plan_Plan
+Frontend_plan_SubscriptionPolicyService ..> Frontend_plan_Subscription
+
+@enduml

@@ -1,0 +1,90 @@
+@startuml
+title LowCortisol Platform - Notification Backend Application Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Notification / Application" {
+  package "Application / Command Services" {
+    interface "NotificationCommandService" as Backend_notification_NotificationCommandService <<interface>> {
+    }
+  }
+  package "Application / Command Services Impl" {
+    class "NotificationCommandServiceImpl" as Backend_notification_NotificationCommandServiceImpl <<Command Service>> {
+      - applicationService: NotificationApplicationService
+      + handle(CreateAlertCommand command) : Alert
+      + handle(MarkAlertAsReadCommand command) : Alert
+      + handle(DismissAlertCommand command) : Alert
+      + handle(ResolveAlertCommand command) : Alert
+      + deleteAlert(Long userId, Long alertId) : void
+      + handle(CreateAlertRuleCommand command) : AlertRule
+      + handle(ToggleAlertRuleCommand command) : AlertRule
+      + deleteRule(Long userId, Long ruleId) : void
+      + handle(CreateAlertRuleProfileCommand command) : AlertRuleProfile
+      + handle(ActivateAlertRuleProfileCommand command) : AlertRuleProfile
+      + handle(UpdateNotificationPreferenceCommand command) : NotificationPreference
+    }
+  }
+  package "Application / Query Services" {
+    interface "NotificationQueryService" as Backend_notification_NotificationQueryService <<interface>> {
+    }
+  }
+  package "Application / Query Services Impl" {
+    class "NotificationQueryServiceImpl" as Backend_notification_NotificationQueryServiceImpl <<Query Service>> {
+      - applicationService: NotificationApplicationService
+      + handle(GetAlertsByUserQuery query) : List<Alert>
+      + handle(GetAlertRulesByUserQuery query) : List<AlertRule>
+      + handle(GetAlertRuleProfilesByUserQuery query) : List<AlertRuleProfile>
+      + handle(EvaluateAlertRulesQuery query) : RuleEvaluationResult
+      + handle(GetNotificationPreferenceQuery query) : NotificationPreference
+    }
+  }
+  package "Application / Services" {
+    class "NotificationApplicationService" as Backend_notification_NotificationApplicationService <<Application Service>> {
+      - alertRepository: AlertRepository
+      - alertRuleRepository: AlertRuleRepository
+      - alertRuleProfileRepository: AlertRuleProfileRepository
+      - preferenceRepository: NotificationPreferenceRepository
+      - alertPolicyService: AlertPolicyService
+      - alertSourceOwnershipService: AlertSourceOwnershipService
+      - ruleEvaluationService: RuleEvaluationService
+      - notificationPreferencePolicyService: NotificationPreferencePolicyService
+      + getAlerts(Long userId) : List<Alert>
+      + createAlert(CreateAlertCommand command) : Alert
+      + markAsRead(Long userId, Long alertId) : Alert
+      + dismissAlert(Long userId, Long alertId, Integer minutes) : Alert
+      + resolveAlert(Long userId, Long alertId) : Alert
+      + deleteAlert(Long userId, Long alertId) : void
+      - buildThreadKey(CreateAlertCommand command, AlertSourceType sourceType, AlertEventType eventType) : String
+      - parseOptionalDateTime(String value) : LocalDateTime
+      - normalizeOptional(String value) : String
+      - validateRuleScope(Long userId, RuleScopeType scopeType, String scopeId) : void
+      - parseEnum(String value, T defaultValue, Class<T> enumType, String errorMessage) : <T extends Enum<T>> T
+      + getRules(Long userId) : List<AlertRule>
+      + createRule(CreateAlertRuleCommand command) : AlertRule
+      + toggleRule(Long userId, Long ruleId) : AlertRule
+      + deleteRule(Long userId, Long ruleId) : void
+      + getRuleProfiles(Long userId) : List<AlertRuleProfile>
+    }
+  }
+  package "Application Root" {
+    class "ConsoleNotificationDeliveryAdapter" as Backend_notification_ConsoleNotificationDeliveryAdapter <<Class>> {
+      + send(Alert alert, NotificationPreference preference) : void
+    }
+    interface "NotificationDeliveryPort" as Backend_notification_NotificationDeliveryPort <<interface>> {
+    }
+  }
+}
+
+Backend_notification_NotificationCommandServiceImpl ..> Backend_notification_NotificationApplicationService
+Backend_notification_NotificationCommandServiceImpl ..> Backend_notification_NotificationCommandService
+Backend_notification_NotificationQueryServiceImpl ..> Backend_notification_NotificationApplicationService
+Backend_notification_NotificationQueryServiceImpl ..> Backend_notification_NotificationQueryService
+
+' Layer relationship completion: every declared type participates in this layer diagram.
+Backend_notification_NotificationCommandServiceImpl ..> Backend_notification_ConsoleNotificationDeliveryAdapter
+Backend_notification_NotificationCommandServiceImpl ..> Backend_notification_NotificationDeliveryPort
+
+@enduml

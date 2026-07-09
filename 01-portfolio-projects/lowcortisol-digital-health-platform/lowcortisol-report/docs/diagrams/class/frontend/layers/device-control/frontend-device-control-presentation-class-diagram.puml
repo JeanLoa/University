@@ -1,0 +1,199 @@
+@startuml
+title LowCortisol WebApp - Device Control Frontend Presentation Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Device Control Presentation" {
+  package "Presentation / Components" {
+    class "DeviceCardComponent" as FrontendPresentation_device_control_DeviceCardComponent <<Component>> {
+      + device: !: Device
+      + locationName
+      + removing
+      + toggle
+      + remove
+      + powerTransition: PowerTransition
+      - transitionTimer: ReturnType<typeof setTimeout> | null
+      + ngOnChanges(changes: SimpleChanges) : void
+      + ngOnDestroy() : void
+      + get: deviceIcon(): string
+      + get: deviceTypeLabel(): string
+      + get: deviceTypeLabelKey(): string
+      + get: statusLabel(): string
+      + get: statusLabelKey(): string
+      + onToggle() : void
+      + onRemove() : void
+      - playPowerTransition(state: Exclude<PowerTransition, null>) : void
+    }
+    class "DeviceGroupCardComponent" as FrontendPresentation_device_control_DeviceGroupCardComponent <<Component>> {
+      + group: !: DeviceGroup
+      + devices: Device[]
+      + roomName
+      + removing
+      + execute
+      + remove
+      + powerTransition: GroupPowerTransition
+      - transitionTimer: ReturnType<typeof setTimeout> | null
+      + constructor: (
+      - translate: TranslateService
+      - uiPreferences: UiPreferencesService
+      + ngOnDestroy() : void
+      + get: canExecute(): boolean
+      + get: activeDeviceCount(): number
+      + get: currentWatts(): number
+      + get: hasActiveDevices(): boolean
+      + get: allDevicesOn(): boolean
+      + get: groupStateLabel(): string
+    }
+    class "DeviceListComponent" as FrontendPresentation_device_control_DeviceListComponent <<Component>> {
+      + devices: Device[]
+      + locationName
+      + removingDeviceIds
+      + toggle
+      + remove
+      + get: roomGroups(): DeviceRoomGroup[]
+      + isDeviceRemoving(deviceId: number) : boolean
+    }
+    class "RoutineCardComponent" as FrontendPresentation_device_control_RoutineCardComponent <<Component>> {
+      + routine: !: Routine
+      + removing
+      + toggle
+      + remove
+      + powerTransition: RoutinePowerTransition
+      - transitionTimer: ReturnType<typeof setTimeout> | null
+      + constructor: (
+      - translate: TranslateService
+      - uiPreferences: UiPreferencesService
+      + ngOnChanges(changes: SimpleChanges) : void
+      + ngOnDestroy() : void
+      + get: targetName(): string
+      + get: repeatDisplay(): string
+      + get: waitingLabel(): string
+      + get: statusLabelKey(): string
+      + get: actionLabelKey(): string
+      + get: targetTypeLabelKey(): string
+      + get: toggleLabelKey(): string
+    }
+    class "RoutineListComponent" as FrontendPresentation_device_control_RoutineListComponent <<Component>> {
+      + routines: Routine[]
+      + devices: Device[]
+      + deviceGroups: DeviceGroup[]
+      + toggle
+      + remove
+      + constructor(translate: TranslateService)
+      + getTargetName(routine: Routine) : string
+      + getTargetTypeLabelKey(routine: Routine) : string
+      + getStatusLabelKey(routine: Routine) : string
+      + getActionLabelKey(routine: Routine) : string
+      + getToggleLabelKey(routine: Routine) : string
+      + getTargetTypeLabel(routine: Routine) : string
+      + getActionLabel(routine: Routine) : string
+      - getTargetTypeKey(targetType: RoutineTargetType) : string
+      + getTargetIcon(routine: Routine) : string
+      - getActionKey(action: RoutineAction) : string
+      + onToggle(routine: Routine) : void
+      + onRemove(routineId: number) : void
+    }
+  }
+  package "Presentation / Pages" {
+    class "DeviceGroupsPageComponent" as FrontendPresentation_device_control_DeviceGroupsPageComponent <<Component>> {
+      + name
+      + description
+      + selectedDeviceIds: number[]
+      + initialLoadComplete
+      + createModalOpen
+      + removingGroupIds
+      + constructor: (
+      + deviceControlFacade: DeviceControlFacade
+      + workplaceFacade: WorkplaceFacade
+      - activeWorkplaceContext: ActiveWorkplaceContextService
+      - toastService: ToastService
+      - confirmDialog: ConfirmDialogService
+      - translate: TranslateService
+      + ngOnInit() : Promise<void>
+      + get: showInitialLoading(): boolean
+      + get: selectedCount(): number
+      + get: groupNameIsValid(): boolean
+      + get: groupSubmitDisabled(): boolean
+    }
+    class "DevicesPageComponent" as FrontendPresentation_device_control_DevicesPageComponent <<Component>> {
+      + name
+      + selectedRoomId: number | null
+      + type: DeviceType
+      + powerWatts
+      + isTypeDropdownOpen
+      + initialLoadComplete
+      + createModalOpen
+      + removingDeviceIds
+      + devicePresets: DevicePreset[]
+      + createPresetDevice(preset: DevicePreset) : Promise<void>
+      + deviceTypeOptions: DropdownOption[]
+      + powerConfigByType: Record<
+      + DeviceType
+      + constructor: (
+      + deviceControlFacade: DeviceControlFacade
+      + workplaceFacade: WorkplaceFacade
+      - activeWorkplaceContext: ActiveWorkplaceContextService
+      - toastService: ToastService
+    }
+    class "OperationModesPageComponent" as FrontendPresentation_device_control_OperationModesPageComponent <<Component>> {
+      + name
+      + description
+      + locationId: number | null
+      + applicationScope: ModeApplicationScope
+      + selectedRoomId: number | null
+      + schedule: ModeSchedule
+      + startsAt
+      + endsAt
+      + selectedGoalIds
+      + ruleProfileId: number | null
+      + preferenceId: number | null
+      + applyRules
+      + applyPreferences
+      + preserveCriticalSound
+      + createModalOpen
+      + selectedModeId: number | null
+      + preview: OperationModePreview | null
+      + routineName
+    }
+    class "RoutinesPageComponent" as FrontendPresentation_device_control_RoutinesPageComponent <<Component>> {
+      + name
+      + targetType: RoutineTargetType
+      + targetId: number | null
+      + action: RoutineAction
+      + repeatType: RoutineRepeatType
+      + selectedDays
+      + intervalDays
+      + selectedHour
+      + selectedMinute
+      + createModalOpen
+      + removingRoutineIds
+      + targetTypeOptions: DropdownOption[]
+      + cleanActionOptions: DropdownOption[]
+      + repeatOptions: DropdownOption[]
+      + weekDays
+      + constructor: (
+      + deviceControlFacade: DeviceControlFacade
+      + workplaceFacade: WorkplaceFacade
+    }
+  }
+  package "Presentation / Routes" {
+    class "DEVICE_CONTROL_ROUTES" as FrontendPresentation_device_control_DEVICE_CONTROL_ROUTES <<Routes>> {
+      + route: /operation/devices
+    }
+  }
+}
+
+FrontendPresentation_device_control_DeviceGroupsPageComponent ..> FrontendPresentation_device_control_DeviceGroupCardComponent
+FrontendPresentation_device_control_DeviceListComponent ..> FrontendPresentation_device_control_DeviceCardComponent
+FrontendPresentation_device_control_DevicesPageComponent ..> FrontendPresentation_device_control_DeviceListComponent
+FrontendPresentation_device_control_RoutinesPageComponent ..> FrontendPresentation_device_control_RoutineCardComponent
+
+' Relationship completion: every declared type participates in the frontend diagram.
+FrontendPresentation_device_control_DeviceGroupsPageComponent ..> FrontendPresentation_device_control_RoutineListComponent
+FrontendPresentation_device_control_DeviceGroupsPageComponent ..> FrontendPresentation_device_control_OperationModesPageComponent
+FrontendPresentation_device_control_DeviceGroupsPageComponent ..> FrontendPresentation_device_control_DEVICE_CONTROL_ROUTES
+
+@enduml

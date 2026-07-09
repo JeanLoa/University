@@ -1,0 +1,99 @@
+:host {
+  display: block;
+}
+
+.comparison-panel {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.panel-heading {
+  align-items: end;
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+}
+
+.panel-heading span {
+  color: #8d998f;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+h2 {
+  color: #f4f7f1;
+  font-size: 1.05rem;
+  line-height: 1.1;
+  margin: 0;
+}
+
+.comparison-list {
+  display: grid;
+  gap: 0.6rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.comparison-row {
+  display: grid;
+  gap: 0.55rem;
+  min-height: 7rem;
+  padding: 0.85rem;
+  border: 1px solid rgba(197, 214, 199, 0.12);
+  border-radius: 8px;
+  background: rgba(15, 18, 16, 0.76);
+  color: #dbe6dd;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+}
+
+.comparison-row.is-active {
+  border-color: rgba(78, 230, 193, 0.52);
+  background:
+    linear-gradient(135deg, rgba(78, 230, 193, 0.13), rgba(167, 139, 250, 0.1)),
+    rgba(15, 18, 16, 0.88);
+}
+
+.comparison-row:focus-visible {
+  border-color: #4ee6c1;
+  box-shadow: 0 0 0 3px rgba(78, 230, 193, 0.17);
+  outline: none;
+}
+
+.comparison-row__name {
+  color: #f4f7f1;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.comparison-row__metric {
+  color: #96a49a;
+  font-size: 0.78rem;
+}
+
+.comparison-row__bars {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.bar {
+  border-radius: 999px;
+  display: block;
+  height: 0.35rem;
+}
+
+.bar--time {
+  background: #4ee6c1;
+}
+
+.bar--visited {
+  background: #a78bfa;
+}
+
+@media (max-width: 820px) {
+  .comparison-list {
+    grid-template-columns: 1fr;
+  }
+}
+

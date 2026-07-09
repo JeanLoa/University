@@ -1,0 +1,100 @@
+@startuml
+title ElectroCorp Platform - Notifications Backend Application Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Notifications / Application" {
+  package "Application / Command Services" {
+    interface "NotificationCommandService" as Backend_notifications_NotificationCommandService <<interface>> {
+    }
+  }
+  package "Application / Command Services Impl" {
+    class "NotificationCommandServiceImpl" as Backend_notifications_NotificationCommandServiceImpl <<Command Service>> {
+      - applicationService: NotificationApplicationService
+      + handle(CreateAlertCommand command) : Alert
+      + handle(MarkAlertAsReadCommand command) : Alert
+      + handle(DismissAlertCommand command) : Alert
+      + handle(ResolveAlertCommand command) : Alert
+      + deleteAlert(Long userId, Long alertId) : void
+      + handle(CreateAlertRuleCommand command) : AlertRule
+      + handle(ToggleAlertRuleCommand command) : AlertRule
+      + deleteRule(Long userId, Long ruleId) : void
+      + handle(CreateAlertRuleProfileCommand command) : AlertRuleProfile
+      + handle(ActivateAlertRuleProfileCommand command) : AlertRuleProfile
+      + handle(UpdateNotificationPreferenceCommand command) : NotificationPreference
+    }
+  }
+  package "Application / Query Services" {
+    interface "NotificationQueryService" as Backend_notifications_NotificationQueryService <<interface>> {
+    }
+  }
+  package "Application / Query Services Impl" {
+    class "NotificationQueryServiceImpl" as Backend_notifications_NotificationQueryServiceImpl <<Query Service>> {
+      - applicationService: NotificationApplicationService
+      + handle(GetAlertsByUserQuery query) : List<Alert>
+      + handle(GetAlertRulesByUserQuery query) : List<AlertRule>
+      + handle(GetAlertRuleProfilesByUserQuery query) : List<AlertRuleProfile>
+      + handle(EvaluateAlertRulesQuery query) : RuleEvaluationResult
+      + handle(GetNotificationPreferenceQuery query) : NotificationPreference
+    }
+  }
+  package "Application / Delivery Port" {
+    interface "NotificationDeliveryPort" as Backend_notifications_NotificationDeliveryPort <<Port>> {
+      + send(Alert alert, NotificationPreference preference, NotificationDeliveryDecision decision) : void
+    }
+  }
+  package "Application / Event Handlers" {
+    class "NotificationIntegrationEventHandler" as Backend_notifications_NotificationIntegrationEventHandler <<Event Handler>> {
+      - notificationApplicationService: NotificationApplicationService
+      + on(UserRegisteredIntegrationEvent event) : void
+      + on(SubscriptionActivatedIntegrationEvent event) : void
+      + on(PaymentRegisteredIntegrationEvent event) : void
+      + on(DeviceCreatedIntegrationEvent event) : void
+      + on(OperationModeActivatedIntegrationEvent event) : void
+      + on(DeviceAssignedToRoomIntegrationEvent event) : void
+      + on(EnergyThresholdExceededIntegrationEvent event) : void
+      + on(SupportTicketCreatedIntegrationEvent event) : void
+      + on(MaintenanceTicketCreatedIntegrationEvent event) : void
+    }
+  }
+  package "Application / Services" {
+    class "NotificationApplicationService" as Backend_notifications_NotificationApplicationService <<Application Service>> {
+      - alertRepository: AlertRepository
+      - alertRuleRepository: AlertRuleRepository
+      - alertRuleProfileRepository: AlertRuleProfileRepository
+      - preferenceRepository: NotificationPreferenceRepository
+      - alertPolicyService: AlertPolicyService
+      - alertSourceOwnershipService: AlertSourceOwnershipService
+      - ruleEvaluationService: RuleEvaluationService
+      - notificationPreferencePolicyService: NotificationPreferencePolicyService
+      - notificationDeliveryPolicyService: NotificationDeliveryPolicyService
+      - notificationDeliveryPort: NotificationDeliveryPort
+      + getAlerts(Long userId) : List<Alert>
+      + createAlert(CreateAlertCommand command) : Alert
+      + markAsRead(Long userId, Long alertId) : Alert
+      + dismissAlert(Long userId, Long alertId, Integer minutes) : Alert
+      + resolveAlert(Long userId, Long alertId) : Alert
+      + deleteAlert(Long userId, Long alertId) : void
+      + getRules(Long userId) : List<AlertRule>
+      + createRule(CreateAlertRuleCommand command) : AlertRule
+      + toggleRule(Long userId, Long ruleId) : AlertRule
+      + deleteRule(Long userId, Long ruleId) : void
+      + getRuleProfiles(Long userId) : List<AlertRuleProfile>
+      + getPreference(Long userId) : NotificationPreference
+      + updatePreference(UpdateNotificationPreferenceCommand command) : NotificationPreference
+      - deliverAlert(Alert alert) : void
+    }
+  }
+}
+
+Backend_notifications_NotificationCommandServiceImpl ..> Backend_notifications_NotificationApplicationService
+Backend_notifications_NotificationCommandServiceImpl ..> Backend_notifications_NotificationCommandService
+Backend_notifications_NotificationQueryServiceImpl ..> Backend_notifications_NotificationApplicationService
+Backend_notifications_NotificationQueryServiceImpl ..> Backend_notifications_NotificationQueryService
+Backend_notifications_NotificationApplicationService ..> Backend_notifications_NotificationDeliveryPort
+Backend_notifications_NotificationIntegrationEventHandler ..> Backend_notifications_NotificationApplicationService
+
+@enduml

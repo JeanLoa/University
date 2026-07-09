@@ -1,0 +1,50 @@
+@startuml
+title ElectroCorp Platform - Service Management Backend Infrastructure Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Service Management / Infrastructure" {
+  package "Infrastructure / JPA" {
+    class "ServiceManagementJpaTableNames" as Backend_servicemanagement_ServiceManagementJpaTableNames <<Class>> {
+      + SUPPORT_TICKETS: String
+      + MAINTENANCE_TICKETS: String
+      - ServiceManagementJpaTableNames()
+    }
+    class "ServiceManagementQueryHints" as Backend_servicemanagement_ServiceManagementQueryHints <<Class>> {
+      + FIND_SUPPORT_TICKETS_BY_USER: String
+      + FIND_MAINTENANCE_TICKETS_BY_USER: String
+      + FIND_OPEN_TICKETS: String
+      + FIND_URGENT_TICKETS: String
+      - ServiceManagementQueryHints()
+    }
+  }
+  package "Infrastructure / JPA Repositories" {
+    interface "JpaMaintenanceTicketRepository" as Backend_servicemanagement_JpaMaintenanceTicketRepository <<interface>> {
+    }
+    interface "JpaSupportTicketRepository" as Backend_servicemanagement_JpaSupportTicketRepository <<interface>> {
+    }
+  }
+  package "Infrastructure / Notifications" {
+    class "ConsoleTicketNotificationAdapter" as Backend_servicemanagement_ConsoleTicketNotificationAdapter <<Class>> {
+      + notifyTicketCreated(Long userId, Long ticketId, String ticketType) : void
+      + notifyTicketStatusChanged(Long userId, Long ticketId, String status) : void
+    }
+    interface "TicketNotificationPort" as Backend_servicemanagement_TicketNotificationPort <<interface>> {
+    }
+  }
+}
+
+
+
+' Layer relationship completion: every declared type participates in this layer diagram.
+Backend_servicemanagement_JpaMaintenanceTicketRepository ..> Backend_servicemanagement_ServiceManagementJpaTableNames
+Backend_servicemanagement_JpaMaintenanceTicketRepository ..> Backend_servicemanagement_ServiceManagementQueryHints
+Backend_servicemanagement_JpaMaintenanceTicketRepository ..> Backend_servicemanagement_ServiceManagementJpaTableNames
+Backend_servicemanagement_JpaMaintenanceTicketRepository ..> Backend_servicemanagement_JpaSupportTicketRepository
+Backend_servicemanagement_JpaMaintenanceTicketRepository ..> Backend_servicemanagement_ConsoleTicketNotificationAdapter
+Backend_servicemanagement_JpaMaintenanceTicketRepository ..> Backend_servicemanagement_TicketNotificationPort
+
+@enduml

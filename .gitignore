@@ -1,0 +1,30 @@
+# Local dependencies
+node_modules/
+.angular/
+
+# Build outputs
+dist/
+build/
+target/
+bin/
+obj/
+
+# Runtime and tooling caches
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.cache/
+
+# Local IDE and assistant workspace state
+.idea/
+.agents/
+.codex/
+
+# Local environment files
+.env
+.env.*
+!.env.example
+
+# OS noise
+.DS_Store
+Thumbs.db

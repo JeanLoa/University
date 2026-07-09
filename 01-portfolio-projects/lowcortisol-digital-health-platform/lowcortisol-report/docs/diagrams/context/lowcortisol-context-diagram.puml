@@ -1,0 +1,53 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+skinparam wrapWidth 135
+skinparam maxMessageSize 70
+skinparam nodesep 35
+skinparam ranksep 45
+skinparam ArrowColor #8A8A8A
+skinparam ArrowFontColor #666666
+skinparam ArrowFontStyle bold
+skinparam ArrowThickness 1
+skinparam rectangleRoundCorner 0
+skinparam rectangleBorderThickness 0
+skinparam rectangleFontColor #FFFFFF
+skinparam rectangleFontStyle plain
+skinparam rectangle {
+  BorderThickness 0
+  MinimumWidth 155
+  Padding 8
+}
+hide stereotype
+top to bottom direction
+
+title LowCortisol - C4 Context Diagram
+
+rectangle "<b>Home or Operations User</b>\n<i>[Person]</i>\n\nRegisters an account, manages sites, monitors water and gas consumption, operates valves, reviews alerts, reports, plans and support." as User #0B5593
+
+rectangle "<b>LowCortisol Platform</b>\n<i>[Software System]</i>\n\nWater and gas monitoring platform with workplace modeling, device control, readings, thresholds, anomalies, alerts, incidents, plan limits, reports and support experience." as System #0B6FB3
+
+rectangle "<b>GitHub Pages</b>\n<i>[External Platform]</i>\n\nHosts the public landing page." as Pages #7F8C8D
+rectangle "<b>Render</b>\n<i>[External Platform]</i>\n\nHosts the Vue web application and ASP.NET Core backend API." as Render #7F8C8D
+rectangle "<b>PostgreSQL Service</b>\n<i>[External Data Platform]</i>\n\nStores operational data for the deployed backend." as Postgres #7F8C8D
+
+User --> System : uses\n[Browser / HTTPS]
+System --> Pages : public site deployed on
+System --> Render : app and api deployed on
+System --> Postgres : persists operational data\n[EF Core / Npgsql]
+
+Pages -[hidden]right- Render
+Render -[hidden]right- Postgres
+User -[hidden]down- System
+System -[hidden]down- Render
+
+legend right
+  <b>Legend</b>
+  |<#0B5593> person |
+  |<#0B6FB3> system |
+  |<#7F8C8D> external platform |
+endlegend
+
+@enduml

@@ -1,0 +1,38 @@
+flowchart LR
+  classDef actor fill:#ffe066,stroke:#d4a100,color:#3d2f00;
+  classDef command fill:#6db3f2,stroke:#1c6fb8,color:#08243d;
+  classDef aggregate fill:#fff2ae,stroke:#c9a900,color:#4a3b00;
+  classDef integration fill:#ff8c42,stroke:#c0501a,color:#3d1500;
+  classDef policy fill:#d8b4fe,stroke:#8b5cf6,color:#3b0764;
+  classDef readmodel fill:#b5e7a0,stroke:#4f9a2f,color:#1f3d0f;
+
+  USER([🎬 User]):::actor
+  BUS[🔗 9 Integration Events from other contexts]:::integration
+
+  POL_NOTIF[🟣 NotificationIntegrationEventHandler: create system Alert]:::policy
+  A_ALERT[📦 Alert]:::aggregate
+  A_RULE[📦 AlertRule]:::aggregate
+  A_RULEPROF[📦 AlertRuleProfile]:::aggregate
+  A_PREF[📦 NotificationPreference]:::aggregate
+
+  C_CRULE[⚡ CreateAlertRule]:::command
+  C_TRULE[⚡ ToggleAlertRule]:::command
+  C_CPROF[⚡ CreateAlertRuleProfile]:::command
+  C_APROF[⚡ ActivateAlertRuleProfile]:::command
+  C_PREF[⚡ UpdateNotificationPreference]:::command
+  C_READ[⚡ MarkAlertAsRead]:::command
+  C_RESOLVE[⚡ ResolveAlert]:::command
+  C_DISMISS[⚡ DismissAlert]:::command
+
+  RM_INBOX[🟢 Alerts inbox / center]:::readmodel
+
+  BUS --> POL_NOTIF --> A_ALERT --> RM_INBOX
+  USER --> C_CRULE --> A_RULE
+  USER --> C_TRULE --> A_RULE
+  USER --> C_CPROF --> A_RULEPROF
+  USER --> C_APROF --> A_RULEPROF
+  A_RULE -.evaluate/filter.-> POL_NOTIF
+  USER --> C_PREF --> A_PREF -.channel/preference.-> POL_NOTIF
+  USER --> C_READ --> A_ALERT
+  USER --> C_RESOLVE --> A_ALERT
+  USER --> C_DISMISS --> A_ALERT

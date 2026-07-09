@@ -1,0 +1,92 @@
+<section class="control-panel" aria-label="Panel de rutas">
+  <div class="panel-heading">
+    <span class="panel-heading__eyebrow">Red Lima urbana</span>
+    <h2>Ruta activa</h2>
+  </div>
+
+  <div class="field-stack">
+    <label class="field">
+      <span>Provincia</span>
+      <app-ui-select
+        ariaLabel="Provincia"
+        [options]="provinceSelectOptions()"
+        [value]="selectedProvinceId"
+        (valueChanged)="provinceChanged.emit($event)"
+      />
+    </label>
+
+    <label class="field">
+      <span>Distrito</span>
+      <app-ui-select
+        ariaLabel="Distrito"
+        [options]="districtSelectOptions()"
+        [value]="selectedDistrictId"
+        (valueChanged)="districtChanged.emit($event)"
+      />
+    </label>
+  </div>
+
+  <div class="free-point-grid" aria-label="Puntos marcados">
+    <div class="free-point-card">
+      <span>Origen marcado</span>
+      <strong>{{ placeLabel(freeOriginPoint, originPlace, originPlaceStatus) }}</strong>
+      <small>{{ zoneLabel(originPlace) }}</small>
+    </div>
+    <div class="free-point-card">
+      <span>Destino marcado</span>
+      <strong>{{ placeLabel(freeDestinationPoint, destinationPlace, destinationPlaceStatus) }}</strong>
+      <small>{{ zoneLabel(destinationPlace) }}</small>
+    </div>
+  </div>
+
+  <p class="route-status" [class.is-alert]="roadRouteStatus === 'outside-territory' || roadRouteStatus === 'unavailable'">
+    {{ roadRouteStatusLabel() }}
+  </p>
+
+  <div class="control-group">
+    <span class="control-group__label">Editar desde mapa</span>
+    <div class="segmented-control">
+      <button
+        type="button"
+        [class.is-active]="pickerMode === 'origin'"
+        (click)="pickerModeChanged.emit('origin')"
+      >
+        Origen
+      </button>
+      <button
+        type="button"
+        [class.is-active]="pickerMode === 'destination'"
+        (click)="pickerModeChanged.emit('destination')"
+      >
+        Destino
+      </button>
+    </div>
+  </div>
+
+  <div class="control-group">
+    <span class="control-group__label">Estrategia</span>
+    <app-ui-select
+      ariaLabel="Estrategia de recorrido"
+      [options]="algorithmSelectOptions()"
+      [value]="selectedAlgorithm"
+      (valueChanged)="onAlgorithmChanged($event)"
+    />
+  </div>
+
+  <label class="toggle-row">
+    <input
+      type="checkbox"
+      [checked]="autoCalculateRoute"
+      (change)="onAutoCalculateChanged($event)"
+    />
+    <span class="toggle-row__track" aria-hidden="true">
+      <span class="toggle-row__thumb"></span>
+    </span>
+    <span>Auto calcular</span>
+  </label>
+
+  <button type="button" class="run-button" [disabled]="!canCalculateRoadRoute()" (click)="routeRequested.emit()">
+    <span class="run-button__icon" aria-hidden="true"></span>
+    Calcular ruta
+  </button>
+</section>

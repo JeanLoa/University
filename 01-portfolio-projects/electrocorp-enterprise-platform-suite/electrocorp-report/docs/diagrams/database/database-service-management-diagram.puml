@@ -1,0 +1,46 @@
+@startuml
+title ElectroCorp Platform - Service Management Database Diagram
+left to right direction
+hide circle
+skinparam linetype ortho
+skinparam shadowing false
+skinparam packageStyle rectangle
+package "Service Management" {
+  entity "maintenance_tickets" as maintenance_tickets {
+    PK id : bigint
+    created_at : timestamp
+    updated_at : timestamp
+    user_id : bigint
+    device_id : bigint
+    device_name : varchar
+    type : varchar
+    description : varchar
+    scheduled_date : date
+    status : varchar
+  }
+  entity "support_tickets" as support_tickets {
+    PK id : bigint
+    created_at : timestamp
+    updated_at : timestamp
+    user_id : bigint
+    subject : varchar
+    description : varchar
+    priority : varchar
+    status : varchar
+  }
+}
+
+package "External References" {
+  entity "devices" as devices <<external>> {
+    PK id
+  }
+  entity "users" as users <<external>> {
+    PK id
+  }
+}
+
+devices ||--o{ maintenance_tickets : device_id
+users ||--o{ maintenance_tickets : user_id
+users ||--o{ support_tickets : user_id
+
+@enduml

@@ -1,0 +1,58 @@
+@startuml
+title LowCortisol WebApp - Monitoring Frontend Domain Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Monitoring / Domain" {
+  package "Domain / Model" {
+    class "ConsumptionReading" as Frontend_consumption_monitoring_ConsumptionReading <<Entity>> {
+      - _userId: number
+      - _deviceId: number
+      - _deviceName: string
+      - _watts: number
+      - _kilowattHours: number
+      - _estimatedCost: number
+      - _sampleSeconds: number
+      - _recordedAt: string
+      - _status: ConsumptionReadingStatus
+      + constructor: (props:
+      + get: userId(): number
+      + get: deviceId(): number
+      + get: deviceName(): string
+      + get: watts(): number
+      + get: kilowattHours(): number
+      + get: estimatedCost(): number
+      + get: sampleSeconds(): number
+      + get: recordedAt(): string
+    }
+    class "ConsumptionReadingStatus" as Frontend_consumption_monitoring_ConsumptionReadingStatus <<type>> {
+      + 'NORMAL' | 'HIGH'
+    }
+  }
+  package "Domain / Services" {
+    class "ConsumptionRecommendationService" as Frontend_consumption_monitoring_ConsumptionRecommendationService <<Domain Service>> {
+      + constructor(statisticsService: ConsumptionStatisticsService)
+      + getRecommendationKey(readings: ConsumptionReading[]) : string
+    }
+    class "ConsumptionStatisticsService" as Frontend_consumption_monitoring_ConsumptionStatisticsService <<Domain Service>> {
+      + calculateTotalWatts(readings: ConsumptionReading[]) : number
+      + calculateAverageWatts(readings: ConsumptionReading[]) : number
+      + findHighestReading(readings: ConsumptionReading[]) : ConsumptionReading | null
+      + countHighReadings(readings: ConsumptionReading[]) : number
+      + countNormalReadings(readings: ConsumptionReading[]) : number
+      + groupByDevice(readings: ConsumptionReading[]) : Record<string, number>
+    }
+  }
+}
+
+Frontend_consumption_monitoring_ConsumptionRecommendationService ..> Frontend_consumption_monitoring_ConsumptionReading
+Frontend_consumption_monitoring_ConsumptionRecommendationService ..> Frontend_consumption_monitoring_ConsumptionStatisticsService
+Frontend_consumption_monitoring_ConsumptionStatisticsService ..> Frontend_consumption_monitoring_ConsumptionReading
+
+' Layer relationship completion: every declared type participates in this layer diagram.
+Frontend_consumption_monitoring_ConsumptionRecommendationService ..> Frontend_consumption_monitoring_ConsumptionReadingStatus
+
+@enduml

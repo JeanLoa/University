@@ -1,0 +1,123 @@
+flowchart TB
+  classDef actor fill:#ffe066,stroke:#d4a100,color:#3d2f00;
+  classDef command fill:#6db3f2,stroke:#1c6fb8,color:#08243d;
+  classDef aggregate fill:#fff2ae,stroke:#c9a900,color:#4a3b00;
+  classDef event fill:#ffb84d,stroke:#d47500,color:#4a2600;
+  classDef integration fill:#ff8c42,stroke:#c0501a,color:#3d1500;
+  classDef policy fill:#d8b4fe,stroke:#8b5cf6,color:#3b0764;
+  classDef readmodel fill:#b5e7a0,stroke:#4f9a2f,color:#1f3d0f;
+  classDef external fill:#ffb6c1,stroke:#d63b6a,color:#4a0a1c;
+
+  ACT_VISITOR([🎬 Visitor]):::actor
+  ACT_USER([🎬 Home/Business User]):::actor
+  ACT_ADMIN([🎬 Administrator]):::actor
+  DEV_IOT[🌐 Smart Plug / IoT Device]:::external
+  EXT_OSM[🌐 OpenStreetMap / Nominatim]:::external
+  EXT_PAY[🌐 Payment Gateway]:::external
+  SYS_CRON([⏰ Monthly Scheduler - cron]):::actor
+
+  subgraph IAM["🔐 IAM"]
+    C_SIGNUP[⚡ SignUp]:::command
+    A_USER[📦 User]:::aggregate
+    E_USER_REG[🟠 UserRegistered]:::event
+    IE_USER_REG[🔗 UserRegisteredIntegrationEvent]:::integration
+  end
+  ACT_VISITOR --> C_SIGNUP --> A_USER --> E_USER_REG --> IE_USER_REG
+
+  subgraph BILL["💳 Billing"]
+    C_CHECKOUT[⚡ CheckoutSubscription]:::command
+    A_SUB[📦 Subscription]:::aggregate
+    A_PAY[📦 Payment]:::aggregate
+    A_INV[📦 Invoice]:::aggregate
+    E_SUB_ACT[🟠 SubscriptionActivated]:::event
+    E_PAY_REG[🟠 PaymentRegistered]:::event
+    IE_SUB_ACT[🔗 SubscriptionActivatedIntegrationEvent]:::integration
+    IE_PAY_REG[🔗 PaymentRegisteredIntegrationEvent]:::integration
+  end
+  ACT_USER --> C_CHECKOUT
+  C_CHECKOUT -->|charge| EXT_PAY -->|approved| A_SUB
+  A_SUB --> A_PAY --> A_INV
+  A_SUB --> E_SUB_ACT --> IE_SUB_ACT
+  A_PAY --> E_PAY_REG --> IE_PAY_REG
+
+  subgraph WP["🏠 Workplace"]
+    C_LOC[⚡ Create/Update Location]:::command
+    A_LOC[📦 Location]:::aggregate
+    A_ROOM[📦 Room]:::aggregate
+    A_DASSIGN[📦 DeviceAssignment]:::aggregate
+    E_DEV_ASSIGNED[🟠 DeviceAssignedToRoom]:::event
+    IE_DEV_ASSIGNED[🔗 DeviceAssignedToRoomIntegrationEvent]:::integration
+  end
+  ACT_USER --> C_LOC
+  EXT_OSM -->|geocoding| C_LOC --> A_LOC --> A_ROOM
+  A_ROOM --> A_DASSIGN --> E_DEV_ASSIGNED --> IE_DEV_ASSIGNED
+
+  subgraph DC["🔌 Device Control"]
+    C_PAIR[⚡ Pair/Create Device]:::command
+    C_OPMODE[⚡ Activate Operation Mode]:::command
+    A_DEV[📦 Device]:::aggregate
+    A_OPMODE[📦 OperationMode]:::aggregate
+    E_DEV_CREATED[🟠 DeviceCreated]:::event
+    E_OPMODE_ACT[🟠 OperationModeActivated]:::event
+    IE_DEV_CREATED[🔗 DeviceCreatedIntegrationEvent]:::integration
+    IE_OPMODE_ACT[🔗 OperationModeActivatedIntegrationEvent]:::integration
+  end
+  ACT_USER --> C_PAIR --> A_DEV --> E_DEV_CREATED --> IE_DEV_CREATED
+  ACT_USER --> C_OPMODE --> A_OPMODE --> E_OPMODE_ACT --> IE_OPMODE_ACT
+
+  subgraph EM["📊 Energy Monitoring"]
+    C_READING[⚡ CreateEnergyReading]:::command
+    A_READING[📦 EnergyReading]:::aggregate
+    POL_THRESHOLD[🟣 consumption &gt; threshold?]:::policy
+    E_THRESHOLD[🟠 EnergyThresholdExceeded]:::event
+    IE_THRESHOLD[🔗 EnergyThresholdExceededIntegrationEvent]:::integration
+  end
+  DEV_IOT -->|telemetry| C_READING --> A_READING --> POL_THRESHOLD -->|exceeds| E_THRESHOLD --> IE_THRESHOLD
+
+  subgraph SM["🛠️ Service Management"]
+    C_SUPPORT[⚡ Create Support Ticket]:::command
+    C_MAINT[⚡ Create Maintenance Ticket]:::command
+    A_SUPPORT[📦 SupportTicket]:::aggregate
+    A_MAINT[📦 MaintenanceTicket]:::aggregate
+    E_SUPPORT[🟠 SupportTicketCreated]:::event
+    E_MAINT[🟠 MaintenanceTicketCreated]:::event
+    IE_SUPPORT[🔗 SupportTicketCreatedIntegrationEvent]:::integration
+    IE_MAINT[🔗 MaintenanceTicketCreatedIntegrationEvent]:::integration
+  end
+  ACT_USER --> C_SUPPORT --> A_SUPPORT --> E_SUPPORT --> IE_SUPPORT
+  ACT_ADMIN --> C_MAINT --> A_MAINT --> E_MAINT --> IE_MAINT
+
+  subgraph MK["📣 Marketing"]
+    C_NEWS[⚡ Subscribe Newsletter]:::command
+    A_NEWS[📦 NewsletterSubscription]:::aggregate
+    RM_LANDING["🟢 Landing / multimedia / T&amp;C"]:::readmodel
+  end
+  ACT_VISITOR --> C_NEWS --> A_NEWS
+  ACT_VISITOR --> RM_LANDING
+
+  subgraph NOTIF["🔔 Notifications"]
+    POL_NOTIF[🟣 on integration event -&gt; create Alert]:::policy
+    A_ALERT[📦 Alert]:::aggregate
+    RM_ALERTS[🟢 Alerts inbox]:::readmodel
+  end
+  POL_NOTIF --> A_ALERT --> RM_ALERTS
+
+  subgraph REP["📈 Reporting"]
+    POL_REP[🟣 on integration event -&gt; record Activity]:::policy
+    A_REPEVENT[📦 ReportingEvent]:::aggregate
+    A_REPORT[📦 ConsumptionReport]:::aggregate
+    RM_REPORTS[🟢 Reports and goals]:::readmodel
+  end
+  POL_REP --> A_REPEVENT
+  SYS_CRON -->|monthly report| A_REPORT --> RM_REPORTS
+  A_REPORT -.notifies.-> POL_NOTIF
+
+  IE_USER_REG --> POL_NOTIF & POL_REP
+  IE_SUB_ACT --> POL_NOTIF & POL_REP
+  IE_PAY_REG --> POL_NOTIF & POL_REP
+  IE_DEV_ASSIGNED --> POL_NOTIF & POL_REP
+  IE_DEV_CREATED --> POL_NOTIF & POL_REP
+  IE_OPMODE_ACT --> POL_NOTIF & POL_REP
+  IE_THRESHOLD --> POL_NOTIF & POL_REP
+  IE_SUPPORT --> POL_NOTIF & POL_REP
+  IE_MAINT --> POL_NOTIF & POL_REP

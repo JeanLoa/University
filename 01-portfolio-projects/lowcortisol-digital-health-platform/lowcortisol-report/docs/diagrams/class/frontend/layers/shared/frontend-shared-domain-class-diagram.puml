@@ -1,0 +1,23 @@
+@startuml
+title LowCortisol WebApp - Shared Frontend Domain Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Shared / Domain" {
+  package "Domain / Model" {
+    class "BaseEntity" as Frontend_shared_BaseEntity <<Entity>> {
+      # constructor(_id: TId)
+      + get: id(): TId
+    }
+  }
+}
+
+
+
+' Layer relationship completion: every declared type participates in this layer diagram.
+Frontend_shared_BaseEntity ..> Frontend_shared_BaseEntity
+
+@enduml

@@ -1,0 +1,120 @@
+.modal-shell {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  display: grid;
+  place-items: center;
+  background: rgba(15, 23, 42, 0.44);
+  padding: 20px;
+}
+
+.modal-panel {
+  display: grid;
+  gap: 16px;
+  width: min(520px, 100%);
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.22);
+  padding: 24px;
+}
+
+.modal-panel--wide {
+  width: min(680px, 100%);
+}
+
+.modal-panel h2 {
+  color: var(--color-text);
+  font-size: 24px;
+  font-weight: 900;
+  margin: 0 0 6px;
+}
+
+.modal-panel p {
+  color: var(--color-text-muted);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.modal-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.modal-field {
+  display: grid;
+  gap: 8px;
+}
+
+.modal-field span {
+  color: var(--color-text);
+  font-weight: 900;
+}
+
+.modal-field input,
+.modal-field textarea {
+  width: 100%;
+  min-height: 46px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-soft);
+  color: var(--color-text);
+  font: inherit;
+  font-weight: 800;
+  outline: none;
+  padding: 12px 14px;
+  resize: vertical;
+  transition:
+      border-color 0.2s ease,
+      box-shadow 0.2s ease;
+}
+
+.modal-field textarea {
+  min-height: 112px;
+  line-height: 1.5;
+}
+
+.modal-field input:focus,
+.modal-field textarea:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.08);
+}
+
+.modal-warning {
+  border: 1px solid #fecaca;
+  border-radius: var(--radius-md);
+  background: #fef2f2;
+  color: var(--color-danger);
+  font-weight: 900;
+  padding: 12px 14px;
+}
+
+.modal-hint {
+  border-radius: var(--radius-md);
+  background: var(--color-surface-soft);
+  color: var(--color-text-muted);
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.5;
+  padding: 12px 14px;
+}
+
+.modal-panel footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 620px) {
+  .modal-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .modal-panel footer {
+    flex-direction: column-reverse;
+  }
+}

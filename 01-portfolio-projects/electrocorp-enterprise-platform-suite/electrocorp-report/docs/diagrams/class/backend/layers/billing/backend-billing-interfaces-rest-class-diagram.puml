@@ -1,0 +1,133 @@
+@startuml
+title ElectroCorp Platform - Billing Backend Interfaces REST Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Billing / Interfaces REST" {
+  package "Interfaces / REST Assemblers" {
+    class "CheckoutSubscriptionCommandFromResourceAssembler" as Backend_billing_CheckoutSubscriptionCommandFromResourceAssembler <<Assembler>> {
+      - CheckoutSubscriptionCommandFromResourceAssembler()
+      + toCommandFromResource(CheckoutSubscriptionResource resource, Long userId) : CheckoutSubscriptionCommand
+    }
+    class "InvoiceResourceFromEntityAssembler" as Backend_billing_InvoiceResourceFromEntityAssembler <<Assembler>> {
+      - InvoiceResourceFromEntityAssembler()
+      + toResourceFromEntity(Invoice entity) : InvoiceResource
+    }
+    class "PaymentResourceFromEntityAssembler" as Backend_billing_PaymentResourceFromEntityAssembler <<Assembler>> {
+      - PaymentResourceFromEntityAssembler()
+      + toResourceFromEntity(Payment entity) : PaymentResource
+    }
+    class "PlanResourceFromEntityAssembler" as Backend_billing_PlanResourceFromEntityAssembler <<Assembler>> {
+      - PlanResourceFromEntityAssembler()
+      + toResourceFromEntity(Plan entity) : PlanResource
+    }
+    class "ProcessPaymentCommandFromResourceAssembler" as Backend_billing_ProcessPaymentCommandFromResourceAssembler <<Assembler>> {
+      - ProcessPaymentCommandFromResourceAssembler()
+      + toCommandFromResource(ProcessPaymentResource resource, Long userId) : ProcessPaymentCommand
+    }
+    class "SubscribeCommandFromResourceAssembler" as Backend_billing_SubscribeCommandFromResourceAssembler <<Assembler>> {
+      - SubscribeCommandFromResourceAssembler()
+      + toCommandFromResource(SubscribeResource resource, Long userId) : SubscribeCommand
+    }
+    class "SubscriptionResourceFromEntityAssembler" as Backend_billing_SubscriptionResourceFromEntityAssembler <<Assembler>> {
+      - SubscriptionResourceFromEntityAssembler()
+      + toResourceFromEntity(Subscription entity) : SubscriptionResource
+    }
+  }
+  package "Interfaces / REST Controllers" {
+    class "BillingController" as Backend_billing_BillingController <<REST Controller>> {
+      - billingCommandService: BillingCommandService
+      - billingQueryService: BillingQueryService
+      - currentUserProvider: CurrentUserProvider
+      + getPlans() : List<PlanResource>
+      + getCurrentSubscription() : SubscriptionResource
+      + subscribe(SubscribeResource request) : SubscriptionResource
+      + checkoutSubscription(CheckoutSubscriptionResource request) : SubscriptionResource
+      + cancelSubscription() : void
+      + processPayment(ProcessPaymentResource request) : PaymentResource
+      + getPayments() : List<PaymentResource>
+      + getInvoices() : List<InvoiceResource>
+    }
+  }
+  package "Interfaces / REST Resources" {
+    class "CheckoutSubscriptionResource" as Backend_billing_CheckoutSubscriptionResource <<record>> {
+      + String planCode
+      + String holderName
+      + String cardNumber
+      + String expirationDate
+      + String cvv
+    }
+    class "InvoiceResource" as Backend_billing_InvoiceResource <<record>> {
+      + Long id
+      + Long userId
+      + String invoiceNumber
+      + BigDecimal totalAmount
+      + String currency
+      + LocalDate issuedAt
+      + from(Invoice invoice) : InvoiceResource
+    }
+    class "PaymentResource" as Backend_billing_PaymentResource <<record>> {
+      + Long id
+      + Long userId
+      + BigDecimal amount
+      + String currency
+      + String status
+      + String paymentMethod
+      + from(Payment payment) : PaymentResource
+    }
+    class "PlanResource" as Backend_billing_PlanResource <<record>> {
+      + Long id
+      + String code
+      + String name
+      + BigDecimal monthlyPrice
+      + String currency
+      + Integer maxDevices
+      + Integer maxRoutines
+      + Integer maxAlerts
+      + Boolean reportExportEnabled
+      + from(Plan plan) : PlanResource
+    }
+    class "ProcessPaymentResource" as Backend_billing_ProcessPaymentResource <<record>> {
+      + Long subscriptionId
+      + String holderName
+      + String cardNumber
+      + String expirationDate
+      + String cvv
+    }
+    class "SubscribeResource" as Backend_billing_SubscribeResource <<record>> {
+      + String planCode
+    }
+    class "SubscriptionResource" as Backend_billing_SubscriptionResource <<record>> {
+      + Long id
+      + Long userId
+      + String planCode
+      + String status
+      + boolean active
+      + LocalDate startDate
+      + LocalDate nextBillingDate
+      + LocalDate endDate
+      + from(Subscription subscription) : SubscriptionResource
+      - nextBillingDateFor(Subscription subscription) : LocalDate
+    }
+  }
+}
+
+Backend_billing_BillingController ..> Backend_billing_CheckoutSubscriptionCommandFromResourceAssembler
+Backend_billing_BillingController ..> Backend_billing_InvoiceResourceFromEntityAssembler
+Backend_billing_BillingController ..> Backend_billing_PaymentResourceFromEntityAssembler
+Backend_billing_BillingController ..> Backend_billing_PlanResourceFromEntityAssembler
+Backend_billing_BillingController ..> Backend_billing_ProcessPaymentCommandFromResourceAssembler
+Backend_billing_BillingController ..> Backend_billing_SubscriptionResourceFromEntityAssembler
+Backend_billing_CheckoutSubscriptionCommandFromResourceAssembler ..> Backend_billing_CheckoutSubscriptionResource
+Backend_billing_InvoiceResourceFromEntityAssembler ..> Backend_billing_InvoiceResource
+Backend_billing_PaymentResourceFromEntityAssembler ..> Backend_billing_PaymentResource
+Backend_billing_PlanResourceFromEntityAssembler ..> Backend_billing_PlanResource
+Backend_billing_ProcessPaymentCommandFromResourceAssembler ..> Backend_billing_ProcessPaymentResource
+Backend_billing_SubscribeCommandFromResourceAssembler ..> Backend_billing_SubscribeResource
+Backend_billing_SubscriptionResourceFromEntityAssembler ..> Backend_billing_SubscriptionResource
+
+
+@enduml

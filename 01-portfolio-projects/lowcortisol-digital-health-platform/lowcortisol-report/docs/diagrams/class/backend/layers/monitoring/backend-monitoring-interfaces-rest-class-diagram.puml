@@ -1,0 +1,93 @@
+@startuml
+title LowCortisol Platform - Monitoring Backend Interfaces REST Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Monitoring / Interfaces REST" {
+  package "Interfaces / REST Assemblers" {
+    class "CreateConsumptionReadingCommandFromResourceAssembler" as Backend_consumptionmonitoring_CreateConsumptionReadingCommandFromResourceAssembler <<Assembler>> {
+      + toCommandFromResource(CreateConsumptionReadingResource resource, Long userId) : CreateConsumptionReadingCommand
+    }
+    class "ConsumptionReadingResourceFromEntityAssembler" as Backend_consumptionmonitoring_ConsumptionReadingResourceFromEntityAssembler <<Assembler>> {
+      + toResourceFromEntity(ConsumptionReading reading) : ConsumptionReadingResource
+    }
+  }
+  package "Interfaces / REST Controllers" {
+    class "MonitoringController" as Backend_consumptionmonitoring_MonitoringController <<REST Controller>> {
+      - commandService: MonitoringCommandService
+      - queryService: MonitoringQueryService
+      - currentUserProvider: CurrentUserProvider
+      + getDashboardSummary() : ConsumptionDashboardSummaryResource
+      + getSamplingSettings() : ConsumptionSamplingSettingsResource
+      + createReading(CreateConsumptionReadingResource request) : ConsumptionReadingResource
+      - parseStart(String value) : LocalDateTime
+      - parseEnd(String value) : LocalDateTime
+    }
+  }
+  package "Interfaces / REST Resources" {
+    class "CreateConsumptionReadingResource" as Backend_consumptionmonitoring_CreateConsumptionReadingResource <<record>> {
+      + Long deviceId
+      + String deviceName
+      + BigDecimal watts
+    }
+    class "ConsumptionDashboardSummaryResource" as Backend_consumptionmonitoring_ConsumptionDashboardSummaryResource <<record>> {
+      + BigDecimal currentWatts
+      + BigDecimal todayKilowattHours
+      + BigDecimal todayEstimatedCost
+      + BigDecimal projectedMonthlyCost
+      + BigDecimal costPerHour
+      + BigDecimal peakWatts
+      + BigDecimal averageWatts
+      + Integer activeDevices
+      + Integer monitoredDevices
+      + Integer normalReadings
+      + Integer highReadings
+      + Integer efficiencyScore
+      + String operationalStatus
+      + String recommendation
+      + Integer activeAlerts
+      + Integer criticalAlerts
+      + String latestAlertLevel
+      + String latestAlertTitle
+      + List<TrendPoint> trend
+      + List<DeviceConsumption> topDevices
+      + List<RoomConsumption> rooms
+      + List<ActiveDevice> activeDeviceDetails
+    }
+    class "ConsumptionReadingResource" as Backend_consumptionmonitoring_ConsumptionReadingResource <<record>> {
+      + Long id
+      + Long userId
+      + Long deviceId
+      + String deviceName
+      + BigDecimal watts
+      + BigDecimal kilowattHours
+      + BigDecimal estimatedCost
+      + Integer sampleSeconds
+      + LocalDateTime recordedAt
+      + String status
+      + from(ConsumptionReading reading) : ConsumptionReadingResource
+    }
+    class "ConsumptionSamplingSettingsResource" as Backend_consumptionmonitoring_ConsumptionSamplingSettingsResource <<record>> {
+      + Integer sampleSeconds
+    }
+    class "UpdateConsumptionSamplingSettingsResource" as Backend_consumptionmonitoring_UpdateConsumptionSamplingSettingsResource <<record>> {
+      + (5
+    }
+  }
+}
+
+Backend_consumptionmonitoring_CreateConsumptionReadingCommandFromResourceAssembler ..> Backend_consumptionmonitoring_CreateConsumptionReadingResource
+Backend_consumptionmonitoring_MonitoringController ..> Backend_consumptionmonitoring_CreateConsumptionReadingCommandFromResourceAssembler
+Backend_consumptionmonitoring_MonitoringController ..> Backend_consumptionmonitoring_CreateConsumptionReadingResource
+Backend_consumptionmonitoring_MonitoringController ..> Backend_consumptionmonitoring_ConsumptionDashboardSummaryResource
+Backend_consumptionmonitoring_MonitoringController ..> Backend_consumptionmonitoring_ConsumptionReadingResource
+Backend_consumptionmonitoring_MonitoringController ..> Backend_consumptionmonitoring_ConsumptionReadingResourceFromEntityAssembler
+Backend_consumptionmonitoring_MonitoringController ..> Backend_consumptionmonitoring_ConsumptionSamplingSettingsResource
+Backend_consumptionmonitoring_MonitoringController ..> Backend_consumptionmonitoring_UpdateConsumptionSamplingSettingsResource
+Backend_consumptionmonitoring_ConsumptionReadingResourceFromEntityAssembler ..> Backend_consumptionmonitoring_ConsumptionReadingResource
+
+
+@enduml

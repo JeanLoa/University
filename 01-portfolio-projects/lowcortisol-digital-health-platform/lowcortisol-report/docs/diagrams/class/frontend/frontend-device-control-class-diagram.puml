@@ -1,0 +1,26 @@
+@startuml
+title LowCortisol WebApp - Device Control Frontend Bounded Context Layers
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Device Control Frontend Bounded Context" {
+  class "Domain" as Frontend_device_control_Domain <<layer>>
+  class "Application" as Frontend_device_control_Application <<layer>>
+  class "Infrastructure" as Frontend_device_control_Infrastructure <<layer>>
+  class "Presentation" as Frontend_device_control_Presentation <<layer>>
+}
+
+Frontend_device_control_Presentation ..> Frontend_device_control_Application : user actions / state
+Frontend_device_control_Application ..> Frontend_device_control_Domain : models and rules
+Frontend_device_control_Application ..> Frontend_device_control_Infrastructure : API services / adapters
+Frontend_device_control_Infrastructure ..> Frontend_device_control_Domain : resources and mappers
+Frontend_device_control_Presentation ..> Frontend_device_control_Domain : view models
+
+note bottom of Frontend_device_control_Application
+Detailed class diagrams for each layer are available in docs/diagrams/class/frontend/layers/device-control.
+end note
+
+@enduml

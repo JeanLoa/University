@@ -1,0 +1,91 @@
+@startuml
+title ElectroCorp Web App - Energy Monitoring Frontend Presentation Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Energy Monitoring Presentation" {
+  package "Presentation / Components" {
+    class "EnergyFilterFormComponent" as FrontendPresentation_energy_monitoring_EnergyFilterFormComponent <<Component>> {
+      + rangeChanged
+      + reset
+      + startDate
+      + endDate
+      + get: isInvalidRange(): boolean
+      + onDateChange() : void
+      + onReset() : void
+      - toInputDate(date: Date) : string
+    }
+    class "MetricsCardsComponent" as FrontendPresentation_energy_monitoring_MetricsCardsComponent <<Component>> {
+      + totalWatts
+      + averageWatts
+      + highestWatts
+      + highReadings
+    }
+    class "UsageChartComponent" as FrontendPresentation_energy_monitoring_UsageChartComponent <<Component>> {
+      + readings: EnergyReading[]
+      + get: maxWatts(): number
+      + get: chartReadings(): EnergyReading[]
+      + getHeight(watts: number) : number
+    }
+  }
+  package "Presentation / Pages" {
+    class "EnergyDashboardPageComponent" as FrontendPresentation_energy_monitoring_EnergyDashboardPageComponent <<Component>> {
+      + energyMonitoringFacade
+      - activeWorkplaceContext
+      - workplaceFacade
+      - toastService
+      - translate
+      - uiPreferences
+      - refreshIntervalId: ReturnType<typeof setInterval> | null
+      - maxSegmentsPerReading
+      - maxChartReadings
+      - maxChartPoints
+      + sampleSeconds
+      + selectedPeriod
+      + periodOptions: DropdownOption[]
+      + normalReadingsCount
+      + highReadingsCount
+      + dashboardRecommendation
+      + ngOnInit() : Promise<void>
+      + ngOnDestroy() : void
+    }
+    class "EnergyHistoryPageComponent" as FrontendPresentation_energy_monitoring_EnergyHistoryPageComponent <<Component>> {
+      + pageSize
+      + deviceNameFilter
+      + deviceIdFilter
+      + readingIdFilter
+      + currentPage
+      + searchTerm
+      + statusFilter
+      + minWatts
+      + maxWatts
+      + sortOption
+      + historyScope
+      + startDateFilter
+      + endDateFilter
+      + statusOptions: DropdownOption[]
+      + sortOptions: DropdownOption[]
+      + constructor: (
+      + energyMonitoringFacade: EnergyMonitoringFacade
+      + workplaceFacade: WorkplaceFacade
+    }
+  }
+  package "Presentation / Routes" {
+    class "ENERGY_MONITORING_ROUTES" as FrontendPresentation_energy_monitoring_ENERGY_MONITORING_ROUTES <<Routes>> {
+      + route: /energy/consumption
+    }
+  }
+}
+
+FrontendPresentation_energy_monitoring_EnergyHistoryPageComponent ..> FrontendPresentation_energy_monitoring_EnergyFilterFormComponent
+
+' Relationship completion: every declared type participates in the frontend diagram.
+FrontendPresentation_energy_monitoring_EnergyHistoryPageComponent ..> FrontendPresentation_energy_monitoring_MetricsCardsComponent
+FrontendPresentation_energy_monitoring_EnergyHistoryPageComponent ..> FrontendPresentation_energy_monitoring_UsageChartComponent
+FrontendPresentation_energy_monitoring_EnergyHistoryPageComponent ..> FrontendPresentation_energy_monitoring_EnergyDashboardPageComponent
+FrontendPresentation_energy_monitoring_EnergyHistoryPageComponent ..> FrontendPresentation_energy_monitoring_ENERGY_MONITORING_ROUTES
+
+@enduml

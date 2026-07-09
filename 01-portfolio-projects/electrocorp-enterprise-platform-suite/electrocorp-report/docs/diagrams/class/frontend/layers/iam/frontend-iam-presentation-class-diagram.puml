@@ -1,0 +1,98 @@
+@startuml
+title ElectroCorp Web App - IAM Frontend Presentation Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "IAM Presentation" {
+  package "Presentation / Pages" {
+    class "AccountPageComponent" as FrontendPresentation_iam_AccountPageComponent <<Component>> {
+      + userInitials() : string
+      + formatDate(value: string | undefined) : string
+      + currentLocale() : string
+    }
+    class "AccessPageComponent" as FrontendPresentation_iam_AccessPageComponent <<Component>> {
+      - iamFacade: IamFacade
+      - toastService: ToastService
+      - translate: TranslateService
+      + ngOnInit() : Promise<void>
+      + isCurrentProfile(profile: AccessProfile) : boolean
+      + profileOptions() : DropdownOption[]
+      + profileValue(user: User) : string
+      + userStatusLabelKey(user: User) : string
+      + onProfileSelected(user: User, profileId: string) : Promise<void>
+    }
+    class "LoginPageComponent" as FrontendPresentation_iam_LoginPageComponent <<Component>> {
+      + email: string
+      + password: string
+      + onSubmit() : Promise<void>
+    }
+    class "PlatformPageComponent" as FrontendPresentation_iam_PlatformPageComponent <<Component>> {
+      + languageOptions: DropdownOption[]
+      + currentLanguage() : string
+      + currentLanguageLabel() : string
+      + currentThemeLabel() : string
+      + selectLanguage(value: string) : void
+      + setDarkMode(enabled: boolean) : void
+    }
+    class "ProfilePageComponent" as FrontendPresentation_iam_ProfilePageComponent <<Component>> {
+      + fullName: string
+      + email: string
+      + ngOnInit() : void
+      + onUpdateProfile() : Promise<void>
+      + hasPendingChanges() : boolean
+    }
+    class "RecoverPasswordPageComponent" as FrontendPresentation_iam_RecoverPasswordPageComponent <<Component>> {
+      + email: string
+      + onSubmit() : Promise<void>
+    }
+    class "ResetPasswordPageComponent" as FrontendPresentation_iam_ResetPasswordPageComponent <<Component>> {
+      + token: string
+      + password: string
+      + confirmPassword: string
+      + ngOnInit() : void
+      + onSubmit() : Promise<void>
+    }
+    class "RegisterPageComponent" as FrontendPresentation_iam_RegisterPageComponent <<Component>> {
+      + fullName: string
+      + email: string
+      + password: string
+      + selectedLandingPlan: LandingSelectedPlan | null
+      + ngOnInit() : void
+      + passwordRequirements() : PasswordRequirement[]
+      + passwordIsValid() : boolean
+      + registrationIsLoading() : boolean
+      + onSubmit() : Promise<void>
+    }
+    class "SecurityPageComponent" as FrontendPresentation_iam_SecurityPageComponent <<Component>> {
+      + email() : string
+      + sendRecovery() : Promise<void>
+      + onDeleteAccount() : Promise<void>
+    }
+  }
+  package "Presentation / Routes" {
+    class "IAM_ROUTES" as FrontendPresentation_iam_IAM_ROUTES <<Routes>> {
+      + /iam/login
+      + /iam/register
+      + /iam/recover-password
+      + /iam/reset-password
+      + /settings/account
+      + /settings/profile
+      + /settings/security
+      + /settings/platform
+      + /settings/access
+    }
+  }
+}
+
+FrontendPresentation_iam_AccessPageComponent ..> Frontend_iam_IamFacade
+FrontendPresentation_iam_ResetPasswordPageComponent ..> Frontend_iam_IamFacade
+FrontendPresentation_iam_RecoverPasswordPageComponent ..> Frontend_iam_IamFacade
+FrontendPresentation_iam_ProfilePageComponent ..> Frontend_iam_IamFacade
+FrontendPresentation_iam_SecurityPageComponent ..> Frontend_iam_IamFacade
+FrontendPresentation_iam_IAM_ROUTES ..> FrontendPresentation_iam_AccessPageComponent
+FrontendPresentation_iam_IAM_ROUTES ..> FrontendPresentation_iam_ResetPasswordPageComponent
+
+@enduml

@@ -1,0 +1,103 @@
+@startuml
+title LowCortisol Platform - Plan Backend Domain Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Plan / Domain" {
+  package "Domain / Aggregates" {
+    class "Plan" as Backend_plan_Plan <<Aggregate Root>> {
+      + Id: Guid
+      + Code: string
+      + Name: string
+      + Description: string
+      + Price: decimal
+      + Currency: string
+      + BillingPeriod: string
+      + MaxSites: int
+      + MaxDevices: int
+      + IsRecommended: bool
+      + IsActive: bool
+      + AddFeature(id, name, description) : PlanFeature
+      + CoversUsage(usedSites, usedDevices) : bool
+    }
+    class "Subscription" as Backend_plan_Subscription <<Aggregate Root>> {
+      + Id: Guid
+      + UserId: string
+      + WorkplaceId: string
+      + PlanId: Guid
+      + Status: SubscriptionStatus
+      + StartedAt: DateTime
+      + ExpiresAt: DateTime?
+      + AutoRenew: bool
+      + ChangePlan(planId) : void
+      + Cancel() : void
+    }
+  }
+
+  package "Domain / Entities" {
+    class "PlanFeature" as Backend_plan_PlanFeature <<Entity>> {
+      + Id: Guid
+      + PlanId: Guid
+      + Name: string
+      + Description: string
+    }
+    class "Payment" as Backend_plan_Payment <<Entity>> {
+      + Id: Guid
+      + SubscriptionId: Guid
+      + Amount: decimal
+      + Currency: string
+      + Method: string
+      + Status: PaymentStatus
+      + PaidAt: DateTime?
+    }
+    class "ServiceRequest" as Backend_plan_ServiceRequest <<Entity>> {
+      + Id: Guid
+      + SubscriptionId: Guid
+      + Type: string
+      + Description: string
+      + Status: ServiceRequestStatus
+      + Resolve() : void
+      + Close() : void
+    }
+  }
+
+  package "Domain / Commands" {
+    class "SubscribeToPlanCommand" as Backend_plan_SubscribeToPlanCommand <<record>>
+    class "ChangePlanCommand" as Backend_plan_ChangePlanCommand <<record>>
+    class "CancelSubscriptionCommand" as Backend_plan_CancelSubscriptionCommand <<record>>
+    class "ResolveServiceRequestCommand" as Backend_plan_ResolveServiceRequestCommand <<record>>
+    class "CloseServiceRequestCommand" as Backend_plan_CloseServiceRequestCommand <<record>>
+  }
+
+  package "Domain / Queries" {
+    class "GetPlansQuery" as Backend_plan_GetPlansQuery <<record>>
+    class "GetPlanByIdQuery" as Backend_plan_GetPlanByIdQuery <<record>>
+    class "GetActiveSubscriptionQuery" as Backend_plan_GetActiveSubscriptionQuery <<record>>
+    class "GetPaymentsQuery" as Backend_plan_GetPaymentsQuery <<record>>
+    class "GetServiceRequestsQuery" as Backend_plan_GetServiceRequestsQuery <<record>>
+    class "GetPlanSummaryQuery" as Backend_plan_GetPlanSummaryQuery <<record>>
+  }
+
+  package "Domain / Value Objects" {
+    enum "PaymentStatus" as Backend_plan_PaymentStatus <<enum>>
+    enum "SubscriptionStatus" as Backend_plan_SubscriptionStatus <<enum>>
+    enum "ServiceRequestStatus" as Backend_plan_ServiceRequestStatus <<enum>>
+  }
+
+  package "Domain / Repositories" {
+    interface "IPlanRepository" as Backend_plan_IPlanRepository <<Repository Port>>
+    interface "ISubscriptionRepository" as Backend_plan_ISubscriptionRepository <<Repository Port>>
+    interface "IPaymentRepository" as Backend_plan_IPaymentRepository <<Repository Port>>
+    interface "IServiceRequestRepository" as Backend_plan_IServiceRequestRepository <<Repository Port>>
+  }
+}
+
+Backend_plan_Plan *-- Backend_plan_PlanFeature
+Backend_plan_Subscription --> Backend_plan_Plan : planId
+Backend_plan_Payment --> Backend_plan_Subscription : subscriptionId
+Backend_plan_ServiceRequest --> Backend_plan_Subscription : subscriptionId
+
+@enduml

@@ -1,0 +1,442 @@
+@startuml
+title LowCortisol WebApp - Shared Frontend Presentation Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Shared UI / Kernel Presentation" {
+  package "Presentation / Components" {
+    class "AppButtonComponent" as FrontendPresentation_shared_AppButtonComponent <<Component>> {
+      + variant: AppButtonVariant
+      + size: AppButtonSize
+      + type: 'button' | 'submit' | 'reset'
+      + disabled
+      + block
+      + link: string | unknown[] | null
+      + ariaLabel
+      + label
+      + pressed
+      + get: className(): string
+      + onPressed(event: MouseEvent) : void
+    }
+    class "AppButtonSize" as FrontendPresentation_shared_AppButtonSize <<type>> {
+      + 'sm' | 'md' | 'lg'
+    }
+    class "AppButtonVariant" as FrontendPresentation_shared_AppButtonVariant <<type>> {
+      + 'primary' | 'secondary' | 'danger' | 'ghost' | 'create' | 'action' | 'neutral'
+    }
+    class "AppDatePickerComponent" as FrontendPresentation_shared_AppDatePickerComponent <<Component>> {
+      - dateTrigger?: ElementRef<HTMLElement>
+      - calendarPanel?: ElementRef<HTMLElement>
+      + label
+      + value
+      + min
+      + max
+      + valueChange
+      + isOpen
+      + isClosing
+      + visibleYear
+      + visibleMonth
+      - closeTimer: ReturnType<typeof setTimeout> | null
+      - syncTimer: ReturnType<typeof setTimeout> | null
+      + constructor: (
+      - elementRef: ElementRef<HTMLElement>
+      - uiPreferences: UiPreferencesService
+      + get: displayValue(): string
+      + get: currentMonthLabel(): string
+    }
+    class "AppDropdownComponent" as FrontendPresentation_shared_AppDropdownComponent <<Component>> {
+      - dropdownTrigger?: ElementRef<HTMLElement>
+      - dropdownMenu?: ElementRef<HTMLElement>
+      + options: DropdownOption[]
+      + value: string | null
+      + placeholder
+      + triggerLabel
+      + variant: 'field' | 'nav'
+      + tone: DropdownTone
+      + valueChange
+      + selected
+      + isOpen
+      + isClosing
+      - closeTimer: ReturnType<typeof setTimeout> | null
+      - syncTimer: ReturnType<typeof setTimeout> | null
+      + constructor(elementRef: ElementRef<HTMLElement>)
+      + get: isNavVariant(): boolean
+      + get: selectedOption(): DropdownOption | undefined
+      + get: labelToShow(): string
+    }
+    class "AppLayoutComponent" as FrontendPresentation_shared_AppLayoutComponent <<Component>> {
+      + router
+      + translate
+      + uiPreferences
+      + authSession
+      + iamFacade
+      + workplaceFacade
+      + confirmDialog
+      + isDrawerOpen
+      + isUserSidebarOpen
+      - workplaceLoadRequested
+      + constructor()
+      + openDrawer() : void
+      + closeDrawer() : void
+      + toggleTheme() : void
+      + signOut() : void
+      + currentUserName() : string
+      + currentUserEmail() : string
+      + currentUserRole() : string
+    }
+    class "AppNumberStepperComponent" as FrontendPresentation_shared_AppNumberStepperComponent <<Component>> {
+      + label
+      + value: number | null
+      + min: number | null
+      + max: number | null
+      + step
+      + decimals
+      + suffix
+      + placeholder
+      + allowEmpty
+      + valueChange
+      + get: inputValue(): string
+      + onInput(event: Event) : void
+      + onBlur(event: Event) : void
+      + onPaste(event: ClipboardEvent) : void
+      + increase() : void
+      + decrease() : void
+      - get: fallbackValue(): number
+      - clampValue(value: number) : number
+    }
+    class "AppTimePickerComponent" as FrontendPresentation_shared_AppTimePickerComponent <<Component>> {
+      - timeTrigger?: ElementRef<HTMLElement>
+      - timePanel?: ElementRef<HTMLElement>
+      + label
+      + value
+      + valueChange
+      + isOpen
+      - syncTimer: ReturnType<typeof setTimeout> | null
+      + String(index) : .padStart(2, '0')
+      + String(index * 5) : .padStart(2, '0')
+      + constructor(elementRef: ElementRef<HTMLElement>)
+      + get: displayValue(): string
+      + get: selectedHour(): string
+      + get: selectedMinute(): string
+      + togglePanel() : void
+      + openPanel() : void
+      + closePanel() : void
+      + selectHour(hour: string) : void
+      + selectMinute(minute: string) : void
+    }
+    class "AppWheelSelectorComponent" as FrontendPresentation_shared_AppWheelSelectorComponent <<Component>> {
+      + options: WheelOption[]
+      + value: WheelOptionValue | null
+      + eyebrow
+      + title
+      + summary
+      + hint
+      + valueChange
+      + optionChange
+      + selectedIndex
+      + isWheelDragging
+      + visibleOptionsList: VisibleWheelOption[]
+      + selectedOption: WheelOption | null
+      - wheelStepPx
+      - wheelOffsetPx
+      - wheelVelocity
+      - wheelAnimationFrame: number | null
+      - activePointerId: number | null
+      - lastPointerX
+    }
+    class "CalibrationCardComponent" as FrontendPresentation_shared_CalibrationCardComponent <<Component>> {
+      + source
+      + title
+      + description
+      + metric
+      + enabled
+      + weight
+      + percent
+      + enabledChange
+      + weightChange
+    }
+    class "ConfirmDialogComponent" as FrontendPresentation_shared_ConfirmDialogComponent <<Component>> {
+      + open
+      + title
+      + message
+      + detail?: string
+      + confirmLabel
+      + cancelLabel
+      + tone: ConfirmDialogTone
+      + requiredText?: string
+      + requiredTextLabel?: string
+      + requiredTextHint?: string
+      + confirmed
+      + cancelled
+      + closing
+      + confirmationText
+      - closeTimer: ReturnType<typeof setTimeout> | null
+      + get: confirmVariant(): AppButtonVariant
+      + get: requiresTypedConfirmation(): boolean
+      + get: canConfirm(): boolean
+    }
+    class "DraggableBarCarouselComponent" as FrontendPresentation_shared_DraggableBarCarouselComponent <<Component>> {
+      + items: DraggableBarCarouselItem[]
+      + visibleRadius
+      + selectable
+      + followLatest
+      + itemSelected
+      + dragging
+      + momentum
+      + autoAdvancing
+      + motionTick
+      - stepPx
+      - dragSensitivity
+      - throwPower
+      - offsetPx
+      - velocity
+      - selectedIndex
+      - didDrag
+      - activePointerId: number | null
+      - lastPointerX
+    }
+    interface "DraggableBarCarouselItem" as FrontendPresentation_shared_DraggableBarCarouselItem <<interface>> {
+      + key: string
+      + value: string
+      + caption: string
+      + percentage: number
+      + ariaLabel?: string
+      + eyebrow?: string
+      + title?: string
+      + subtitle?: string
+      + detail?: string
+      + meta?: string
+      + tone?: 'default' | 'warning'
+    }
+    interface "DropdownOption" as FrontendPresentation_shared_DropdownOption <<interface>> {
+      + label: string
+      + labelKey?: string
+      + value: string
+      + route?: string
+      + aliases?: string[]
+      + description?: string
+      + descriptionKey?: string
+      + disabled?: boolean
+      + emptyState?: boolean
+    }
+    class "DropdownTone" as FrontendPresentation_shared_DropdownTone <<type>> {
+      + 'default' | 'info' | 'success' | 'warning' | 'critical'
+    }
+    class "EmptyStateComponent" as FrontendPresentation_shared_EmptyStateComponent <<Component>> {
+      + eyebrow
+      + title
+      + description
+      + actionLabel
+      + actionLink: string | unknown[] | null
+      + actionVariant: AppButtonVariant
+      + compact
+    }
+    class "ErrorMessageComponent" as FrontendPresentation_shared_ErrorMessageComponent <<Component>> {
+      + message: string | null
+    }
+    class "FooterComponent" as FrontendPresentation_shared_FooterComponent <<Component>> {
+      + currentYear
+    }
+    class "HeaderComponent" as FrontendPresentation_shared_HeaderComponent <<Component>> {
+      + showPrivateNavigation
+      + isDarkMode
+      + userInitial
+      + themeToggled
+      + userMenuToggled
+      + currentUrl
+      + consumptionOptions: DropdownOption[]
+      + workplaceOptions: DropdownOption[]
+      + operationOptions: DropdownOption[]
+      + alertsOptions: DropdownOption[]
+      + supportOptions: DropdownOption[]
+      + constructor(router: Router)
+      + activeValue(options: DropdownOption[]) : string | null
+      + toggleTheme() : void
+      + toggleUserMenu() : void
+      - matchedRouteLength(url: string, option: DropdownOption) : number
+    }
+    class "LanguageSwitcherComponent" as FrontendPresentation_shared_LanguageSwitcherComponent <<Component>> {
+      + languages: LanguageOption[]
+      + constructor(uiPreferences: UiPreferencesService)
+      + changeLanguage(language: LanguageOption['code']) : void
+    }
+    class "LoadingSpinnerComponent" as FrontendPresentation_shared_LoadingSpinnerComponent <<Component>> {
+    }
+    class "ModalFormShellComponent" as FrontendPresentation_shared_ModalFormShellComponent <<Component>> {
+      + eyebrow
+      + title
+      + description
+      + closed
+      + closing
+      - modalOpen
+      - closeTimer: ReturnType<typeof setTimeout> | null
+      + set: open(value: boolean)
+      + get: open(): boolean
+      + ngOnDestroy() : void
+      + close() : void
+      - clearCloseTimer() : void
+    }
+    class "SectionCardComponent" as FrontendPresentation_shared_SectionCardComponent <<Component>> {
+      + eyebrow
+      + title
+      + description
+      + size: SectionCardSize
+      + get: className(): string
+    }
+    class "SectionCardSize" as FrontendPresentation_shared_SectionCardSize <<type>> {
+      + 'large' | 'medium' | 'small' | 'description'
+    }
+    class "SettingsSectionComponent" as FrontendPresentation_shared_SettingsSectionComponent <<Component>> {
+      + eyebrow
+      + title
+      + description
+      + stackedHeader
+    }
+    class "SettingsShellComponent" as FrontendPresentation_shared_SettingsShellComponent <<Component>> {
+      + navItems: SettingsNavItem[]
+    }
+    class "SettingToggleComponent" as FrontendPresentation_shared_SettingToggleComponent <<Component>> {
+      + title
+      + description
+      + checked
+      + disabled
+      + checkedChange
+      + toggle() : void
+    }
+    class "SeverityBadgeComponent" as FrontendPresentation_shared_SeverityBadgeComponent <<Component>> {
+      + level: SeverityBadgeLevel | string
+      + get: normalizedLevel(): SeverityBadgeLevel
+      + get: label(): string
+    }
+    class "SeverityBadgeLevel" as FrontendPresentation_shared_SeverityBadgeLevel <<type>> {
+      + | 'STABLE' | 'SUCCESS' | 'INFO' | 'WARNING' | 'CRITICAL'
+    }
+    class "ToastContainerComponent" as FrontendPresentation_shared_ToastContainerComponent <<Component>> {
+      + toastService
+      + labelFor(type: ToastType) : string
+    }
+    interface "VisibleWheelOption" as FrontendPresentation_shared_VisibleWheelOption <<interface>> {
+      + index: number
+    }
+    class "WeightSliderComponent" as FrontendPresentation_shared_WeightSliderComponent <<Component>> {
+      + label
+      + value
+      + percent
+      + active
+      + min
+      + max
+      + step
+      + valueChange
+      + update(event: Event) : void
+    }
+    interface "WheelOption" as FrontendPresentation_shared_WheelOption <<interface>> {
+      + label: string
+      + value: TValue
+      + sublabel?: string
+    }
+    class "WheelOptionValue" as FrontendPresentation_shared_WheelOptionValue <<type>> {
+      + string: | number
+    }
+  }
+  package "Presentation / Pages" {
+    class "AboutPageComponent" as FrontendPresentation_shared_AboutPageComponent <<Component>> {
+      + heroSignalKeys
+      + valueKeys
+      + dailyUseKeys
+      + recommendationKeys
+      + capabilityKeys
+      + carefulUseKeys
+    }
+    class "HomePageComponent" as FrontendPresentation_shared_HomePageComponent <<Component>> {
+      + workplaceFacade
+      + deviceControlFacade
+      + consumptionMonitoringFacade
+      + reportFacade
+      + notificationFacade
+      + serviceManagementFacade
+      + activeWorkplaceContext
+      + uiPreferences
+      - translate
+      + assignedDeviceIds
+      + activeMode
+      + loading
+      + ngOnInit() : Promise<void>
+      + onActiveLocationChange(value: WheelOptionValue) : void
+      + getLocationTypeLabel(location: Location) : string
+      + getLocationSubtitle(location: Location) : string
+      + getRoomName(assignment: DeviceAssignment) : string
+      + getDeviceName(deviceId: number) : string
+    }
+    class "NotFoundPageComponent" as FrontendPresentation_shared_NotFoundPageComponent <<Component>> {
+    }
+  }
+  package "Presentation / Utils" {
+    interface "FloatingPanelPosition" as FrontendPresentation_shared_FloatingPanelPosition <<interface>> {
+      + top: number
+      + left: number
+      + width: number
+      + maxHeight: number
+      + opensAbove: boolean
+    }
+    interface "FloatingPanelPositionOptions" as FrontendPresentation_shared_FloatingPanelPositionOptions <<interface>> {
+      + gap?: number
+      + maxHeight?: number
+      + minHeight?: number
+      + minWidth?: number
+      + panelHeight?: number
+      + preferredWidth?: number
+      + viewportPadding?: number
+    }
+  }
+}
+
+FrontendPresentation_shared_AboutPageComponent ..> FrontendPresentation_shared_AppButtonComponent
+FrontendPresentation_shared_AboutPageComponent ..> FrontendPresentation_shared_SectionCardComponent
+FrontendPresentation_shared_AppDropdownComponent ..> FrontendPresentation_shared_DropdownOption
+FrontendPresentation_shared_AppLayoutComponent ..> FrontendPresentation_shared_ConfirmDialogComponent
+FrontendPresentation_shared_AppLayoutComponent ..> FrontendPresentation_shared_FooterComponent
+FrontendPresentation_shared_AppLayoutComponent ..> FrontendPresentation_shared_HeaderComponent
+FrontendPresentation_shared_AppLayoutComponent ..> FrontendPresentation_shared_ToastContainerComponent
+FrontendPresentation_shared_AppWheelSelectorComponent ..> FrontendPresentation_shared_VisibleWheelOption
+FrontendPresentation_shared_AppWheelSelectorComponent ..> FrontendPresentation_shared_WheelOption
+FrontendPresentation_shared_AppWheelSelectorComponent ..> FrontendPresentation_shared_WheelOptionValue
+FrontendPresentation_shared_CalibrationCardComponent ..> FrontendPresentation_shared_SettingToggleComponent
+FrontendPresentation_shared_CalibrationCardComponent ..> FrontendPresentation_shared_WeightSliderComponent
+FrontendPresentation_shared_ConfirmDialogComponent ..> FrontendPresentation_shared_AppButtonComponent
+FrontendPresentation_shared_ConfirmDialogComponent ..> FrontendPresentation_shared_AppButtonVariant
+FrontendPresentation_shared_DropdownTone ..> FrontendPresentation_shared_DropdownOption
+FrontendPresentation_shared_EmptyStateComponent ..> FrontendPresentation_shared_AppButtonComponent
+FrontendPresentation_shared_EmptyStateComponent ..> FrontendPresentation_shared_AppButtonVariant
+FrontendPresentation_shared_HeaderComponent ..> FrontendPresentation_shared_AppDropdownComponent
+FrontendPresentation_shared_HeaderComponent ..> FrontendPresentation_shared_DropdownOption
+FrontendPresentation_shared_HeaderComponent ..> FrontendPresentation_shared_LanguageSwitcherComponent
+FrontendPresentation_shared_HomePageComponent ..> FrontendPresentation_shared_AppButtonComponent
+FrontendPresentation_shared_HomePageComponent ..> FrontendPresentation_shared_AppWheelSelectorComponent
+FrontendPresentation_shared_HomePageComponent ..> FrontendPresentation_shared_EmptyStateComponent
+FrontendPresentation_shared_HomePageComponent ..> FrontendPresentation_shared_SectionCardComponent
+FrontendPresentation_shared_HomePageComponent ..> FrontendPresentation_shared_WheelOption
+FrontendPresentation_shared_HomePageComponent ..> FrontendPresentation_shared_WheelOptionValue
+
+' Relationship completion: every declared type participates in the frontend diagram.
+FrontendPresentation_shared_AboutPageComponent ..> FrontendPresentation_shared_AppButtonSize
+FrontendPresentation_shared_AboutPageComponent ..> FrontendPresentation_shared_AppDatePickerComponent
+FrontendPresentation_shared_AboutPageComponent ..> FrontendPresentation_shared_AppNumberStepperComponent
+FrontendPresentation_shared_AboutPageComponent ..> FrontendPresentation_shared_AppTimePickerComponent
+FrontendPresentation_shared_AboutPageComponent ..> FrontendPresentation_shared_DraggableBarCarouselComponent
+FrontendPresentation_shared_AboutPageComponent ..> FrontendPresentation_shared_DraggableBarCarouselItem
+FrontendPresentation_shared_AboutPageComponent ..> FrontendPresentation_shared_ErrorMessageComponent
+FrontendPresentation_shared_AboutPageComponent ..> FrontendPresentation_shared_LoadingSpinnerComponent
+FrontendPresentation_shared_AboutPageComponent ..> FrontendPresentation_shared_ModalFormShellComponent
+FrontendPresentation_shared_AboutPageComponent ..> FrontendPresentation_shared_SectionCardSize
+FrontendPresentation_shared_AboutPageComponent ..> FrontendPresentation_shared_SettingsSectionComponent
+FrontendPresentation_shared_AboutPageComponent ..> FrontendPresentation_shared_SettingsShellComponent
+FrontendPresentation_shared_AboutPageComponent ..> FrontendPresentation_shared_SeverityBadgeComponent
+FrontendPresentation_shared_AboutPageComponent ..> FrontendPresentation_shared_SeverityBadgeLevel
+FrontendPresentation_shared_AboutPageComponent ..> FrontendPresentation_shared_NotFoundPageComponent
+FrontendPresentation_shared_AboutPageComponent ..> FrontendPresentation_shared_FloatingPanelPosition
+FrontendPresentation_shared_AboutPageComponent ..> FrontendPresentation_shared_FloatingPanelPositionOptions
+
+@enduml

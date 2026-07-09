@@ -1,0 +1,179 @@
+@startuml
+title LowCortisol WebApp - Shared Frontend Application Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Shared / Application" {
+  package "Application / Facades and Services" {
+    class "AppLanguage" as Frontend_shared_AppLanguage <<type>> {
+      + AppLanguageCode
+    }
+    class "AppTheme" as Frontend_shared_AppTheme <<type>> {
+      + 'light' | 'dark'
+    }
+    interface "AuthenticatedUserSession" as Frontend_shared_AuthenticatedUserSession <<interface>> {
+      + id: number
+      + fullName: string
+      + email: string
+      + token: string
+      + accessProfileId?: number
+      + accessProfileName?: string
+    }
+    class "AuthSessionService" as Frontend_shared_AuthSessionService <<Service>> {
+      - storageKey
+      - currentUserSignal
+      - loadingSignal
+      + accessProfileName
+      + setLoading(value: boolean) : void
+      + setCurrentUser(user: AuthenticatedUserSession) : void
+      + clearSession() : void
+      + restoreStoredSession() : AuthenticatedUserSession | null
+    }
+    interface "ConfirmDialogOptions" as Frontend_shared_ConfirmDialogOptions <<interface>> {
+      + title?: string
+      + message: string
+      + detail?: string
+      + confirmLabel?: string
+      + cancelLabel?: string
+      + tone?: ConfirmDialogTone
+      + requiredText?: string
+      + requiredTextLabel?: string
+      + requiredTextHint?: string
+    }
+    class "ConfirmDialogService" as Frontend_shared_ConfirmDialogService <<Service>> {
+      - activeDialog
+      + confirm(options: ConfirmDialogOptions) : Promise<boolean>
+      + confirmSequence(options: ConfirmDialogOptions[]) : Promise<boolean>
+      + confirmCurrent() : void
+      + cancelCurrent() : void
+      - close(confirmed: boolean) : void
+    }
+    interface "ConfirmDialogState" as Frontend_shared_ConfirmDialogState <<interface>> {
+      + title: string
+      + message: string
+      + detail?: string
+      + confirmLabel: string
+      + cancelLabel: string
+      + tone: ConfirmDialogTone
+      + requiredText?: string
+      + requiredTextLabel?: string
+      + requiredTextHint?: string
+    }
+    class "ConfirmDialogTone" as Frontend_shared_ConfirmDialogTone <<type>> {
+      + 'warning' | 'danger' | 'info'
+    }
+    class "ThemeService" as Frontend_shared_ThemeService <<Service>> {
+      - uiPreferences
+      + toggleTheme() : void
+      + setTheme(theme: AppTheme) : void
+    }
+    interface "ToastMessage" as Frontend_shared_ToastMessage <<interface>> {
+      + id: number
+      + type: ToastType
+      + message: string
+      + leaving?: boolean
+    }
+    class "ToastService" as Frontend_shared_ToastService <<Service>> {
+      + toasts
+      - nextId
+      - defaultDurationMs
+      - exitDurationMs
+      + success(message: string) : void
+      + info(message: string) : void
+      + warning(message: string) : void
+      + critical(message: string) : void
+      + error(message: string) : void
+      + dismiss(id: number) : void
+      - show(type: ToastType, message: string, durationMs = this.defaultDurationMs) : void
+    }
+    class "ToastType" as Frontend_shared_ToastType <<type>> {
+      + 'success' | 'info' | 'warning' | 'critical' | 'error'
+    }
+    class "TranslationService" as Frontend_shared_TranslationService <<Service>> {
+      - currentLanguageSignal
+      + availableLanguages
+      + constructor(translate: TranslateService)
+      + use(language: AppLanguage) : void
+      + toggleLanguage() : void
+    }
+    class "UiPreferencesService" as Frontend_shared_UiPreferencesService <<Service>> {
+      - document
+      - translate
+      - storage
+      + currentLanguage
+      + isDarkMode
+      + constructor()
+      + setLanguage(language: LanguageCode) : void
+      + toggleLanguage() : void
+      + toggleTheme() : void
+      + setTheme(theme: AppTheme) : void
+      - applyTheme(theme: AppTheme) : void
+      - readStoredLanguage() : LanguageCode
+      - readStoredTheme() : AppTheme
+      - isSupportedLanguage(language: string | null) : language is LanguageCode
+      - readStorage(key: string) : string | null
+      - writeStorage(key: string, value: string) : void
+    }
+    class "UiStateService" as Frontend_shared_UiStateService <<Service>> {
+      + constructor(store: SharedUiStore)
+      + get: sidebarOpen()
+      + get: globalLoading()
+      + openSidebar() : void
+      + closeSidebar() : void
+      + toggleSidebar() : void
+      + setGlobalLoading(value: boolean) : void
+      + reset() : void
+    }
+  }
+  package "Application / Guards" {
+    class "ActiveSubscriptionGuard" as Frontend_shared_ActiveSubscriptionGuard <<Guard>> {
+      + inject
+    }
+    class "AuthGuard" as Frontend_shared_AuthGuard <<Guard>> {
+      + inject
+    }
+  }
+  package "Application / Interceptors" {
+    class "AuthInterceptor" as Frontend_shared_AuthInterceptor <<Interceptor>> {
+      + HttpInterceptorFn
+    }
+    class "ErrorInterceptor" as Frontend_shared_ErrorInterceptor <<Interceptor>> {
+      + HttpErrorResponse: , HttpInterceptorFn
+    }
+  }
+  package "Application / Stores" {
+    class "SharedUiStore" as Frontend_shared_SharedUiStore <<Store>> {
+      - sidebarOpenSignal
+      - globalLoadingSignal
+      + setSidebarOpen(value: boolean) : void
+      + toggleSidebar() : void
+      + setGlobalLoading(value: boolean) : void
+      + reset() : void
+    }
+  }
+}
+
+Frontend_shared_ActiveSubscriptionGuard ..> Frontend_shared_AuthSessionService
+Frontend_shared_AuthGuard ..> Frontend_shared_AuthSessionService
+Frontend_shared_AuthInterceptor ..> Frontend_shared_AuthSessionService
+Frontend_shared_ThemeService ..> Frontend_shared_AppTheme
+Frontend_shared_ThemeService ..> Frontend_shared_UiPreferencesService
+Frontend_shared_UiStateService ..> Frontend_shared_SharedUiStore
+
+' Layer relationship completion: every declared type participates in this layer diagram.
+Frontend_shared_SharedUiStore ..> Frontend_shared_AppLanguage
+Frontend_shared_SharedUiStore ..> Frontend_shared_AuthenticatedUserSession
+Frontend_shared_SharedUiStore ..> Frontend_shared_ConfirmDialogOptions
+Frontend_shared_SharedUiStore ..> Frontend_shared_ConfirmDialogService
+Frontend_shared_SharedUiStore ..> Frontend_shared_ConfirmDialogState
+Frontend_shared_SharedUiStore ..> Frontend_shared_ConfirmDialogTone
+Frontend_shared_SharedUiStore ..> Frontend_shared_ToastMessage
+Frontend_shared_SharedUiStore ..> Frontend_shared_ToastService
+Frontend_shared_SharedUiStore ..> Frontend_shared_ToastType
+Frontend_shared_SharedUiStore ..> Frontend_shared_TranslationService
+Frontend_shared_SharedUiStore ..> Frontend_shared_ErrorInterceptor
+
+@enduml

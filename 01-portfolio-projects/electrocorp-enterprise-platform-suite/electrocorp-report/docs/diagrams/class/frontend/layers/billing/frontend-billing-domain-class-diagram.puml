@@ -1,0 +1,142 @@
+@startuml
+title ElectroCorp Web App - Billing Frontend Domain Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Billing / Domain" {
+  package "Domain / Model" {
+    class "Invoice" as Frontend_billing_Invoice <<Entity>> {
+      - _userId: number
+      - _invoiceNumber: string
+      - _totalAmount: number
+      - _currency: string
+      - _issuedAt: string
+      + constructor: (props:
+      + get: userId(): number
+      + get: invoiceNumber(): string
+      + get: totalAmount(): number
+      + get: currency(): string
+      + get: issuedAt(): string
+    }
+    class "Payment" as Frontend_billing_Payment <<Entity>> {
+      - _userId: number
+      - _amount: number
+      - _currency: string
+      - _status: PaymentStatus
+      - _paymentMethod: string
+      + constructor: (props:
+      + get: userId(): number
+      + get: amount(): number
+      + get: currency(): string
+      + get: status(): PaymentStatus
+      + get: paymentMethod(): string
+      + get: isApproved(): boolean
+    }
+    class "PaymentMethod" as Frontend_billing_PaymentMethod <<type>> {
+      + 'CARD'
+    }
+    class "PaymentStatus" as Frontend_billing_PaymentStatus <<type>> {
+      + 'APPROVED' | 'REJECTED' | 'PENDING'
+    }
+    class "Plan" as Frontend_billing_Plan <<Entity>> {
+      - _code: PlanCode
+      - _name: string
+      - _monthlyPrice: number
+      - _currency: string
+      - _maxDevices: number | null
+      - _maxRoutines: number | null
+      - _maxAlerts: number | null
+      - _reportExportEnabled: boolean
+      + constructor: (props:
+      + get: code(): PlanCode
+      + get: name(): string
+      + get: monthlyPrice(): number
+      + get: currency(): string
+      + get: maxDevices(): number | null
+      + get: maxRoutines(): number | null
+      + get: maxAlerts(): number | null
+      + get: reportExportEnabled(): boolean
+      + get: isStarter(): boolean
+    }
+    class "PlanCode" as Frontend_billing_PlanCode <<type>> {
+      + 'STARTER' | 'PROFESSIONAL' | 'ENTERPRISE'
+    }
+    class "Subscription" as Frontend_billing_Subscription <<Entity>> {
+      - _userId: number
+      - _planCode: PlanCode
+      - _status: SubscriptionStatus
+      - _active: boolean
+      - _startDate: string | null
+      - _nextBillingDate: string | null
+      - _endDate: string | null
+      + constructor: (props:
+      + get: userId(): number
+      + get: planCode(): PlanCode
+      + get: status(): SubscriptionStatus
+      + get: active(): boolean
+      + get: isActive(): boolean
+      + get: startDate(): string | null
+      + get: nextBillingDate(): string | null
+      + get: endDate(): string | null
+    }
+    class "SubscriptionStatus" as Frontend_billing_SubscriptionStatus <<type>> {
+      + 'ACTIVE' | 'CANCELLED' | 'EXPIRED'
+    }
+  }
+  package "Domain / Services" {
+    class "PaymentValidationService" as Frontend_billing_PaymentValidationService <<Domain Service>> {
+      + isValidCardNumber(cardNumber: string) : boolean
+      + isValidCvv(cvv: string) : boolean
+      + isValidHolderName(holderName: string) : boolean
+      + isValidExpirationDate(expirationDate: string) : boolean
+      + sanitizeCardNumber(cardNumber: string) : string
+      + getLastFourDigits(cardNumber: string) : string
+    }
+    interface "PlanPermissions" as Frontend_billing_PlanPermissions <<interface>> {
+      + maxDevices: number
+      + maxRoutines: number
+      + maxManualAlerts: number
+      + canExportCsv: boolean
+      + canAccessEnergyHistory: boolean
+      + canUseAdvancedAnalytics: boolean
+      + canUseMultipleLocations: boolean
+    }
+    class "PlanPermissionService" as Frontend_billing_PlanPermissionService <<Domain Service>> {
+      - permissions: Record<PlanCode, PlanPermissions>
+      + getPermissions(planCode: PlanCode | null) : PlanPermissions | null
+      + canCreateDevice(planCode: PlanCode | null, currentDevices: number) : boolean
+      + canCreateRoutine(planCode: PlanCode | null, currentRoutines: number) : boolean
+      + canCreateManualAlert(planCode: PlanCode | null, currentAlerts: number) : boolean
+      + canExportCsv(planCode: PlanCode | null) : boolean
+      + canAccessEnergyHistory(planCode: PlanCode | null) : boolean
+      + canUseAdvancedAnalytics(planCode: PlanCode | null) : boolean
+      + canUseMultipleLocations(planCode: PlanCode | null) : boolean
+    }
+    class "SubscriptionPolicyService" as Frontend_billing_SubscriptionPolicyService <<Domain Service>> {
+      + canSubscribeToPlan: (
+      + currentSubscription: Subscription | null
+      + targetPlanCode: PlanCode
+      + canCancelSubscription(subscription: Subscription | null) : boolean
+    }
+  }
+}
+
+Frontend_billing_PlanPermissionService ..> Frontend_billing_PlanCode
+Frontend_billing_PlanPermissions ..> Frontend_billing_PlanCode
+Frontend_billing_Subscription ..> Frontend_billing_PlanCode
+Frontend_billing_SubscriptionPolicyService ..> Frontend_billing_PlanCode
+Frontend_billing_SubscriptionPolicyService ..> Frontend_billing_Subscription
+Frontend_billing_SubscriptionStatus ..> Frontend_billing_PlanCode
+
+' Layer relationship completion: every declared type participates in this layer diagram.
+Frontend_billing_PlanPermissionService ..> Frontend_billing_Invoice
+Frontend_billing_PlanPermissionService ..> Frontend_billing_Payment
+Frontend_billing_PlanPermissionService ..> Frontend_billing_PaymentMethod
+Frontend_billing_PlanPermissionService ..> Frontend_billing_PaymentStatus
+Frontend_billing_PlanPermissionService ..> Frontend_billing_Plan
+Frontend_billing_PlanPermissionService ..> Frontend_billing_PaymentValidationService
+
+@enduml

@@ -1,0 +1,26 @@
+@startuml
+title LowCortisol WebApp - Support Frontend Bounded Context Layers
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Support Frontend Bounded Context" {
+  class "Domain" as Frontend_service_management_Domain <<layer>>
+  class "Application" as Frontend_service_management_Application <<layer>>
+  class "Infrastructure" as Frontend_service_management_Infrastructure <<layer>>
+  class "Presentation" as Frontend_service_management_Presentation <<layer>>
+}
+
+Frontend_service_management_Presentation ..> Frontend_service_management_Application : user actions / state
+Frontend_service_management_Application ..> Frontend_service_management_Domain : models and rules
+Frontend_service_management_Application ..> Frontend_service_management_Infrastructure : API services / adapters
+Frontend_service_management_Infrastructure ..> Frontend_service_management_Domain : resources and mappers
+Frontend_service_management_Presentation ..> Frontend_service_management_Domain : view models
+
+note bottom of Frontend_service_management_Application
+Detailed class diagrams for each layer are available in docs/diagrams/class/frontend/layers/support.
+end note
+
+@enduml

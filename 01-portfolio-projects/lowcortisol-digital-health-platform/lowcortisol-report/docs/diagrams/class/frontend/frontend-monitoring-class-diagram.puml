@@ -1,0 +1,26 @@
+@startuml
+title LowCortisol WebApp - Monitoring Frontend Bounded Context Layers
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Monitoring Frontend Bounded Context" {
+  class "Domain" as Frontend_consumption_monitoring_Domain <<layer>>
+  class "Application" as Frontend_consumption_monitoring_Application <<layer>>
+  class "Infrastructure" as Frontend_consumption_monitoring_Infrastructure <<layer>>
+  class "Presentation" as Frontend_consumption_monitoring_Presentation <<layer>>
+}
+
+Frontend_consumption_monitoring_Presentation ..> Frontend_consumption_monitoring_Application : user actions / state
+Frontend_consumption_monitoring_Application ..> Frontend_consumption_monitoring_Domain : models and rules
+Frontend_consumption_monitoring_Application ..> Frontend_consumption_monitoring_Infrastructure : API services / adapters
+Frontend_consumption_monitoring_Infrastructure ..> Frontend_consumption_monitoring_Domain : resources and mappers
+Frontend_consumption_monitoring_Presentation ..> Frontend_consumption_monitoring_Domain : view models
+
+note bottom of Frontend_consumption_monitoring_Application
+Detailed class diagrams for each layer are available in docs/diagrams/class/frontend/layers/monitoring.
+end note
+
+@enduml

@@ -1,0 +1,107 @@
+@startuml
+title ElectroCorp Platform - Notifications Database Diagram
+left to right direction
+hide circle
+skinparam linetype ortho
+skinparam shadowing false
+skinparam packageStyle rectangle
+package "Notifications" {
+  entity "alert_rule_profiles" as alert_rule_profiles {
+    PK id : bigint
+    created_at : timestamp
+    updated_at : timestamp
+    user_id : bigint
+    name : varchar
+    description : varchar
+    scope_type : varchar
+    scope_id : varchar
+    mode : varchar
+    sensitivity : varchar
+    active : boolean
+  }
+  entity "alert_rules" as alert_rules {
+    PK id : bigint
+    created_at : timestamp
+    updated_at : timestamp
+    user_id : bigint
+    name : varchar
+    metric : varchar
+    condition_type : varchar
+    threshold : decimal
+    level : varchar
+    scope_type : varchar
+    scope_id : varchar
+    evaluator_type : varchar
+    weight : integer
+    profile_name : varchar
+    enabled : boolean
+  }
+  entity "alerts" as alerts {
+    PK id : bigint
+    created_at : timestamp
+    updated_at : timestamp
+    user_id : bigint
+    title : varchar
+    message : varchar
+    level : varchar
+    source_type : varchar
+    source_id : varchar
+    source_label : varchar
+    event_type : varchar
+    thread_key : varchar
+    evidence : varchar
+    explanation : varchar
+    recommended_action : varchar
+    severity_score : integer
+    repeat_count : integer
+    active : boolean
+    resolved : boolean
+    read_status : boolean
+    first_detected_at : timestamp
+    last_triggered_at : timestamp
+    dismissed_until : timestamp
+    expires_at : timestamp
+  }
+  entity "notification_preferences" as notification_preferences {
+    PK id : bigint
+    created_at : timestamp
+    updated_at : timestamp
+    user_id : bigint
+    scope_type : varchar
+    scope_id : varchar
+    email_enabled : boolean
+    push_enabled : boolean
+    in_app_enabled : boolean
+    toast_enabled : boolean
+    dashboard_enabled : boolean
+    critical_only : boolean
+    minimum_level : varchar
+    allowed_levels : varchar
+    allowed_source_types : varchar
+    critical_breaks_quiet_hours : boolean
+    group_similar_alerts : boolean
+    reminders_enabled : boolean
+    cooldown_minutes : integer
+    max_alerts_per_hour : integer
+    routine_night_silence : boolean
+    goal_deadline_alerts : boolean
+    maintenance_device_alerts : boolean
+    system_recommendations : boolean
+    daily_summary_enabled : boolean
+    weekly_summary_enabled : boolean
+    default_delivery_mode : varchar
+  }
+}
+
+package "External References" {
+  entity "users" as users <<external>> {
+    PK id
+  }
+}
+
+users ||--o{ alert_rule_profiles : user_id
+users ||--o{ alert_rules : user_id
+users ||--o{ alerts : user_id
+users ||--o{ notification_preferences : user_id
+
+@enduml

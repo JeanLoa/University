@@ -1,0 +1,114 @@
+@startuml
+title LowCortisol Platform - IAM Backend Domain Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "IAM / Domain" {
+  package "Domain / Aggregates" {
+    class "AccessProfile" as Backend_iam_AccessProfile <<Aggregate>> {
+      - name: String
+      - description: String
+    }
+    class "User" as Backend_iam_User <<Aggregate>> {
+      - fullName: String
+      - email: String
+      - passwordHash: String
+      - status: AccountStatus
+      - accessProfile: AccessProfile
+      + deactivate() : void
+      + isActive() : boolean
+    }
+  }
+  package "Domain / Commands" {
+    class "DeleteAccountCommand" as Backend_iam_DeleteAccountCommand <<record>> {
+      + Long userId
+    }
+    class "RecoverPasswordCommand" as Backend_iam_RecoverPasswordCommand <<record>> {
+      + String email
+    }
+    class "SignInCommand" as Backend_iam_SignInCommand <<record>> {
+      + String email
+      + String password
+    }
+    class "SignUpCommand" as Backend_iam_SignUpCommand <<record>> {
+      + String fullName
+      + String email
+      + String password
+    }
+    class "UpdateProfileCommand" as Backend_iam_UpdateProfileCommand <<record>> {
+      + String fullName
+      + String email
+    }
+  }
+  package "Domain / Events" {
+    class "UserRegisteredEvent" as Backend_iam_UserRegisteredEvent <<record>> {
+      + Long userId
+      + String email
+      + LocalDateTime occurredOn
+      + UserRegisteredEvent(Long userId, String email, LocalDateTime occurredOn) : record
+      + UserRegisteredEvent(Long userId, String email)
+    }
+  }
+  package "Domain / Model" {
+    enum "AccountStatus" as Backend_iam_AccountStatus <<enum>> {
+      + ACTIVE
+      + INACTIVE
+    }
+  }
+  package "Domain / Repositories" {
+    interface "AccessProfileRepository" as Backend_iam_AccessProfileRepository <<interface>> {
+    }
+    interface "UserRepository" as Backend_iam_UserRepository <<interface>> {
+    }
+  }
+  package "Domain / Services" {
+    class "EmailPolicyService" as Backend_iam_EmailPolicyService <<Domain Service>> {
+      + isAllowedEmail(String email) : boolean
+    }
+    class "PasswordPolicyService" as Backend_iam_PasswordPolicyService <<Domain Service>> {
+      + isValid(String password) : boolean
+    }
+    class "UserProfilePolicyService" as Backend_iam_UserProfilePolicyService <<Domain Service>> {
+      + validateFullName(String fullName) : void
+      + validateEmail(String email) : void
+    }
+  }
+  package "Domain / Value Objects" {
+    class "AccessProfileName" as Backend_iam_AccessProfileName <<record>> {
+      + String value
+      + AccessProfileName(String value) : record
+    }
+    class "PasswordHash" as Backend_iam_PasswordHash <<record>> {
+      + String value
+      + PasswordHash(String value) : record
+    }
+    class "RoleName" as Backend_iam_RoleName <<record>> {
+      + String value
+      + RoleName(String value) : record
+      - PATTERN: Pattern
+    }
+  }
+}
+
+Backend_iam_AccessProfileRepository ..> Backend_iam_AccessProfile
+Backend_iam_UserRepository ..> Backend_iam_User
+
+' Layer relationship completion: every declared type participates in this layer diagram.
+Backend_iam_AccessProfileRepository ..> Backend_iam_DeleteAccountCommand
+Backend_iam_AccessProfileRepository ..> Backend_iam_RecoverPasswordCommand
+Backend_iam_AccessProfileRepository ..> Backend_iam_SignInCommand
+Backend_iam_AccessProfileRepository ..> Backend_iam_SignUpCommand
+Backend_iam_AccessProfileRepository ..> Backend_iam_UpdateProfileCommand
+Backend_iam_AccessProfileRepository ..> Backend_iam_UserRegisteredEvent
+Backend_iam_AccessProfileRepository ..> Backend_iam_AccountStatus
+Backend_iam_AccessProfileRepository ..> Backend_iam_EmailPolicyService
+Backend_iam_AccessProfileRepository ..> Backend_iam_PasswordPolicyService
+Backend_iam_AccessProfileRepository ..> Backend_iam_UserProfilePolicyService
+Backend_iam_AccessProfileRepository ..> Backend_iam_AccessProfileName
+Backend_iam_AccessProfileRepository ..> Backend_iam_PasswordHash
+Backend_iam_AccessProfileRepository ..> Backend_iam_RoleName
+
+@enduml

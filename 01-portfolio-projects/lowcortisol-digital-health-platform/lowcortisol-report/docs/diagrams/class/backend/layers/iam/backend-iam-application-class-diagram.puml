@@ -1,0 +1,43 @@
+@startuml
+title LowCortisol Platform - IAM Backend Application Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "IAM / Application" {
+  package "Application / Results" {
+    class "AuthenticationResult" as Backend_iam_AuthenticationResult <<record>> {
+      + User user
+      + String token
+    }
+  }
+  package "Application / Services" {
+    class "AuthApplicationService" as Backend_iam_AuthApplicationService <<Application Service>> {
+      - userRepository: UserRepository
+      - accessProfileRepository: AccessProfileRepository
+      - passwordEncoder: PasswordEncoder
+      - jwtTokenService: JwtTokenService
+      + signUp(SignUpCommand command) : AuthenticationResult
+      + signIn(SignInCommand command) : AuthenticationResult
+      + getAuthenticatedUser(Long userId) : User
+      + signOut() : void
+      + recoverPassword(RecoverPasswordCommand command) : void
+    }
+    class "UserApplicationService" as Backend_iam_UserApplicationService <<Application Service>> {
+      - userRepository: UserRepository
+      + getProfile(Long userId) : User
+      + updateProfile(Long userId, UpdateProfileCommand command) : User
+      + deleteAccount(Long userId) : void
+      - findUser(Long userId) : User
+    }
+  }
+}
+
+Backend_iam_AuthApplicationService ..> Backend_iam_AuthenticationResult
+
+' Layer relationship completion: every declared type participates in this layer diagram.
+Backend_iam_AuthApplicationService ..> Backend_iam_UserApplicationService
+
+@enduml

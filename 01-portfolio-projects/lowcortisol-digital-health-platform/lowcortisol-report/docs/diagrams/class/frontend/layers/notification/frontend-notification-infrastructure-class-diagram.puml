@@ -1,0 +1,236 @@
+@startuml
+title LowCortisol WebApp - Notification Frontend Infrastructure Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Notification / Infrastructure" {
+  package "Infrastructure / API Services" {
+    class "AlertRuleProfilesApiService" as Frontend_notification_AlertRuleProfilesApiService <<API Service>> {
+      + constructor: (
+      + http: HttpClient
+      + apiBaseUrl: string
+      + findAllForCurrentUser() : Observable<AlertRuleProfileResponse[]>
+      + activate(profileId: number) : Observable<AlertRuleProfileResponse>
+    }
+    class "AlertRulesApiService" as Frontend_notification_AlertRulesApiService <<API Service>> {
+      + constructor: (
+      + http: HttpClient
+      + apiBaseUrl: string
+      + findAllForCurrentUser() : Observable<AlertRuleResponse[]>
+      + toggle(ruleId: number) : Observable<AlertRuleResponse>
+      + evaluate(resource: EvaluateAlertRulesResource) : Observable<RuleEvaluationResultResponse>
+    }
+    class "AlertsApiService" as Frontend_notification_AlertsApiService <<API Service>> {
+      + constructor: (
+      + http: HttpClient
+      + apiBaseUrl: string
+      + findAllForCurrentUser() : Observable<AlertResponse[]>
+      + createAlert(resource: AlertResource) : Observable<AlertResponse>
+      + markAsRead(alertId: number) : Observable<AlertResponse>
+      + dismiss(alertId: number, minutes = 10) : Observable<AlertResponse>
+      + resolve(alertId: number) : Observable<AlertResponse>
+    }
+    class "NotificationPreferencesApiService" as Frontend_notification_NotificationPreferencesApiService <<API Service>> {
+      + constructor: (
+      + http: HttpClient
+      + apiBaseUrl: string
+      + findCurrent() : Observable<NotificationPreferenceResponse>
+      + save(resource: NotificationPreferenceResource) : Observable<NotificationPreferenceResponse>
+    }
+  }
+  package "Infrastructure / Assemblers" {
+    class "AlertAssembler" as Frontend_notification_AlertAssembler <<Assembler>> {
+      + override: toEntity(response: AlertResponse): Alert
+      + override: toResource(entity: Alert): AlertResource
+    }
+    class "AlertRuleAssembler" as Frontend_notification_AlertRuleAssembler <<Assembler>> {
+      + override: toEntity(response: AlertRuleResponse): AlertRule
+      + override: toResource(entity: AlertRule): AlertRuleResource
+    }
+    class "NotificationPreferenceAssembler" as Frontend_notification_NotificationPreferenceAssembler <<Assembler>> {
+      + override: toEntity(
+      + response: NotificationPreferenceResponse
+      + override: toResource(
+      + entity: NotificationPreference
+    }
+  }
+  package "Infrastructure / Resources" {
+    interface "AlertResource" as Frontend_notification_AlertResource <<interface>> {
+      + userId?: number
+      + title: string
+      + message: string
+      + level: AlertLevel
+      + sourceType?: AlertSourceType
+      + sourceId?: string | null
+      + sourceLabel?: string | null
+      + eventType?: AlertEventType
+      + threadKey?: string
+      + evidence?: string | null
+      + explanation?: string | null
+      + recommendedAction?: string | null
+      + severityScore?: number
+      + repeatCount?: number
+      + active?: boolean
+      + resolved?: boolean
+      + read?: boolean
+      + readStatus?: boolean
+    }
+    interface "AlertRuleProfileResource" as Frontend_notification_AlertRuleProfileResource <<interface>> {
+      + userId?: number
+      + name: string
+      + description?: string
+      + scopeType?: RuleScopeType
+      + scopeId?: string | null
+      + mode?: RuleProfileMode
+      + sensitivity?: RuleSensitivity
+    }
+    interface "AlertRuleResource" as Frontend_notification_AlertRuleResource <<interface>> {
+      + userId?: number
+      + name: string
+      + metric: AlertRuleMetric
+      + conditionType: AlertRuleCondition
+      + threshold: number
+      + level?: AlertLevel
+      + scopeType?: RuleScopeType
+      + scopeId?: string | null
+      + evaluatorType?: RuleEvaluatorType
+      + weight?: number
+      + profileName?: string
+    }
+    interface "EvaluateAlertRulesResource" as Frontend_notification_EvaluateAlertRulesResource <<interface>> {
+      + scopeType?: RuleScopeType
+      + scopeId?: string | null
+      + observedValue?: number
+    }
+    interface "NotificationPreferenceResource" as Frontend_notification_NotificationPreferenceResource <<interface>> {
+      + userId?: number
+      + emailEnabled: boolean
+      + pushEnabled: boolean
+      + inAppEnabled?: boolean
+      + toastEnabled?: boolean
+      + dashboardEnabled?: boolean
+      + criticalOnly: boolean
+      + minimumLevel: AlertLevel
+      + scopeType?: NotificationPreferenceScope
+      + scopeId?: string | null
+      + allowedLevels?: string
+      + allowedSourceTypes?: string
+      + quietHoursEnabled?: boolean
+      + quietHoursStart?: string
+      + quietHoursEnd?: string
+      + criticalBreaksQuietHours?: boolean
+      + groupSimilarAlerts?: boolean
+      + remindersEnabled?: boolean
+    }
+  }
+  package "Infrastructure / Responses" {
+    interface "AlertResponse" as Frontend_notification_AlertResponse <<interface>> {
+      + userId: number
+      + title: string
+      + message: string
+      + level: AlertLevel
+      + sourceType?: AlertSourceType
+      + sourceId?: string | null
+      + sourceLabel?: string | null
+      + eventType?: AlertEventType
+      + threadKey?: string
+      + evidence?: string | null
+      + explanation?: string | null
+      + recommendedAction?: string | null
+      + severityScore?: number
+      + repeatCount?: number
+      + active?: boolean
+      + resolved?: boolean
+      + read?: boolean
+      + readStatus?: boolean
+    }
+    interface "AlertRuleProfileResponse" as Frontend_notification_AlertRuleProfileResponse <<interface>> {
+      + userId: number
+      + name: string
+      + description: string
+      + scopeType: RuleScopeType
+      + scopeId?: string | null
+      + mode: RuleProfileMode
+      + sensitivity: RuleSensitivity
+      + active: boolean
+    }
+    interface "AlertRuleResponse" as Frontend_notification_AlertRuleResponse <<interface>> {
+      + userId: number
+      + name: string
+      + metric: AlertRuleMetric
+      + condition?: AlertRuleCondition
+      + conditionType?: AlertRuleCondition
+      + threshold: number
+      + level?: AlertLevel
+      + scopeType?: RuleScopeType
+      + scopeId?: string | null
+      + evaluatorType?: RuleEvaluatorType
+      + weight?: number
+      + profileName?: string
+      + enabled: boolean
+      + createdAt?: string
+    }
+    interface "NotificationPreferenceResponse" as Frontend_notification_NotificationPreferenceResponse <<interface>> {
+      + userId: number
+      + emailEnabled: boolean
+      + pushEnabled: boolean
+      + inAppEnabled?: boolean
+      + toastEnabled?: boolean
+      + dashboardEnabled?: boolean
+      + criticalOnly: boolean
+      + minimumLevel: AlertLevel
+      + scopeType?: NotificationPreferenceScope
+      + scopeId?: string | null
+      + allowedLevels?: string
+      + allowedSourceTypes?: string
+      + quietHoursEnabled?: boolean
+      + quietHoursStart?: string
+      + quietHoursEnd?: string
+      + criticalBreaksQuietHours?: boolean
+      + groupSimilarAlerts?: boolean
+      + remindersEnabled?: boolean
+    }
+    interface "RuleEvaluationResultResponse" as Frontend_notification_RuleEvaluationResultResponse <<interface>> {
+      + userId: number
+      + scopeType: RuleScopeType
+      + scopeId?: string | null
+      + level: AlertLevel
+      + severityScore: number
+      + evidence: string
+      + explanation: string
+      + recommendedAction: string
+      + sourceType: AlertSourceType
+      + sourceId?: string | null
+      + eventType: AlertEventType
+      + threadKey: string
+      + activeEvaluatorCount: number
+      + totalWeight: number
+    }
+  }
+}
+
+Frontend_notification_AlertAssembler ..> Frontend_notification_AlertResource
+Frontend_notification_AlertAssembler ..> Frontend_notification_AlertResponse
+Frontend_notification_AlertRuleAssembler ..> Frontend_notification_AlertRuleResource
+Frontend_notification_AlertRuleAssembler ..> Frontend_notification_AlertRuleResponse
+Frontend_notification_AlertRuleProfilesApiService ..> Frontend_notification_AlertRuleProfileResource
+Frontend_notification_AlertRuleProfilesApiService ..> Frontend_notification_AlertRuleProfileResponse
+Frontend_notification_AlertRulesApiService ..> Frontend_notification_AlertRuleAssembler
+Frontend_notification_AlertRulesApiService ..> Frontend_notification_AlertRuleResource
+Frontend_notification_AlertRulesApiService ..> Frontend_notification_AlertRuleResponse
+Frontend_notification_AlertRulesApiService ..> Frontend_notification_EvaluateAlertRulesResource
+Frontend_notification_AlertRulesApiService ..> Frontend_notification_RuleEvaluationResultResponse
+Frontend_notification_AlertsApiService ..> Frontend_notification_AlertAssembler
+Frontend_notification_AlertsApiService ..> Frontend_notification_AlertResource
+Frontend_notification_AlertsApiService ..> Frontend_notification_AlertResponse
+Frontend_notification_NotificationPreferenceAssembler ..> Frontend_notification_NotificationPreferenceResource
+Frontend_notification_NotificationPreferenceAssembler ..> Frontend_notification_NotificationPreferenceResponse
+Frontend_notification_NotificationPreferencesApiService ..> Frontend_notification_NotificationPreferenceAssembler
+Frontend_notification_NotificationPreferencesApiService ..> Frontend_notification_NotificationPreferenceResource
+Frontend_notification_NotificationPreferencesApiService ..> Frontend_notification_NotificationPreferenceResponse
+
+
+@enduml

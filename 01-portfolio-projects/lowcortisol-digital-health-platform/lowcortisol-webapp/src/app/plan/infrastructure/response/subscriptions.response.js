@@ -1,0 +1,8 @@
+import { BaseResponse } from "../../../shared/infrastructure/response/base.response";
+
+export class SubscriptionsResponse extends BaseResponse {
+    constructor({ data = [], message = "", success = true, errors = [], total = 0 } = {}) {
+        super({ data, message, success, errors });
+        this.total = total || data.length;
+    }
+}

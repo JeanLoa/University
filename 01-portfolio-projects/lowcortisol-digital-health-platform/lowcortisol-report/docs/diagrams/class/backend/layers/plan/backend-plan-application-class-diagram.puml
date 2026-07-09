@@ -1,0 +1,56 @@
+@startuml
+title LowCortisol Platform - Plan Backend Application Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Plan / Application" {
+  package "Application / Command Services" {
+    interface "IPlanCommandService" as Backend_plan_IPlanCommandService <<interface>> {
+      + Handle(SubscribeToPlanCommand, CancellationToken) : Result<Subscription>
+      + Handle(ChangePlanCommand, CancellationToken) : Result<Subscription>
+      + Handle(CancelSubscriptionCommand, CancellationToken) : Result
+      + Handle(ResolveServiceRequestCommand, CancellationToken) : Result<ServiceRequest>
+      + Handle(CloseServiceRequestCommand, CancellationToken) : Result<ServiceRequest>
+    }
+    class "PlanCommandService" as Backend_plan_PlanCommandService <<Command Service>> {
+      - planRepository: IPlanRepository
+      - subscriptionRepository: ISubscriptionRepository
+      - paymentRepository: IPaymentRepository
+      - serviceRequestRepository: IServiceRequestRepository
+      - unitOfWork: IUnitOfWork
+    }
+  }
+
+  package "Application / Query Services" {
+    interface "IPlanQueryService" as Backend_plan_IPlanQueryService <<interface>> {
+      + Handle(GetPlansQuery, CancellationToken) : Result<IEnumerable<Plan>>
+      + Handle(GetPlanByIdQuery, CancellationToken) : Result<Plan>
+      + Handle(GetActiveSubscriptionQuery, CancellationToken) : Result<Subscription>
+      + Handle(GetPaymentsQuery, CancellationToken) : Result<IEnumerable<Payment>>
+      + Handle(GetServiceRequestsQuery, CancellationToken) : Result<IEnumerable<ServiceRequest>>
+      + Handle(GetPlanSummaryQuery, CancellationToken) : Result<PlanSummary>
+    }
+    class "PlanQueryService" as Backend_plan_PlanQueryService <<Query Service>> {
+      - planRepository: IPlanRepository
+      - subscriptionRepository: ISubscriptionRepository
+      - paymentRepository: IPaymentRepository
+      - serviceRequestRepository: IServiceRequestRepository
+      - workplaceFacade: Workplace usage by id
+      - deviceControlFacade: device usage by id
+    }
+  }
+}
+
+Backend_plan_PlanCommandService ..|> Backend_plan_IPlanCommandService
+Backend_plan_PlanQueryService ..|> Backend_plan_IPlanQueryService
+Backend_plan_PlanCommandService ..> Backend_plan_IPlanRepository
+Backend_plan_PlanCommandService ..> Backend_plan_ISubscriptionRepository
+Backend_plan_PlanCommandService ..> Backend_plan_IPaymentRepository
+Backend_plan_PlanCommandService ..> Backend_plan_IServiceRequestRepository
+Backend_plan_PlanQueryService ..> Backend_plan_IPlanRepository
+Backend_plan_PlanQueryService ..> Backend_plan_ISubscriptionRepository
+
+@enduml

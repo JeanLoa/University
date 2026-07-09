@@ -1,0 +1,148 @@
+@startuml
+title LowCortisol WebApp - Workplace Frontend Presentation Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Workplace Presentation" {
+  package "Presentation / Components" {
+    class "DeviceAssignmentFormComponent" as FrontendPresentation_workplace_DeviceAssignmentFormComponent <<Component>> {
+      + devices: Device[]
+      + locations: Location[]
+      + rooms: Room[]
+      + loading
+      + assigned
+      + deviceId: number | null
+      + locationId: number | null
+      + roomId: number | null
+      + constructor(translate: TranslateService)
+      + ngOnChanges() : void
+      + get: availableRooms(): Room[]
+      + get: deviceValue(): string | null
+      + get: locationValue(): string | null
+      + get: roomValue(): string
+      + get: deviceOptions(): DropdownOption[]
+      + get: locationOptions(): DropdownOption[]
+      + get: roomOptions(): DropdownOption[]
+      + deviceTypeLabel(type: Device['type']) : string
+    }
+    class "LocationCardComponent" as FrontendPresentation_workplace_LocationCardComponent <<Component>> {
+      + location: !: Location
+      + deviceCount
+      + roomCount
+      + groupCount
+      + unroomedDeviceCount
+      + activeWatts
+      + coverage
+      + selected
+      + remove
+      + constructor: (
+      - translate: TranslateService
+      - uiPreferences: UiPreferencesService
+      + get: typeLabel(): string
+      + get: typeLabelKey(): string
+      + get: formattedCreatedAt(): string
+      + onOpen() : void
+      + onRemove() : void
+      - currentLocale() : string
+    }
+    class "RoomCardComponent" as FrontendPresentation_workplace_RoomCardComponent <<Component>> {
+      + room: !: Room
+      + locationName
+      + deviceCount
+      + activeDeviceCount
+      + groupCount
+      + routineCount
+      + currentWatts
+      + primaryGroupName
+      + remove
+      + constructor: (
+      - translate: TranslateService
+      - uiPreferences: UiPreferencesService
+      + get: statusLabel(): string
+      + get: statusLabelKey(): string
+      + get: formattedCreatedAt(): string
+      + onRemove() : void
+      - currentLocale() : string
+    }
+  }
+  package "Presentation / Pages" {
+    class "DeviceAssignmentsPageComponent" as FrontendPresentation_workplace_DeviceAssignmentsPageComponent <<Component>> {
+      + roomOneValue: string | null
+      + roomTwoValue: string | null
+      + draggedAssignmentId: number | null
+      + activeDropRoomId: number | null
+      + constructor: (
+      + workplaceFacade: WorkplaceFacade
+      + deviceControlFacade: DeviceControlFacade
+      - activeWorkplaceContext: ActiveWorkplaceContextService
+      - toastService: ToastService
+      - confirmDialog: ConfirmDialogService
+      - translate: TranslateService
+      + ngOnInit() : Promise<void>
+      + get: activeLocationId(): number | null
+      + get: activeLocationName(): string
+      + get: activeRooms()
+      + get: activeAssignments()
+      + get: roomOneDropdownOptions(): DropdownOption[]
+      + get: roomTwoDropdownOptions(): DropdownOption[]
+    }
+    class "LocationsPageComponent" as FrontendPresentation_workplace_LocationsPageComponent <<Component>> {
+      - mapViewport?: ElementRef<HTMLElement>
+      + name
+      + address
+      + type: LocationType
+      + createModalOpen
+      + selectedLatitude
+      + selectedLongitude
+      + addressSuggestions: OpenStreetMapPlace[]
+      + addressSearchLoading
+      + locatingUser
+      + draggingMap
+      + types: LocationType[]
+      + tileSize
+      - mapCenterLatitude
+      - mapCenterLongitude
+      - mapZoomLevel
+      - minMapZoomLevel
+      - maxMapZoomLevel
+    }
+    class "RoomsPageComponent" as FrontendPresentation_workplace_RoomsPageComponent <<Component>> {
+      + name
+      + createModalOpen
+      - defaultRoomFloor
+      + constructor: (
+      + workplaceFacade: WorkplaceFacade
+      + deviceControlFacade: DeviceControlFacade
+      - activeWorkplaceContext: ActiveWorkplaceContextService
+      - toastService: ToastService
+      - confirmDialog: ConfirmDialogService
+      - translate: TranslateService
+      + ngOnInit() : Promise<void>
+      + get: activeLocationId(): number | null
+      + get: activeRooms()
+      + get: activeAssignments()
+      + get: activeDeviceCount(): number
+      + get: activeGroupCount(): number
+      + get: activeLocationName(): string
+      + openCreateModal() : void
+    }
+  }
+  package "Presentation / Routes" {
+    class "WORKPLACE_ROUTES" as FrontendPresentation_workplace_WORKPLACE_ROUTES <<Routes>> {
+      + route: /spaces/sites
+    }
+  }
+}
+
+FrontendPresentation_workplace_LocationsPageComponent ..> FrontendPresentation_workplace_LocationCardComponent
+FrontendPresentation_workplace_RoomsPageComponent ..> FrontendPresentation_workplace_RoomCardComponent
+
+' Relationship completion: every declared type participates in the frontend diagram.
+FrontendPresentation_workplace_LocationsPageComponent ..> FrontendPresentation_workplace_DeviceAssignmentFormComponent
+FrontendPresentation_workplace_LocationsPageComponent ..> FrontendPresentation_workplace_DeviceAssignmentsPageComponent
+FrontendPresentation_workplace_LocationsPageComponent ..> FrontendPresentation_workplace_WORKPLACE_ROUTES
+
+@enduml

@@ -1,0 +1,85 @@
+@startuml
+title ElectroCorp Web App - Service Management Frontend Domain Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Service Management / Domain" {
+  package "Domain / Model" {
+    class "MaintenanceTicket" as Frontend_service_management_MaintenanceTicket <<Entity>> {
+      - _userId: number
+      - _deviceId: number
+      - _deviceName: string
+      - _type: MaintenanceTicketType
+      - _description: string
+      - _scheduledDate: string
+      - _status: MaintenanceTicketStatus
+      - _createdAt: string
+      + constructor: (props:
+      + get: userId(): number
+      + get: deviceId(): number
+      + get: deviceName(): string
+      + get: type(): MaintenanceTicketType
+      + get: description(): string
+      + get: scheduledDate(): string
+      + get: status(): MaintenanceTicketStatus
+      + get: createdAt(): string
+      + get: isPending(): boolean
+    }
+    class "MaintenanceTicketStatus" as Frontend_service_management_MaintenanceTicketStatus <<type>> {
+      + 'PENDING' | 'SCHEDULED' | 'COMPLETED' | 'CANCELED'
+    }
+    class "MaintenanceTicketType" as Frontend_service_management_MaintenanceTicketType <<type>> {
+      + 'INSPECTION' | 'REPAIR' | 'REPLACEMENT' | 'INSTALLATION'
+    }
+    class "SupportTicket" as Frontend_service_management_SupportTicket <<Entity>> {
+      - _userId: number
+      - _subject: string
+      - _description: string
+      - _priority: SupportTicketPriority
+      - _status: SupportTicketStatus
+      - _createdAt: string
+      + constructor: (props:
+      + get: userId(): number
+      + get: subject(): string
+      + get: description(): string
+      + get: priority(): SupportTicketPriority
+      + get: status(): SupportTicketStatus
+      + get: createdAt(): string
+      + get: isOpen(): boolean
+      + get: isInProgress(): boolean
+      + get: isResolved(): boolean
+      + get: isClosed(): boolean
+      + get: isUrgent(): boolean
+    }
+    class "SupportTicketPriority" as Frontend_service_management_SupportTicketPriority <<type>> {
+      + 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT'
+    }
+    class "SupportTicketStatus" as Frontend_service_management_SupportTicketStatus <<type>> {
+      + 'OPEN' | 'IN_PROGRESS' | 'RESOLVED' | 'CLOSED'
+    }
+  }
+  package "Domain / Services" {
+    class "TicketPriorityService" as Frontend_service_management_TicketPriorityService <<Domain Service>> {
+      - supportPriorityWeight: Record<SupportTicketPriority, number>
+      - maintenanceStatusWeight: Record<MaintenanceTicketStatus, number>
+      + sortSupportTickets(tickets: SupportTicket[]) : SupportTicket[]
+      + sortMaintenanceTickets(tickets: MaintenanceTicket[]) : MaintenanceTicket[]
+      + getSupportPriorityWeight(priority: SupportTicketPriority) : number
+      + getMaintenanceStatusWeight(status: MaintenanceTicketStatus) : number
+    }
+  }
+}
+
+Frontend_service_management_TicketPriorityService ..> Frontend_service_management_MaintenanceTicket
+Frontend_service_management_TicketPriorityService ..> Frontend_service_management_MaintenanceTicketStatus
+Frontend_service_management_TicketPriorityService ..> Frontend_service_management_SupportTicket
+Frontend_service_management_TicketPriorityService ..> Frontend_service_management_SupportTicketPriority
+
+' Layer relationship completion: every declared type participates in this layer diagram.
+Frontend_service_management_TicketPriorityService ..> Frontend_service_management_MaintenanceTicketType
+Frontend_service_management_TicketPriorityService ..> Frontend_service_management_SupportTicketStatus
+
+@enduml

@@ -1,0 +1,90 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+skinparam wrapWidth 220
+skinparam maxMessageSize 130
+skinparam nodesep 70
+skinparam ranksep 80
+skinparam ArrowColor #8A8A8A
+skinparam ArrowFontColor #666666
+skinparam ArrowFontStyle bold
+skinparam ArrowThickness 1
+skinparam rectangleRoundCorner 0
+skinparam rectangleBorderThickness 0
+skinparam rectangleFontColor #FFFFFF
+skinparam rectangleFontStyle plain
+skinparam rectangle {
+  BorderThickness 0
+  MinimumWidth 190
+  Padding 12
+}
+skinparam database {
+  MinimumWidth 210
+  Padding 12
+}
+skinparam rectangle<<SystemBoundary>> {
+  BackgroundColor transparent
+  BorderColor #4A4A4A
+  BorderThickness 2
+  BorderStyle dashed
+  FontColor #333333
+  FontStyle bold
+  MinimumWidth 760
+  Padding 18
+}
+skinparam rectangle<<BoundedContext>> {
+  BackgroundColor transparent
+  BorderColor #4A4A4A
+  BorderThickness 2
+  BorderStyle dashed
+  FontColor #333333
+  FontStyle bold
+  MinimumWidth 760
+  Padding 18
+}
+skinparam databaseBackgroundColor #C9332B
+skinparam databaseBorderColor #C9332B
+skinparam databaseFontColor #FFFFFF
+skinparam databaseFontStyle plain
+hide stereotype
+top to bottom direction
+
+title LowCortisol - Device Control Backend Components Diagram
+
+rectangle "<b>LowCortisol SPA</b>\n<i>[Compiled Vue SPA]</i>\n\nBrowser runtime that consumes this bounded context through HTTPS." as Spa #3498DB
+
+rectangle "<b>Device Control Backend Bounded Context</b>\n<i>[ASP.NET Core Module]</i>" <<BoundedContext>> {
+  rectangle "<b>Interfaces REST Layer</b>\n<i>[REST / Resources]</i>\n\nControllers expose HTTP endpoints and translate resources into application requests." as Interfaces #58A9E8
+  rectangle "<b>Application Layer</b>\n<i>[Commands / Queries / Services]</i>\n\nCoordinates use cases, transactions, commands, queries and application services." as Application #58A9E8
+  rectangle "<b>Domain Layer</b>\n<i>[Aggregates / Policies]</i>\n\nOwns business rules, aggregates, entities, value objects, events and domain services." as Domain #58A9E8
+  rectangle "<b>Infrastructure Layer</b>\n<i>[Persistence / Adapters]</i>\n\nImplements repositories, persistence mappings, ACL adapters and technical integrations." as Infrastructure #58A9E8
+}
+database "<b>LowCortisol Database</b>\n<i>[PostgreSQL]</i>\n\nStores devices, device groups, routines and operation modes." as Database
+
+Spa --> Interfaces : Calls REST endpoints\n[JSON / HTTPS]
+Interfaces --> Application : Delegates use cases
+Application --> Domain : Enforces business rules
+Application --> Infrastructure : Uses ports / repositories
+Infrastructure --> Domain : Maps persisted state
+Infrastructure --> Database : Reads and writes
+
+Spa -[hidden]down- Interfaces
+Interfaces -[hidden]down- Application
+Application -[hidden]down- Domain
+Domain -[hidden]right- Infrastructure
+Infrastructure -[hidden]down- Database
+
+legend right
+  <b>Legend</b>
+  |<#0B5593> person |
+  |<#0B6FB3> system |
+  |<#3498DB> container |
+  |<#58A9E8> component |
+  |<#F39C12> infrastructure / external |
+  |<#C9332B> database |
+  |<#7F8C8D> external container |
+endlegend
+
+@enduml

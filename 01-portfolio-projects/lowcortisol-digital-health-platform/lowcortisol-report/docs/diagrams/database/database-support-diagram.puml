@@ -1,0 +1,73 @@
+@startuml
+title LowCortisol Platform - Support Database Diagram
+left to right direction
+hide circle
+skinparam linetype ortho
+skinparam shadowing false
+skinparam packageStyle rectangle
+package "Support" {
+  entity "support_tickets" as support_tickets {
+    PK id : uuid
+    user_id : varchar
+    site_id : varchar
+    title : varchar
+    description : varchar
+    category : varchar
+    priority : varchar
+    status : varchar
+    assigned_agent_id : varchar
+    created_at : timestamp
+    updated_at : timestamp
+  }
+  entity "support_messages" as support_messages {
+    PK id : uuid
+    ticket_id : uuid
+    sender_id : varchar
+    sender_type : varchar
+    content : varchar
+    status : varchar
+    created_at : timestamp
+    updated_at : timestamp
+  }
+  entity "support_conversations" as support_conversations {
+    PK id : uuid
+    ticket_id : uuid
+    status : varchar
+    created_at : timestamp
+    updated_at : timestamp
+  }
+  entity "support_agents" as support_agents {
+    PK id : uuid
+    name : varchar
+    specialty : varchar
+    status : varchar
+    created_at : timestamp
+    updated_at : timestamp
+  }
+  entity "knowledge_articles" as knowledge_articles {
+    PK id : uuid
+    title : varchar
+    summary : varchar
+    category : varchar
+    helpful_count : integer
+    content : varchar
+    created_at : timestamp
+    updated_at : timestamp
+  }
+}
+
+package "External References" {
+  entity "sites" as sites <<external>> {
+    PK id
+  }
+  entity "users" as users <<external>> {
+    PK id
+  }
+}
+
+support_tickets ||--o{ support_messages : ticket_id
+support_tickets ||--|| support_conversations : ticket_id
+users ||--o{ support_tickets : user_id
+sites ||--o{ support_tickets : site_id
+
+@enduml

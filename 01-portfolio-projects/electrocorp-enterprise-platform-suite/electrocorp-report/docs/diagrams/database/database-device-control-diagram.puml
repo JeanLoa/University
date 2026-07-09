@@ -1,0 +1,130 @@
+@startuml
+title ElectroCorp Platform - Device Control Database Diagram
+left to right direction
+hide circle
+skinparam linetype ortho
+skinparam shadowing false
+skinparam packageStyle rectangle
+package "Device Control" {
+  entity "device_group_devices" as device_group_devices {
+    PK id : bigint
+    created_at : timestamp
+    updated_at : timestamp
+    device_group_id : bigint
+    device_id : bigint
+  }
+  entity "device_groups" as device_groups {
+    PK id : bigint
+    created_at : timestamp
+    updated_at : timestamp
+    user_id : bigint
+    name : varchar
+    description : varchar
+  }
+  entity "devices" as devices {
+    PK id : bigint
+    created_at : timestamp
+    updated_at : timestamp
+    user_id : bigint
+    name : varchar
+    room : varchar
+    type : varchar
+    power_watts : decimal
+    status : varchar
+  }
+  entity "operation_mode_routines" as operation_mode_routines {
+    PK, FK operation_mode_id : bigint
+    name : varchar
+    target_type : varchar
+    target_id : bigint
+    action : varchar
+    trigger_time : varchar
+    enabled : boolean
+  }
+  entity "operation_modes" as operation_modes {
+    PK id : bigint
+    created_at : timestamp
+    updated_at : timestamp
+    user_id : bigint
+    location_id : bigint
+    name : varchar
+    description : varchar
+    status : varchar
+    room_ids : varchar
+    group_ids : varchar
+    device_ids : varchar
+    turn_on_device_ids : varchar
+    turn_off_device_ids : varchar
+    keep_on_device_ids : varchar
+    routine_ids : varchar
+    routines_to_enable_ids : varchar
+    routines_to_disable_ids : varchar
+    goal_ids : varchar
+    internal_routines : List
+    all_day : boolean
+    starts_at : varchar
+    ends_at : varchar
+    rule_profile_id : bigint
+    preference_id : bigint
+    apply_rule_profile : boolean
+    apply_notification_preference : boolean
+    apply_routines : boolean
+    preserve_critical_sound : boolean
+    last_activated_at : timestamp
+  }
+  entity "routines" as routines {
+    PK id : bigint
+    created_at : timestamp
+    updated_at : timestamp
+    user_id : bigint
+    device_id : bigint
+    group_id : bigint
+    target_type : varchar
+    target_id : bigint
+    name : varchar
+    action : varchar
+    time : varchar
+    repeat_type : varchar
+    days_of_week : varchar
+    interval_days : integer
+    starts_on : varchar
+    enabled : boolean
+  }
+}
+
+package "External References" {
+  entity "device_assignments" as device_assignments <<external>> {
+    PK id
+  }
+  entity "energy_device_usage_states" as energy_device_usage_states <<external>> {
+    PK id
+  }
+  entity "energy_readings" as energy_readings <<external>> {
+    PK id
+  }
+  entity "locations" as locations <<external>> {
+    PK id
+  }
+  entity "maintenance_tickets" as maintenance_tickets <<external>> {
+    PK id
+  }
+  entity "users" as users <<external>> {
+    PK id
+  }
+}
+
+device_groups ||--o{ device_group_devices : device_group_id
+devices ||--o{ device_assignments : device_id
+devices ||--o{ device_group_devices : device_id
+devices ||--o{ energy_device_usage_states : device_id
+devices ||--o{ energy_readings : device_id
+devices ||--o{ maintenance_tickets : device_id
+devices ||--o{ routines : device_id
+locations ||--o{ operation_modes : location_id
+operation_modes ||--o{ operation_mode_routines : operation_mode_id
+users ||--o{ device_groups : user_id
+users ||--o{ devices : user_id
+users ||--o{ operation_modes : user_id
+users ||--o{ routines : user_id
+
+@enduml

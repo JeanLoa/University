@@ -1,0 +1,27 @@
+{
+  "folders": [
+    {
+      "name": "Frontend - LowCortisol WebApp",
+      "path": "lowcortisol-webapp"
+    },
+    {
+      "name": "Backend - LowCortisol Platform",
+      "path": "lowcortisol-platform"
+    },
+    {
+      "name": "WebDev Course",
+      "path": "webdev-course-lowcortisol"
+    },
+    {
+      "path": "lowcortisol-report"
+    },
+    {
+      "path": "lowcortisol-website"
+    }
+  ],
+  "settings": {
+    "git.autofetch": false,
+    "git.autorefresh": false,
+    "git.autoRepositoryDetection": "subFolders"
+  }
+}

@@ -1,0 +1,119 @@
+{
+  "territories": [
+    {
+      "id": "lima-metropolitana",
+      "label": "Lima",
+      "kind": "metropolitan-area",
+      "center": {
+        "latitude": -12.0758,
+        "longitude": -77.0675
+      },
+      "bounds": {
+        "north": -12.0475,
+        "south": -12.1045,
+        "east": -77.0315,
+        "west": -77.1095
+      }
+    },
+    {
+      "id": "lima-province",
+      "parentId": "lima-metropolitana",
+      "label": "Lima Metropolitana",
+      "kind": "province",
+      "center": {
+        "latitude": -12.0758,
+        "longitude": -77.0675
+      },
+      "bounds": {
+        "north": -12.0475,
+        "south": -12.1045,
+        "east": -77.0315,
+        "west": -77.1095
+      }
+    },
+    {
+      "id": "san-miguel",
+      "parentId": "lima-province",
+      "label": "San Miguel",
+      "kind": "district",
+      "center": {
+        "latitude": -12.0763,
+        "longitude": -77.0863
+      },
+      "bounds": {
+        "north": -12.0643,
+        "south": -12.0898,
+        "east": -77.0752,
+        "west": -77.1038
+      },
+      "boundarySource": {
+        "provider": "openstreetmap",
+        "relationId": 1944825,
+        "sourceUrl": "https://www.openstreetmap.org/relation/1944825"
+      }
+    },
+    {
+      "id": "pueblo-libre",
+      "parentId": "lima-province",
+      "label": "Pueblo Libre",
+      "kind": "district",
+      "center": {
+        "latitude": -12.0735,
+        "longitude": -77.0639
+      },
+      "bounds": {
+        "north": -12.0626,
+        "south": -12.0835,
+        "east": -77.0521,
+        "west": -77.0802
+      },
+      "boundarySource": {
+        "provider": "openstreetmap",
+        "relationId": 1944764,
+        "sourceUrl": "https://www.openstreetmap.org/relation/1944764"
+      }
+    },
+    {
+      "id": "magdalena",
+      "parentId": "lima-province",
+      "label": "Magdalena del Mar",
+      "kind": "district",
+      "center": {
+        "latitude": -12.0908,
+        "longitude": -77.0743
+      },
+      "bounds": {
+        "north": -12.0832,
+        "south": -12.1036,
+        "east": -77.0632,
+        "west": -77.0863
+      },
+      "boundarySource": {
+        "provider": "openstreetmap",
+        "relationId": 1944765,
+        "sourceUrl": "https://www.openstreetmap.org/relation/1944765"
+      }
+    },
+    {
+      "id": "jesus-maria",
+      "parentId": "lima-province",
+      "label": "Jesus Maria",
+      "kind": "district",
+      "center": {
+        "latitude": -12.0748,
+        "longitude": -77.0481
+      },
+      "bounds": {
+        "north": -12.0638,
+        "south": -12.0893,
+        "east": -77.0356,
+        "west": -77.0565
+      },
+      "boundarySource": {
+        "provider": "openstreetmap",
+        "relationId": 1944744,
+        "sourceUrl": "https://www.openstreetmap.org/relation/1944744"
+      }
+    }
+  ]
+}

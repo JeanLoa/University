@@ -1,0 +1,14 @@
+<svg width="64" height="64" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#38bdf8"></stop>
+      <stop offset="100%" stop-color="#2563eb"></stop>
+    </linearGradient>
+  </defs>
+
+  <!-- Fondo -->
+  <rect width="48" height="48" rx="12" fill="url(#bg)"></rect>
+
+  <!-- Línea tipo “actividad” -->
+  <path d="M10 26 L16 26 L20 18 L26 34 L30 24 L38 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>

@@ -1,0 +1,96 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+skinparam wrapWidth 220
+skinparam maxMessageSize 130
+skinparam nodesep 70
+skinparam ranksep 80
+skinparam ArrowColor #8A8A8A
+skinparam ArrowFontColor #666666
+skinparam ArrowFontStyle bold
+skinparam ArrowThickness 1
+skinparam rectangleRoundCorner 0
+skinparam rectangleBorderThickness 0
+skinparam rectangleFontColor #FFFFFF
+skinparam rectangleFontStyle plain
+skinparam rectangle {
+  BorderThickness 0
+  MinimumWidth 190
+  Padding 12
+}
+skinparam database {
+  MinimumWidth 210
+  Padding 12
+}
+skinparam rectangle<<SystemBoundary>> {
+  BackgroundColor transparent
+  BorderColor #4A4A4A
+  BorderThickness 2
+  BorderStyle dashed
+  FontColor #333333
+  FontStyle bold
+  MinimumWidth 760
+  Padding 18
+}
+skinparam rectangle<<BoundedContext>> {
+  BackgroundColor transparent
+  BorderColor #4A4A4A
+  BorderThickness 2
+  BorderStyle dashed
+  FontColor #333333
+  FontStyle bold
+  MinimumWidth 760
+  Padding 18
+}
+skinparam databaseBackgroundColor #C9332B
+skinparam databaseBorderColor #C9332B
+skinparam databaseFontColor #FFFFFF
+skinparam databaseFontStyle plain
+hide stereotype
+top to bottom direction
+
+title ElectroCorp - Notifications Backend Components Diagram
+
+rectangle "<b>ElectroCorp SPA</b>\n<i>[Compiled Angular SPA]</i>\n\nBrowser runtime that consumes this bounded context through HTTPS." as Spa #3498DB
+
+rectangle "<b>Notifications Backend Bounded Context</b>\n<i>[Spring Boot Module]</i>" <<BoundedContext>> {
+  rectangle "<b>Interfaces REST Layer</b>\n<i>[REST / Resources]</i>\n\nControllers expose HTTP endpoints and translate resources into application requests." as Interfaces #58A9E8
+  rectangle "<b>Application Layer</b>\n<i>[Commands / Queries / Delivery Port]</i>\n\nCreates alerts, evaluates rules, applies preferences and dispatches delivery decisions." as Application #58A9E8
+  rectangle "<b>Domain Layer</b>\n<i>[Aggregates / Policies]</i>\n\nOwns alerts, rules, profiles, notification preferences and delivery policy decisions." as Domain #58A9E8
+  rectangle "<b>Infrastructure Layer</b>\n<i>[JPA / Mailchimp Adapter]</i>\n\nImplements persistence and email delivery through Mailchimp/Mandrill when credentials are configured." as Infrastructure #58A9E8
+}
+database "<b>ElectroCorp Database</b>\n<i>[PostgreSQL]</i>\n\nStores alerts, alert rules, preferences and notification evaluation." as Database
+rectangle "<b>Mailchimp Transactional</b>\n<i>[External Messaging Provider]</i>\n\nReceives alert email delivery requests for enabled user preferences." as Mailchimp #F39C12
+rectangle "<b>Integration Events</b>\n<i>[Internal Spring Events]</i>\n\nDomain activity from IAM, Billing, Workplace, Device Control, Energy and Service Management." as Events #7F8C8D
+
+Spa --> Interfaces : Calls REST endpoints\n[JSON / HTTPS]
+Events --> Application : AFTER_COMMIT handlers\nREQUIRES_NEW transaction
+Interfaces --> Application : Delegates use cases
+Application --> Domain : Enforces business rules
+Application --> Infrastructure : Uses ports / repositories
+Infrastructure --> Domain : Maps persisted state
+Infrastructure --> Database : Reads and writes
+Infrastructure --> Mailchimp : Sends alert emails
+
+Spa -[hidden]down- Interfaces
+Events -[hidden]right- Application
+Interfaces -[hidden]down- Application
+Application -[hidden]down- Domain
+Domain -[hidden]right- Infrastructure
+Infrastructure -[hidden]down- Database
+Infrastructure -[hidden]right- Mailchimp
+
+legend right
+  <b>Legend</b>
+  |<#0B5593> person |
+  |<#0B6FB3> system |
+  |<#3498DB> container |
+  |<#58A9E8> component |
+  |<#F39C12> infrastructure / external |
+  |<#C9332B> database |
+  |<#7F8C8D> external container |
+endlegend
+
+@enduml

@@ -1,0 +1,8 @@
+/* Punto de entrada: importar módulos en orden */
+@import url("base.css");
+@import url("header.css");
+@import url("hero.css");
+@import url("sections.css");
+@import url("testimonials.css");
+@import url("about.css");
+@import url("responsive.css");

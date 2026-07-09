@@ -1,0 +1,153 @@
+@startuml
+title ElectroCorp Web App - Billing Frontend Infrastructure Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Billing / Infrastructure" {
+  package "Infrastructure / API Services" {
+    class "InvoicesApiService" as Frontend_billing_InvoicesApiService <<API Service>> {
+      + constructor: (
+      + http: HttpClient
+      + apiBaseUrl: string
+      + findCurrentUserInvoices() : Observable<InvoiceResponse[]>
+    }
+    class "PaymentsApiService" as Frontend_billing_PaymentsApiService <<API Service>> {
+      + constructor: (
+      + http: HttpClient
+      + apiBaseUrl: string
+      + findCurrentUserPayments() : Observable<PaymentResponse[]>
+    }
+    class "PlansApiService" as Frontend_billing_PlansApiService <<API Service>> {
+      + constructor: (
+      + http: HttpClient
+      + apiBaseUrl: string
+    }
+    class "SubscriptionsApiService" as Frontend_billing_SubscriptionsApiService <<API Service>> {
+      + constructor: (
+      + http: HttpClient
+      + apiBaseUrl: string
+      + findCurrent() : Observable<SubscriptionResponse | null>
+      + cancelCurrent() : Observable<void>
+      + checkout(resource: CheckoutSubscriptionResource) : Observable<SubscriptionResponse>
+    }
+  }
+  package "Infrastructure / Assemblers" {
+    class "InvoiceAssembler" as Frontend_billing_InvoiceAssembler <<Assembler>> {
+      + override: toEntity(response: InvoiceResponse): Invoice
+      + override: toResource(entity: Invoice): InvoiceResource
+    }
+    class "PaymentAssembler" as Frontend_billing_PaymentAssembler <<Assembler>> {
+      + override: toEntity(response: PaymentResponse): Payment
+      + override: toResource(entity: Payment): PaymentResource
+    }
+    class "PlanAssembler" as Frontend_billing_PlanAssembler <<Assembler>> {
+      + override: toEntity(response: PlanResponse): Plan
+      + override: toResource(entity: Plan): PlanResource
+    }
+    class "SubscriptionAssembler" as Frontend_billing_SubscriptionAssembler <<Assembler>> {
+      + override: toEntity(response: SubscriptionResponse): Subscription
+      + override: toResource(entity: Subscription): SubscriptionResource
+    }
+  }
+  package "Infrastructure / Resources" {
+    interface "CheckoutSubscriptionResource" as Frontend_billing_CheckoutSubscriptionResource <<interface>> {
+      + planCode: PlanCode
+      + holderName: string
+      + cardNumber: string
+      + expirationDate: string
+      + cvv: string
+    }
+    interface "InvoiceResource" as Frontend_billing_InvoiceResource <<interface>> {
+      + userId: number
+      + invoiceNumber: string
+      + totalAmount: number
+      + currency: string
+      + issuedAt: string
+    }
+    interface "PaymentResource" as Frontend_billing_PaymentResource <<interface>> {
+      + userId: number
+      + subscriptionId: number
+      + holderName: string
+      + cardNumber: string
+      + expirationDate: string
+      + cvv: string
+    }
+    interface "PlanResource" as Frontend_billing_PlanResource <<interface>> {
+      + code: PlanCode
+      + name: string
+      + monthlyPrice: number
+      + currency: string
+      + maxDevices: number | null
+      + maxRoutines: number | null
+      + maxAlerts: number | null
+      + reportExportEnabled: boolean
+    }
+    interface "SubscriptionResource" as Frontend_billing_SubscriptionResource <<interface>> {
+      + userId: number
+      + planCode: PlanCode
+    }
+  }
+  package "Infrastructure / Responses" {
+    interface "InvoiceResponse" as Frontend_billing_InvoiceResponse <<interface>> {
+      + userId: number
+      + invoiceNumber: string
+      + totalAmount: number
+      + currency: string
+      + issuedAt: string
+    }
+    interface "PaymentResponse" as Frontend_billing_PaymentResponse <<interface>> {
+      + userId: number
+      + amount: number
+      + currency: string
+      + status: PaymentStatus
+      + paymentMethod: string
+    }
+    interface "PlanResponse" as Frontend_billing_PlanResponse <<interface>> {
+      + code: PlanCode
+      + name: string
+      + monthlyPrice: number
+      + currency: string
+      + maxDevices: number | null
+      + maxRoutines: number | null
+      + maxAlerts: number | null
+      + reportExportEnabled: boolean
+    }
+    interface "SubscriptionResponse" as Frontend_billing_SubscriptionResponse <<interface>> {
+      + userId: number
+      + planCode: PlanCode
+      + status: SubscriptionStatus
+      + active: boolean
+      + startDate?: string | null
+      + nextBillingDate?: string | null
+      + endDate?: string | null
+    }
+  }
+}
+
+Frontend_billing_InvoiceAssembler ..> Frontend_billing_InvoiceResource
+Frontend_billing_InvoiceAssembler ..> Frontend_billing_InvoiceResponse
+Frontend_billing_InvoicesApiService ..> Frontend_billing_InvoiceAssembler
+Frontend_billing_InvoicesApiService ..> Frontend_billing_InvoiceResource
+Frontend_billing_InvoicesApiService ..> Frontend_billing_InvoiceResponse
+Frontend_billing_PaymentAssembler ..> Frontend_billing_PaymentResource
+Frontend_billing_PaymentAssembler ..> Frontend_billing_PaymentResponse
+Frontend_billing_PaymentsApiService ..> Frontend_billing_PaymentAssembler
+Frontend_billing_PaymentsApiService ..> Frontend_billing_PaymentResource
+Frontend_billing_PaymentsApiService ..> Frontend_billing_PaymentResponse
+Frontend_billing_PlanAssembler ..> Frontend_billing_PlanResource
+Frontend_billing_PlanAssembler ..> Frontend_billing_PlanResponse
+Frontend_billing_PlansApiService ..> Frontend_billing_PlanAssembler
+Frontend_billing_PlansApiService ..> Frontend_billing_PlanResource
+Frontend_billing_PlansApiService ..> Frontend_billing_PlanResponse
+Frontend_billing_SubscriptionAssembler ..> Frontend_billing_SubscriptionResource
+Frontend_billing_SubscriptionAssembler ..> Frontend_billing_SubscriptionResponse
+Frontend_billing_SubscriptionsApiService ..> Frontend_billing_CheckoutSubscriptionResource
+Frontend_billing_SubscriptionsApiService ..> Frontend_billing_SubscriptionAssembler
+Frontend_billing_SubscriptionsApiService ..> Frontend_billing_SubscriptionResource
+Frontend_billing_SubscriptionsApiService ..> Frontend_billing_SubscriptionResponse
+
+
+@enduml

@@ -1,0 +1,35 @@
+<section class="metrics-panel" aria-label="Telemetria de ruta">
+  <div class="panel-heading">
+    <span class="panel-heading__eyebrow">Telemetria</span>
+    <div class="panel-heading__line">
+      <h2>Ruta vial</h2>
+      <app-status-badge
+        [label]="statusLabel()"
+        [tone]="statusTone()"
+      />
+    </div>
+  </div>
+
+  <div class="metrics-grid">
+    <app-metric-card label="Distancia" [value]="distanceValue()" supporting="Recorrido total" tone="cyan" />
+    <app-metric-card label="Tiempo" [value]="timeValue()" supporting="Estimacion vial" tone="green" />
+    <app-metric-card label="Flujo" [value]="congestionValue()" [supporting]="flowSupporting()" tone="amber" />
+    <app-metric-card label="Costo" [value]="costValue()" [supporting]="criterionUnit()" tone="violet" />
+  </div>
+
+  <div class="route-stack">
+    <div class="route-stack__item">
+      <span>Puntos de trazado</span>
+      <strong>{{ visitedValue() }}</strong>
+    </div>
+    <div class="route-stack__item">
+      <span>Indicaciones</span>
+      <strong>{{ edgeValue() }}</strong>
+    </div>
+  </div>
+
+  <div class="route-path">
+    <span>Secuencia</span>
+    <p>{{ routeSummary() }}</p>
+  </div>
+</section>

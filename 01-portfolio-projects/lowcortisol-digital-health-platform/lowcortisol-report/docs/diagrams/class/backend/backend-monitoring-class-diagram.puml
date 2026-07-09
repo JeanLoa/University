@@ -1,0 +1,26 @@
+@startuml
+title LowCortisol Platform - Monitoring Backend Bounded Context Layers
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Monitoring Backend Bounded Context" {
+  class "Application" as Backend_consumption_monitoring_Application <<layer>>
+  class "Domain" as Backend_consumption_monitoring_Domain <<layer>>
+  class "Infrastructure" as Backend_consumption_monitoring_Infrastructure <<layer>>
+  class "Interfaces REST" as Backend_consumption_monitoring_Interfaces_REST <<layer>>
+}
+
+Backend_consumption_monitoring_Interfaces_REST ..> Backend_consumption_monitoring_Application : commands / queries
+Backend_consumption_monitoring_Application ..> Backend_consumption_monitoring_Domain : model and policies
+Backend_consumption_monitoring_Application ..> Backend_consumption_monitoring_Infrastructure : repository ports / adapters
+Backend_consumption_monitoring_Infrastructure ..> Backend_consumption_monitoring_Domain : persistence mapping
+Backend_consumption_monitoring_Interfaces_REST ..> Backend_consumption_monitoring_Domain : resources from aggregates
+
+note bottom of Backend_consumption_monitoring_Application
+Detailed class diagrams for each layer are available in docs/diagrams/class/backend/layers/monitoring.
+end note
+
+@enduml

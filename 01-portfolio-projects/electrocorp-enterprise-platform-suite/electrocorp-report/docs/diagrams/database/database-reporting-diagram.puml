@@ -1,0 +1,62 @@
+@startuml
+title ElectroCorp Platform - Reporting Database Diagram
+left to right direction
+hide circle
+skinparam linetype ortho
+skinparam shadowing false
+skinparam packageStyle rectangle
+package "Reporting" {
+  entity "consumption_reports" as consumption_reports {
+    PK id : bigint
+    created_at : timestamp
+    updated_at : timestamp
+    user_id : bigint
+    total_watts : decimal
+    average_watts : decimal
+    highest_watts : decimal
+    start_date : date
+    end_date : date
+  }
+  entity "energy_goals" as energy_goals {
+    PK id : bigint
+    created_at : timestamp
+    updated_at : timestamp
+    user_id : bigint
+    title : varchar
+    target_watts : decimal
+    current_watts : decimal
+    deadline : date
+    status : varchar
+    scope_type : varchar
+    scope_id : bigint
+    scope_name : varchar
+    active_from : LocalTime
+    active_to : LocalTime
+  }
+  entity "reporting_events" as reporting_events {
+    PK id : bigint
+    created_at : timestamp
+    updated_at : timestamp
+    user_id : bigint
+    event_key : varchar
+    event_name : varchar
+    source_context : varchar
+    subject_type : varchar
+    subject_id : varchar
+    summary : varchar
+    detail : varchar
+    occurred_on : timestamp
+  }
+}
+
+package "External References" {
+  entity "users" as users <<external>> {
+    PK id
+  }
+}
+
+users ||--o{ consumption_reports : user_id
+users ||--o{ energy_goals : user_id
+users ||--o{ reporting_events : user_id
+
+@enduml

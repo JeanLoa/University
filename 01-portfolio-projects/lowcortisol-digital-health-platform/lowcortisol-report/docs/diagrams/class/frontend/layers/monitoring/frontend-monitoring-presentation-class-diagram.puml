@@ -1,0 +1,91 @@
+@startuml
+title LowCortisol WebApp - Monitoring Frontend Presentation Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Monitoring Presentation" {
+  package "Presentation / Components" {
+    class "ConsumptionFilterFormComponent" as FrontendPresentation_consumption_monitoring_ConsumptionFilterFormComponent <<Component>> {
+      + rangeChanged
+      + reset
+      + startDate
+      + endDate
+      + get: isInvalidRange(): boolean
+      + onDateChange() : void
+      + onReset() : void
+      - toInputDate(date: Date) : string
+    }
+    class "MetricsCardsComponent" as FrontendPresentation_consumption_monitoring_MetricsCardsComponent <<Component>> {
+      + totalWatts
+      + averageWatts
+      + highestWatts
+      + highReadings
+    }
+    class "UsageChartComponent" as FrontendPresentation_consumption_monitoring_UsageChartComponent <<Component>> {
+      + readings: ConsumptionReading[]
+      + get: maxWatts(): number
+      + get: chartReadings(): ConsumptionReading[]
+      + getHeight(watts: number) : number
+    }
+  }
+  package "Presentation / Pages" {
+    class "ConsumptionDashboardPageComponent" as FrontendPresentation_consumption_monitoring_ConsumptionDashboardPageComponent <<Component>> {
+      + consumptionMonitoringFacade
+      - activeWorkplaceContext
+      - workplaceFacade
+      - toastService
+      - translate
+      - uiPreferences
+      - refreshIntervalId: ReturnType<typeof setInterval> | null
+      - maxSegmentsPerReading
+      - maxChartReadings
+      - maxChartPoints
+      + sampleSeconds
+      + selectedPeriod
+      + periodOptions: DropdownOption[]
+      + normalReadingsCount
+      + highReadingsCount
+      + dashboardRecommendation
+      + ngOnInit() : Promise<void>
+      + ngOnDestroy() : void
+    }
+    class "ConsumptionHistoryPageComponent" as FrontendPresentation_consumption_monitoring_ConsumptionHistoryPageComponent <<Component>> {
+      + pageSize
+      + deviceNameFilter
+      + deviceIdFilter
+      + readingIdFilter
+      + currentPage
+      + searchTerm
+      + statusFilter
+      + minWatts
+      + maxWatts
+      + sortOption
+      + historyScope
+      + startDateFilter
+      + endDateFilter
+      + statusOptions: DropdownOption[]
+      + sortOptions: DropdownOption[]
+      + constructor: (
+      + consumptionMonitoringFacade: MonitoringFacade
+      + workplaceFacade: WorkplaceFacade
+    }
+  }
+  package "Presentation / Routes" {
+    class "ENERGY_MONITORING_ROUTES" as FrontendPresentation_consumption_monitoring_ENERGY_MONITORING_ROUTES <<Routes>> {
+      + route: /consumption/consumption
+    }
+  }
+}
+
+FrontendPresentation_consumption_monitoring_ConsumptionHistoryPageComponent ..> FrontendPresentation_consumption_monitoring_ConsumptionFilterFormComponent
+
+' Relationship completion: every declared type participates in the frontend diagram.
+FrontendPresentation_consumption_monitoring_ConsumptionHistoryPageComponent ..> FrontendPresentation_consumption_monitoring_MetricsCardsComponent
+FrontendPresentation_consumption_monitoring_ConsumptionHistoryPageComponent ..> FrontendPresentation_consumption_monitoring_UsageChartComponent
+FrontendPresentation_consumption_monitoring_ConsumptionHistoryPageComponent ..> FrontendPresentation_consumption_monitoring_ConsumptionDashboardPageComponent
+FrontendPresentation_consumption_monitoring_ConsumptionHistoryPageComponent ..> FrontendPresentation_consumption_monitoring_ENERGY_MONITORING_ROUTES
+
+@enduml

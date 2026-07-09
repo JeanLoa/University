@@ -1,0 +1,52 @@
+@startuml
+title LowCortisol WebApp - Support Frontend Presentation Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Support / Presentation" {
+  class "SupportPageComponent" as Frontend_support_SupportPageComponent <<Page>> {
+    + loadSupport()
+    + openCreateTicket()
+    + selectTicket(ticket)
+    + resolveTicket(ticket)
+    + closeTicket(ticket)
+    + sendMessage()
+  }
+
+  class "SupportTicketCardComponent" as Frontend_support_SupportTicketCardComponent <<Component>> {
+    + ticket
+    + select(ticket)
+  }
+
+  class "CreateSupportTicketModal" as Frontend_support_CreateSupportTicketModal <<Component>> {
+    + submit()
+    + close()
+  }
+
+  class "KnowledgeArticleCardComponent" as Frontend_support_KnowledgeArticleCardComponent <<Component>> {
+    + article
+    + open(article)
+  }
+
+  class "KnowledgeArticleDetailModal" as Frontend_support_KnowledgeArticleDetailModal <<Component>> {
+    + article
+    + close()
+  }
+}
+
+class "Support Routes" as Frontend_support_Routes <<Vue Router>>
+class "Support Store" as Frontend_support_Store <<Store>>
+class "Shared UI" as Frontend_support_SharedUi <<Shared>>
+
+Frontend_support_Routes --> Frontend_support_SupportPageComponent
+Frontend_support_SupportPageComponent --> Frontend_support_Store
+Frontend_support_SupportPageComponent --> Frontend_support_SupportTicketCardComponent
+Frontend_support_SupportPageComponent --> Frontend_support_CreateSupportTicketModal
+Frontend_support_SupportPageComponent --> Frontend_support_KnowledgeArticleCardComponent
+Frontend_support_SupportPageComponent --> Frontend_support_KnowledgeArticleDetailModal
+Frontend_support_SupportPageComponent ..> Frontend_support_SharedUi
+
+@enduml

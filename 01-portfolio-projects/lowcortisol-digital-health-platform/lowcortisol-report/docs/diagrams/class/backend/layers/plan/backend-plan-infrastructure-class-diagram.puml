@@ -1,0 +1,37 @@
+@startuml
+title LowCortisol Platform - Plan Backend Infrastructure Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Plan / Infrastructure" {
+  package "Persistence / Entity Framework Core" {
+    class "PlanEntityTypeConfigurations" as Backend_plan_PlanEntityTypeConfigurations <<EF Core Configuration>> {
+      + Configure(Plan)
+      + Configure(PlanFeature)
+      + Configure(Subscription)
+      + Configure(Payment)
+      + Configure(ServiceRequest)
+    }
+    class "PlanRepository" as Backend_plan_EfPlanRepository <<Repository Adapter>>
+    class "SubscriptionRepository" as Backend_plan_EfSubscriptionRepository <<Repository Adapter>>
+    class "PaymentRepository" as Backend_plan_EfPaymentRepository <<Repository Adapter>>
+    class "ServiceRequestRepository" as Backend_plan_EfServiceRequestRepository <<Repository Adapter>>
+  }
+
+  package "Persistence / InMemory" {
+    class "InMemoryPlanRepository" as Backend_plan_InMemoryPlanRepository <<Demo Adapter>>
+    class "InMemorySubscriptionRepository" as Backend_plan_InMemorySubscriptionRepository <<Demo Adapter>>
+  }
+}
+
+Backend_plan_EfPlanRepository ..|> Backend_plan_IPlanRepository
+Backend_plan_EfSubscriptionRepository ..|> Backend_plan_ISubscriptionRepository
+Backend_plan_EfPaymentRepository ..|> Backend_plan_IPaymentRepository
+Backend_plan_EfServiceRequestRepository ..|> Backend_plan_IServiceRequestRepository
+Backend_plan_InMemoryPlanRepository ..|> Backend_plan_IPlanRepository
+Backend_plan_InMemorySubscriptionRepository ..|> Backend_plan_ISubscriptionRepository
+
+@enduml

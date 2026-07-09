@@ -1,0 +1,45 @@
+@startuml
+title LowCortisol Platform - Monitoring Backend Infrastructure Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Monitoring / Infrastructure" {
+  package "Infrastructure / Export" {
+    class "ConsumptionReadingsCsvExporter" as Backend_consumptionmonitoring_ConsumptionReadingsCsvExporter <<Class>> {
+      + export(List<ConsumptionReading> readings) : byte[]
+      - sanitize(String value) : String
+    }
+  }
+  package "Infrastructure / EF Core" {
+    class "MonitoringJpaTableNames" as Backend_consumptionmonitoring_MonitoringJpaTableNames <<Class>> {
+      + ENERGY_READINGS: String
+      - MonitoringJpaTableNames()
+    }
+    class "MonitoringQueryHints" as Backend_consumptionmonitoring_MonitoringQueryHints <<Class>> {
+      + FIND_BY_USER: String
+      + FIND_BY_DEVICE: String
+      + FIND_BY_DATE_RANGE: String
+      - MonitoringQueryHints()
+    }
+  }
+  package "Infrastructure / EF Core Repositories" {
+    interface "JpaConsumptionDeviceUsageStateRepository" as Backend_consumptionmonitoring_JpaConsumptionDeviceUsageStateRepository <<interface>> {
+    }
+    interface "JpaConsumptionReadingRepository" as Backend_consumptionmonitoring_JpaConsumptionReadingRepository <<interface>> {
+    }
+  }
+}
+
+
+
+' Layer relationship completion: every declared type participates in this layer diagram.
+Backend_consumptionmonitoring_JpaConsumptionDeviceUsageStateRepository ..> Backend_consumptionmonitoring_ConsumptionReadingsCsvExporter
+Backend_consumptionmonitoring_JpaConsumptionDeviceUsageStateRepository ..> Backend_consumptionmonitoring_MonitoringJpaTableNames
+Backend_consumptionmonitoring_JpaConsumptionDeviceUsageStateRepository ..> Backend_consumptionmonitoring_MonitoringQueryHints
+Backend_consumptionmonitoring_JpaConsumptionDeviceUsageStateRepository ..> Backend_consumptionmonitoring_ConsumptionReadingsCsvExporter
+Backend_consumptionmonitoring_JpaConsumptionDeviceUsageStateRepository ..> Backend_consumptionmonitoring_JpaConsumptionReadingRepository
+
+@enduml

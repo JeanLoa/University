@@ -1,0 +1,92 @@
+@startuml
+title ElectroCorp Web App - Billing Frontend Presentation Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Billing Presentation" {
+  package "Presentation / Components" {
+    class "InvoiceCardComponent" as FrontendPresentation_billing_InvoiceCardComponent <<Component>> {
+      + invoice: !: Invoice
+      + download
+      + onDownload() : void
+    }
+    class "PaymentFormComponent" as FrontendPresentation_billing_PaymentFormComponent <<Component>> {
+      + plan: !: Plan
+      + loading
+      + confirmed
+      + canceled
+      + holderName
+      + cardNumber
+      + expirationDate
+      + cvv
+      + onCardNumberChange(value: string) : void
+      + onExpirationDateChange(value: string) : void
+      + onCvvChange(value: string) : void
+      + onConfirm() : void
+      + onCancel() : void
+    }
+    class "PlanCardComponent" as FrontendPresentation_billing_PlanCardComponent <<Component>> {
+      + plan: !: Plan
+      + activePlanCode: PlanCode | null
+      + selected
+      - featureKeysByPlan: Record<PlanCode, string[]>
+      + get: isSelected(): boolean
+      + get: isRecommended(): boolean
+      + get: descriptionKey(): string
+      + get: featureKeys(): string[]
+      + get: usageKey(): string
+      + onSelect() : void
+    }
+  }
+  package "Presentation / Pages" {
+    class "BillingHistoryPageComponent" as FrontendPresentation_billing_BillingHistoryPageComponent <<Component>> {
+      + constructor: (
+      + billingFacade: BillingFacade
+      - toastService: ToastService
+      - confirmDialog: ConfirmDialogService
+      - translate: TranslateService
+      - uiPreferences: UiPreferencesService
+      + ngOnInit() : Promise<void>
+      + downloadInvoice(invoiceId: number) : void
+      + cancelSubscription() : Promise<void>
+      + formatMoney(amount: number | undefined, currency = 'PEN') : string
+      + formatLimit(value: number | null | undefined) : string
+      + formatDate(value: string | undefined) : string
+      + subscriptionStatusLabel(status: SubscriptionStatus | undefined) : string
+      + paymentStatusLabel(status: PaymentStatus | undefined) : string
+      + invoiceStateLabel(invoice: Invoice) : string
+      - currentLocale() : string
+      - t(key: string) : string
+    }
+    class "PlansPageComponent" as FrontendPresentation_billing_PlansPageComponent <<Component>> {
+      + selectedPlan: Plan | null
+      + constructor: (
+      + billingFacade: BillingFacade
+      - toastService: ToastService
+      - confirmDialog: ConfirmDialogService
+      + ngOnInit() : Promise<void>
+      + openPayment(plan: Plan) : void
+      + closePayment() : void
+      + confirmPayment(command: PaymentFormCommand) : Promise<void>
+      + cancelSubscription() : Promise<void>
+    }
+  }
+  package "Presentation / Routes" {
+    class "BILLING_ROUTES" as FrontendPresentation_billing_BILLING_ROUTES <<Routes>> {
+      + route: /plans
+    }
+  }
+}
+
+FrontendPresentation_billing_PlansPageComponent ..> FrontendPresentation_billing_PaymentFormComponent
+FrontendPresentation_billing_PlansPageComponent ..> FrontendPresentation_billing_PlanCardComponent
+
+' Relationship completion: every declared type participates in the frontend diagram.
+FrontendPresentation_billing_PlansPageComponent ..> FrontendPresentation_billing_InvoiceCardComponent
+FrontendPresentation_billing_PlansPageComponent ..> FrontendPresentation_billing_BillingHistoryPageComponent
+FrontendPresentation_billing_PlansPageComponent ..> FrontendPresentation_billing_BILLING_ROUTES
+
+@enduml

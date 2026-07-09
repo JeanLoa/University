@@ -1,0 +1,45 @@
+@startuml
+title ElectroCorp Platform - Service Management Backend Application Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Service Management / Application" {
+  package "Application / Services" {
+    class "ServiceManagementApplicationService" as Backend_servicemanagement_ServiceManagementApplicationService <<Application Service>> {
+      - supportTicketRepository: SupportTicketRepository
+      - maintenanceTicketRepository: MaintenanceTicketRepository
+      - deviceRepository: DeviceRepository
+      - domainEventPublisher: DomainEventPublisher
+      + getSupportTickets(Long userId) : List<SupportTicket>
+      + createSupportTicket(CreateSupportTicketCommand command) : SupportTicket
+      + updateSupportStatus(Long userId, Long ticketId, UpdateTicketStatusCommand command) : SupportTicket
+      + deleteSupportTicket(DeleteSupportTicketCommand command) : void
+      + getMaintenanceTickets(Long userId) : List<MaintenanceTicket>
+      + createMaintenanceTicket(CreateMaintenanceTicketCommand command) : MaintenanceTicket
+      + updateMaintenanceStatus(Long userId, Long ticketId, UpdateTicketStatusCommand command) : MaintenanceTicket
+      + deleteMaintenanceTicket(DeleteMaintenanceTicketCommand command) : void
+    }
+  }
+  package "Application / Event Handlers" {
+    class "SupportTicketCreatedEventHandler" as Backend_servicemanagement_SupportTicketCreatedEventHandler <<Event Handler>> {
+      - integrationEventPublisher: IntegrationEventPublisher
+      + on(SupportTicketCreatedEvent event) : void
+    }
+    class "MaintenanceTicketCreatedEventHandler" as Backend_servicemanagement_MaintenanceTicketCreatedEventHandler <<Event Handler>> {
+      - integrationEventPublisher: IntegrationEventPublisher
+      + on(MaintenanceTicketCreatedEvent event) : void
+    }
+  }
+}
+
+
+
+
+' Single-class layer participation.
+Backend_servicemanagement_ServiceManagementApplicationService ..> Backend_servicemanagement_SupportTicketCreatedEventHandler : after commit
+Backend_servicemanagement_ServiceManagementApplicationService ..> Backend_servicemanagement_MaintenanceTicketCreatedEventHandler : after commit
+
+@enduml

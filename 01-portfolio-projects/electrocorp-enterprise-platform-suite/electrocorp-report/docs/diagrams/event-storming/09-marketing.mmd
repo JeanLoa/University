@@ -1,0 +1,24 @@
+flowchart LR
+  classDef actor fill:#ffe066,stroke:#d4a100,color:#3d2f00;
+  classDef command fill:#6db3f2,stroke:#1c6fb8,color:#08243d;
+  classDef aggregate fill:#fff2ae,stroke:#c9a900,color:#4a3b00;
+  classDef readmodel fill:#b5e7a0,stroke:#4f9a2f,color:#1f3d0f;
+
+  VISITOR([🎬 Visitor]):::actor
+
+  C_NEWS[⚡ SubscribeNewsletter]:::command
+  C_SEARCH[⚡ Search]:::command
+  C_MULTIMEDIA[⚡ UpdateMultimediaState]:::command
+
+  A_NEWS[📦 NewsletterSubscription]:::aggregate
+
+  RM_CONTENT[🟢 Landing content by language]:::readmodel
+  RM_TRANS[🟢 Translations bundle]:::readmodel
+  RM_MULTI[🟢 Multimedia config - audio/menu]:::readmodel
+  RM_TERMS["🟢 Terms and Conditions"]:::readmodel
+
+  VISITOR --> C_NEWS -->|idempotent by email| A_NEWS
+  VISITOR --> C_SEARCH --> RM_CONTENT
+  VISITOR --> C_MULTIMEDIA --> RM_MULTI
+  VISITOR --> RM_TRANS
+  VISITOR --> RM_TERMS

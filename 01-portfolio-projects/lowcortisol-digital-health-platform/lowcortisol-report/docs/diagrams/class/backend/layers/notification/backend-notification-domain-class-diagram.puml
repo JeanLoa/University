@@ -1,0 +1,491 @@
+@startuml
+title LowCortisol Platform - Notification Backend Domain Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Notification / Domain" {
+  package "Domain / Aggregates" {
+    class "Alert" as Backend_notification_Alert <<Aggregate>> {
+      - userId: Long
+      - title: String
+      - message: String
+      - level: String
+      - sourceType: AlertSourceType
+      - sourceId: String
+      - sourceLabel: String
+      - eventType: AlertEventType
+      - threadKey: String
+      - evidence: String
+      - explanation: String
+      - recommendedAction: String
+      - severityScore: Integer
+      - repeatCount: Integer
+      - active: Boolean
+      - resolved: Boolean
+      - readStatus: Boolean
+      - firstDetectedAt: LocalDateTime
+      - lastTriggeredAt: LocalDateTime
+      - dismissedUntil: LocalDateTime
+      - expiresAt: LocalDateTime
+      + markAsRead() : void
+      + dismissUntil(LocalDateTime until) : void
+      + resolve() : void
+    }
+    class "AlertRule" as Backend_notification_AlertRule <<Aggregate>> {
+      - userId: Long
+      - name: String
+      - metric: String
+      - conditionType: String
+      - threshold: BigDecimal
+      - level: AlertLevel
+      - scopeType: RuleScopeType
+      - scopeId: String
+      - evaluatorType: RuleEvaluatorType
+      - weight: Integer
+      - profileName: String
+      - enabled: Boolean
+      + toggle() : void
+      + appliesTo(RuleScopeType requestedScopeType, String requestedScopeId) : boolean
+      + effectiveWeight() : int
+    }
+    class "AlertRuleProfile" as Backend_notification_AlertRuleProfile <<Aggregate>> {
+      - userId: Long
+      - name: String
+      - description: String
+      - scopeType: RuleScopeType
+      - scopeId: String
+      - mode: RuleProfileMode
+      - sensitivity: RuleSensitivity
+      - active: Boolean
+      + activate() : void
+      + deactivate() : void
+    }
+    class "NotificationPreference" as Backend_notification_NotificationPreference <<Aggregate>> {
+      - userId: Long
+      - scopeType: NotificationPreferenceScope
+      - scopeId: String
+      - emailEnabled: Boolean
+      - pushEnabled: Boolean
+      - inAppEnabled: Boolean
+      - toastEnabled: Boolean
+      - dashboardEnabled: Boolean
+      - criticalOnly: Boolean
+      - minimumLevel: String
+      - allowedLevels: String
+      - allowedSourceTypes: String
+      - criticalBreaksQuietHours: Boolean
+      - groupSimilarAlerts: Boolean
+      - remindersEnabled: Boolean
+      - cooldownMinutes: Integer
+      - maxAlertsPerHour: Integer
+      - routineNightSilence: Boolean
+      - goalDeadlineAlerts: Boolean
+      - maintenanceDeviceAlerts: Boolean
+      - systemRecommendations: Boolean
+      - dailySummaryEnabled: Boolean
+      - weeklySummaryEnabled: Boolean
+      - defaultDeliveryMode: NotificationDeliveryMode
+    }
+  }
+  package "Domain / Commands" {
+    class "ActivateAlertRuleProfileCommand" as Backend_notification_ActivateAlertRuleProfileCommand <<record>> {
+      + Long userId
+      + Long profileId
+    }
+    class "CreateAlertCommand" as Backend_notification_CreateAlertCommand <<record>> {
+      + Long userId
+      + String title
+      + String message
+      + String level
+      + String sourceType
+      + String sourceId
+      + String sourceLabel
+      + String eventType
+      + String threadKey
+      + String evidence
+      + String explanation
+      + String recommendedAction
+      + Integer severityScore
+      + String expiresAt
+    }
+    class "CreateAlertRuleCommand" as Backend_notification_CreateAlertRuleCommand <<record>> {
+      + Long userId
+      + String name
+      + String metric
+      + String conditionType
+      + BigDecimal threshold
+      + String level
+      + String scopeType
+      + String scopeId
+      + String evaluatorType
+      + Integer weight
+      + String profileName
+    }
+    class "CreateAlertRuleProfileCommand" as Backend_notification_CreateAlertRuleProfileCommand <<record>> {
+      + Long userId
+      + String name
+      + String description
+      + String scopeType
+      + String scopeId
+      + String mode
+      + String sensitivity
+    }
+    class "DismissAlertCommand" as Backend_notification_DismissAlertCommand <<record>> {
+      + Long userId
+      + Long alertId
+      + Integer minutes
+    }
+    class "MarkAlertAsReadCommand" as Backend_notification_MarkAlertAsReadCommand <<record>> {
+      + Long userId
+      + Long alertId
+    }
+    class "ResolveAlertCommand" as Backend_notification_ResolveAlertCommand <<record>> {
+      + Long userId
+      + Long alertId
+    }
+    class "ToggleAlertRuleCommand" as Backend_notification_ToggleAlertRuleCommand <<record>> {
+      + Long userId
+      + Long ruleId
+    }
+    class "UpdateNotificationPreferenceCommand" as Backend_notification_UpdateNotificationPreferenceCommand <<record>> {
+      + Long userId
+      + Boolean emailEnabled
+      + Boolean pushEnabled
+      + Boolean criticalOnly
+      + String minimumLevel
+      + String scopeType
+      + String scopeId
+      + Boolean inAppEnabled
+      + Boolean toastEnabled
+      + Boolean dashboardEnabled
+      + String allowedLevels
+      + String allowedSourceTypes
+      + Boolean quietHoursEnabled
+      + String quietHoursStart
+      + String quietHoursEnd
+      + Boolean criticalBreaksQuietHours
+      + Boolean groupSimilarAlerts
+      + Boolean remindersEnabled
+      + Integer cooldownMinutes
+      + Integer maxAlertsPerHour
+      + Boolean routineNightSilence
+      + Boolean goalDeadlineAlerts
+      + Boolean maintenanceDeviceAlerts
+      + Boolean systemRecommendations
+    }
+  }
+  package "Domain / Events" {
+    class "AlertCreatedEvent" as Backend_notification_AlertCreatedEvent <<record>> {
+      + Long userId
+      + Long alertId
+      + String severity
+      + LocalDateTime occurredOn
+      + AlertCreatedEvent(Long userId, Long alertId, String severity, LocalDateTime occurredOn) : record
+      + AlertCreatedEvent(Long userId, Long alertId, String severity)
+    }
+  }
+  package "Domain / Factories" {
+    class "AlertFactory" as Backend_notification_AlertFactory <<Class>> {
+      - normalizeOptional(String value) : String
+    }
+  }
+  package "Domain / Model" {
+    class "NotificationDeliveryDecision" as Backend_notification_NotificationDeliveryDecision <<record>> {
+      + boolean allowed
+      + NotificationDeliveryMode deliveryMode
+      + boolean soundAllowed
+      + boolean toastAllowed
+      + boolean inboxAllowed
+      + String reason
+    }
+    class "RuleEvaluationResult" as Backend_notification_RuleEvaluationResult <<record>> {
+      + Long userId
+      + RuleScopeType scopeType
+      + String scopeId
+      + AlertLevel level
+      + Integer severityScore
+      + String evidence
+      + String explanation
+      + String recommendedAction
+      + AlertSourceType sourceType
+      + String sourceId
+      + AlertEventType eventType
+      + String threadKey
+      + Integer activeEvaluatorCount
+      + Integer totalWeight
+    }
+  }
+  package "Domain / Queries" {
+    class "EvaluateAlertRulesQuery" as Backend_notification_EvaluateAlertRulesQuery <<record>> {
+      + Long userId
+      + String scopeType
+      + String scopeId
+      + BigDecimal observedValue
+    }
+    class "GetAlertRuleProfilesByUserQuery" as Backend_notification_GetAlertRuleProfilesByUserQuery <<record>> {
+      + Long userId
+      + GetAlertRuleProfilesByUserQuery(Long userId) : record
+    }
+    class "GetAlertRulesByUserQuery" as Backend_notification_GetAlertRulesByUserQuery <<record>> {
+      + Long userId
+      + GetAlertRulesByUserQuery(Long userId) : record
+    }
+    class "GetAlertsByUserQuery" as Backend_notification_GetAlertsByUserQuery <<record>> {
+      + Long userId
+      + GetAlertsByUserQuery(Long userId) : record
+    }
+    class "GetNotificationPreferenceQuery" as Backend_notification_GetNotificationPreferenceQuery <<record>> {
+      + Long userId
+      + GetNotificationPreferenceQuery(Long userId) : record
+    }
+  }
+  package "Domain / Repositories" {
+    interface "AlertRepository" as Backend_notification_AlertRepository <<interface>> {
+    }
+    interface "AlertRuleProfileRepository" as Backend_notification_AlertRuleProfileRepository <<interface>> {
+    }
+    interface "AlertRuleRepository" as Backend_notification_AlertRuleRepository <<interface>> {
+    }
+    interface "NotificationPreferenceRepository" as Backend_notification_NotificationPreferenceRepository <<interface>> {
+    }
+  }
+  package "Domain / Services" {
+    class "AlertPolicyService" as Backend_notification_AlertPolicyService <<Domain Service>> {
+      + validateAlert(String title, String message, String level) : void
+      + isValidLevel(String level) : boolean
+      + isCritical(String level) : boolean
+      + parseLevel(String level) : AlertLevel
+      + parseSourceType(String sourceType) : AlertSourceType
+      + parseEventType(String eventType) : AlertEventType
+      + normalizeScore(Integer score) : int
+    }
+    class "AlertRulePolicyService" as Backend_notification_AlertRulePolicyService <<Domain Service>> {
+      + validateRule(String name, String metric, String conditionType, BigDecimal threshold) : void
+      + evaluate(BigDecimal currentValue, String conditionType, BigDecimal threshold) : boolean
+    }
+    class "AlertSourceOwnershipService" as Backend_notification_AlertSourceOwnershipService <<Domain Service>> {
+      - deviceRepository: DeviceRepository
+      - deviceGroupRepository: DeviceGroupRepository
+      - routineRepository: RoutineRepository
+      - locationRepository: LocationRepository
+      - roomRepository: RoomRepository
+      - consumptionGoalRepository: ConsumptionGoalRepository
+      + validateSourceOwnership(Long userId, AlertSourceType sourceType, String sourceId) : void
+      - parseId(String sourceId) : Long
+    }
+    class "AlertSummaryService" as Backend_notification_AlertSummaryService <<Domain Service>> {
+      + countUnread(List<Alert> alerts) : long
+      + countCritical(List<Alert> alerts) : long
+    }
+    class "NotificationChannelPolicyService" as Backend_notification_NotificationChannelPolicyService <<Domain Service>> {
+      - deliveryPolicyService: NotificationDeliveryPolicyService
+      + NotificationChannelPolicyService(NotificationDeliveryPolicyService deliveryPolicyService)
+      + canSendEmail(NotificationPreference preference, Alert alert) : boolean
+      + canSendPush(NotificationPreference preference, Alert alert) : boolean
+      - allowsByLevel(NotificationPreference preference, Alert alert) : boolean
+    }
+    class "NotificationDeliveryPolicyService" as Backend_notification_NotificationDeliveryPolicyService <<Domain Service>> {
+      + decide(NotificationPreference preference, Alert alert, LocalTime now) : NotificationDeliveryDecision
+      - isLevelAllowed(NotificationPreference preference, String level) : boolean
+      - isSourceAllowed(NotificationPreference preference, String sourceType) : boolean
+      - split(String value) : Set<String>
+    }
+    class "NotificationPreferencePolicyService" as Backend_notification_NotificationPreferencePolicyService <<Domain Service>> {
+      + validatePreference(String minimumLevel) : void
+      + normalizeLevelSet(String levels) : String
+      + normalizeSourceSet(String sources) : String
+      + allowsLevel(String configuredMinimumLevel, String alertLevel) : boolean
+      - priorityOf(String level) : int
+      - normalizeSet(String value, Set<String> allowedValues, String errorMessage) : String
+    }
+    class "RuleEvaluationService" as Backend_notification_RuleEvaluationService <<Domain Service>> {
+      - alertRuleRepository: AlertRuleRepository
+      - severityPolicyService: RuleSeverityPolicyService
+      + evaluate(Long userId, RuleScopeType scopeType, String scopeId, BigDecimal observedValue) : RuleEvaluationResult
+      - contribution(AlertRule rule, BigDecimal observedValue, int totalWeight) : int
+      - buildEvidence(List<AlertRule> rules, BigDecimal observedValue, int totalWeight) : String
+      - sourceTypeFromScope(RuleScopeType scopeType) : AlertSourceType
+    }
+    class "RuleSeverityPolicyService" as Backend_notification_RuleSeverityPolicyService <<Domain Service>> {
+      + classify(int score) : AlertLevel
+      + recommendedAction(AlertLevel level) : String
+    }
+  }
+  package "Domain / Value Objects" {
+    enum "AlertEventType" as Backend_notification_AlertEventType <<enum>> {
+      + MANUAL
+      + CONSUMPTION_REVIEW
+      + DEVICE_STATUS
+      + GROUP_STATUS
+      + ROOM_ACTIVITY
+      + WORKPLACE_ACTIVITY
+      + ROUTINE_UPCOMING
+      + ROUTINE_EXECUTED
+      + ROUTINE_FAILED
+      + ROUTINE_DISABLED
+      + GOAL_PROGRESS
+      + GOAL_DEADLINE
+      + GOAL_EXCEEDED
+      + GOAL_COMPLETED
+      + REPORT_SUMMARY
+      + RULE_EVALUATION
+      + SYSTEM_STATUS
+    }
+    enum "AlertLevel" as Backend_notification_AlertLevel <<enum>> {
+      + STABLE
+      + INFO
+      + WARNING
+      + CRITICAL
+    }
+    class "AlertMessage" as Backend_notification_AlertMessage <<record>> {
+      + String value
+      + AlertMessage(String value) : record
+    }
+    class "AlertSeverity" as Backend_notification_AlertSeverity <<record>> {
+      + String value
+      + AlertSeverity(String value) : record
+    }
+    enum "AlertSourceType" as Backend_notification_AlertSourceType <<enum>> {
+      + DEVICE
+      + GROUP
+      + ROOM
+      + WORKPLACE
+      + ROUTINE
+      + GOAL
+      + REPORT
+      + SYSTEM
+      + RULE
+    }
+    class "AlertTitle" as Backend_notification_AlertTitle <<record>> {
+      + String value
+      + AlertTitle(String value) : record
+    }
+    class "NotificationChannel" as Backend_notification_NotificationChannel <<record>> {
+      + String value
+      + NotificationChannel(String value) : record
+      - ALLOWED: Set<String>
+    }
+    enum "NotificationDeliveryMode" as Backend_notification_NotificationDeliveryMode <<enum>> {
+      + BANNER
+      + QUIET
+      + INBOX_ONLY
+    }
+    enum "NotificationPreferenceScope" as Backend_notification_NotificationPreferenceScope <<enum>> {
+      + USER
+    }
+    class "QuietHours" as Backend_notification_QuietHours <<Value Object>> {
+      - enabled: Boolean
+      - startTime: String
+      - endTime: String
+      + QuietHours()
+      + QuietHours(Boolean enabled, String startTime, String endTime)
+      + getEnabled() : Boolean
+      + getStartTime() : String
+      + getEndTime() : String
+      + isNowQuiet(LocalTime now) : boolean
+      - normalizeTime(String value, String fallback) : String
+    }
+    enum "RuleEvaluatorType" as Backend_notification_RuleEvaluatorType <<enum>> {
+      + DAILY_KWH
+      + AVERAGE_WATTS
+      + ACTIVE_POWER
+      + HIGH_READING_COUNT
+      + SUSTAINED_CONSUMPTION
+      + DEVICE_COUNT
+      + GOAL_USAGE
+      + GOAL_DEADLINE
+      + ROUTINE_CONTEXT
+      + COST_ESTIMATE
+    }
+    enum "RuleProfileMode" as Backend_notification_RuleProfileMode <<enum>> {
+      + BALANCED
+      + SAVINGS
+    }
+    enum "RuleScopeType" as Backend_notification_RuleScopeType <<enum>> {
+      + GENERAL
+      + WORKPLACE
+      + ROOM
+      + DEVICE
+      + GROUP
+      + ROUTINE
+    }
+    enum "RuleSensitivity" as Backend_notification_RuleSensitivity <<enum>> {
+      + LOW
+      + NORMAL
+      + HIGH
+    }
+  }
+}
+
+Backend_notification_Alert ..> Backend_notification_AlertEventType
+Backend_notification_Alert ..> Backend_notification_AlertLevel
+Backend_notification_Alert ..> Backend_notification_AlertSourceType
+Backend_notification_AlertFactory ..> Backend_notification_Alert
+Backend_notification_AlertFactory ..> Backend_notification_AlertEventType
+Backend_notification_AlertFactory ..> Backend_notification_AlertMessage
+Backend_notification_AlertFactory ..> Backend_notification_AlertSeverity
+Backend_notification_AlertFactory ..> Backend_notification_AlertSourceType
+Backend_notification_AlertPolicyService ..> Backend_notification_AlertEventType
+Backend_notification_AlertPolicyService ..> Backend_notification_AlertLevel
+Backend_notification_AlertPolicyService ..> Backend_notification_AlertSourceType
+Backend_notification_AlertRepository ..> Backend_notification_Alert
+Backend_notification_AlertRule ..> Backend_notification_AlertLevel
+Backend_notification_AlertRule ..> Backend_notification_RuleEvaluatorType
+Backend_notification_AlertRule ..> Backend_notification_RuleScopeType
+Backend_notification_AlertRuleProfile ..> Backend_notification_RuleProfileMode
+Backend_notification_AlertRuleProfile ..> Backend_notification_RuleScopeType
+Backend_notification_AlertRuleProfile ..> Backend_notification_RuleSensitivity
+Backend_notification_AlertRuleProfileRepository ..> Backend_notification_AlertRuleProfile
+Backend_notification_AlertRuleRepository ..> Backend_notification_AlertRule
+Backend_notification_AlertSourceOwnershipService ..> Backend_notification_AlertSourceType
+Backend_notification_AlertSummaryService ..> Backend_notification_Alert
+Backend_notification_NotificationChannelPolicyService ..> Backend_notification_Alert
+Backend_notification_NotificationChannelPolicyService ..> Backend_notification_NotificationPreference
+Backend_notification_NotificationDeliveryDecision ..> Backend_notification_NotificationDeliveryMode
+Backend_notification_NotificationDeliveryPolicyService ..> Backend_notification_Alert
+Backend_notification_NotificationDeliveryPolicyService ..> Backend_notification_AlertLevel
+Backend_notification_NotificationDeliveryPolicyService ..> Backend_notification_NotificationDeliveryDecision
+Backend_notification_NotificationDeliveryPolicyService ..> Backend_notification_NotificationDeliveryMode
+Backend_notification_NotificationDeliveryPolicyService ..> Backend_notification_NotificationPreference
+Backend_notification_NotificationPreference ..> Backend_notification_NotificationDeliveryMode
+Backend_notification_NotificationPreference ..> Backend_notification_NotificationPreferenceScope
+Backend_notification_NotificationPreference ..> Backend_notification_QuietHours
+Backend_notification_NotificationPreferenceRepository ..> Backend_notification_NotificationPreference
+Backend_notification_RuleEvaluationResult ..> Backend_notification_AlertEventType
+Backend_notification_RuleEvaluationResult ..> Backend_notification_AlertLevel
+Backend_notification_RuleEvaluationResult ..> Backend_notification_AlertSourceType
+Backend_notification_RuleEvaluationResult ..> Backend_notification_RuleScopeType
+Backend_notification_RuleEvaluationService ..> Backend_notification_AlertEventType
+Backend_notification_RuleEvaluationService ..> Backend_notification_AlertLevel
+Backend_notification_RuleEvaluationService ..> Backend_notification_AlertRule
+Backend_notification_RuleEvaluationService ..> Backend_notification_AlertRuleRepository
+Backend_notification_RuleEvaluationService ..> Backend_notification_AlertSourceType
+Backend_notification_RuleEvaluationService ..> Backend_notification_RuleEvaluationResult
+Backend_notification_RuleEvaluationService ..> Backend_notification_RuleScopeType
+Backend_notification_RuleSeverityPolicyService ..> Backend_notification_AlertLevel
+
+' Layer relationship completion: every declared type participates in this layer diagram.
+Backend_notification_AlertRepository ..> Backend_notification_ActivateAlertRuleProfileCommand
+Backend_notification_AlertRepository ..> Backend_notification_CreateAlertCommand
+Backend_notification_AlertRepository ..> Backend_notification_CreateAlertRuleCommand
+Backend_notification_AlertRepository ..> Backend_notification_CreateAlertRuleProfileCommand
+Backend_notification_AlertRepository ..> Backend_notification_DismissAlertCommand
+Backend_notification_AlertRepository ..> Backend_notification_MarkAlertAsReadCommand
+Backend_notification_AlertRepository ..> Backend_notification_ResolveAlertCommand
+Backend_notification_AlertRepository ..> Backend_notification_ToggleAlertRuleCommand
+Backend_notification_AlertRepository ..> Backend_notification_UpdateNotificationPreferenceCommand
+Backend_notification_AlertRepository ..> Backend_notification_AlertCreatedEvent
+Backend_notification_AlertRepository ..> Backend_notification_EvaluateAlertRulesQuery
+Backend_notification_AlertRepository ..> Backend_notification_GetAlertRuleProfilesByUserQuery
+Backend_notification_AlertRepository ..> Backend_notification_GetAlertRulesByUserQuery
+Backend_notification_AlertRepository ..> Backend_notification_GetAlertsByUserQuery
+Backend_notification_AlertRepository ..> Backend_notification_GetNotificationPreferenceQuery
+Backend_notification_AlertRepository ..> Backend_notification_AlertRulePolicyService
+Backend_notification_AlertRepository ..> Backend_notification_NotificationPreferencePolicyService
+Backend_notification_AlertRepository ..> Backend_notification_AlertTitle
+Backend_notification_AlertRepository ..> Backend_notification_NotificationChannel
+
+@enduml

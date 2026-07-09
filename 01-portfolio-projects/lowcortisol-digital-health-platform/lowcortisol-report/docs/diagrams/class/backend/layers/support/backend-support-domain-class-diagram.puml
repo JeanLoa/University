@@ -1,0 +1,92 @@
+@startuml
+title LowCortisol Platform - Support Backend Domain Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Support / Domain" {
+  package "Domain / Aggregates" {
+    class "SupportTicket" as Backend_support_SupportTicket <<Aggregate Root>> {
+      + Id: Guid
+      + UserId: string
+      + SiteId: string
+      + Title: string
+      + Description: string
+      + Category: string
+      + Priority: SupportTicketPriority
+      + Status: SupportTicketStatus
+      + AssignedAgentId: string
+      + UpdateStatus(status) : void
+      + Resolve() : void
+      + Close() : void
+    }
+  }
+
+  package "Domain / Entities" {
+    class "SupportMessage" as Backend_support_SupportMessage <<Entity>> {
+      + Id: Guid
+      + TicketId: Guid
+      + SenderId: string
+      + SenderType: string
+      + Content: string
+      + Status: string
+    }
+    class "SupportConversation" as Backend_support_SupportConversation <<Entity>> {
+      + Id: Guid
+      + TicketId: Guid
+      + Status: SupportConversationStatus
+      + Close() : void
+    }
+    class "SupportAgent" as Backend_support_SupportAgent <<Entity>> {
+      + Id: Guid
+      + Name: string
+      + Specialty: string
+      + Status: SupportAgentStatus
+    }
+    class "KnowledgeArticle" as Backend_support_KnowledgeArticle <<Entity>> {
+      + Id: Guid
+      + Title: string
+      + Summary: string
+      + Category: string
+      + HelpfulCount: int
+      + Content: string
+    }
+  }
+
+  package "Domain / Commands" {
+    class "CreateSupportTicketCommand" as Backend_support_CreateSupportTicketCommand <<record>>
+    class "UpdateSupportTicketCommand" as Backend_support_UpdateSupportTicketCommand <<record>>
+    class "SendSupportMessageCommand" as Backend_support_SendSupportMessageCommand <<record>>
+  }
+
+  package "Domain / Queries" {
+    class "GetSupportTicketsQuery" as Backend_support_GetSupportTicketsQuery <<record>>
+    class "GetSupportAgentsQuery" as Backend_support_GetSupportAgentsQuery <<record>>
+    class "GetKnowledgeArticlesQuery" as Backend_support_GetKnowledgeArticlesQuery <<record>>
+    class "GetSupportConversationsQuery" as Backend_support_GetSupportConversationsQuery <<record>>
+    class "GetSupportConversationByTicketQuery" as Backend_support_GetSupportConversationByTicketQuery <<record>>
+    class "GetSupportSummaryQuery" as Backend_support_GetSupportSummaryQuery <<record>>
+  }
+
+  package "Domain / Value Objects" {
+    enum "SupportTicketPriority" as Backend_support_SupportTicketPriority <<enum>>
+    enum "SupportTicketStatus" as Backend_support_SupportTicketStatus <<enum>>
+    enum "SupportAgentStatus" as Backend_support_SupportAgentStatus <<enum>>
+    enum "SupportConversationStatus" as Backend_support_SupportConversationStatus <<enum>>
+  }
+
+  package "Domain / Repositories" {
+    interface "ISupportTicketRepository" as Backend_support_ISupportTicketRepository <<Repository Port>>
+    interface "ISupportConversationRepository" as Backend_support_ISupportConversationRepository <<Repository Port>>
+    interface "ISupportAgentRepository" as Backend_support_ISupportAgentRepository <<Repository Port>>
+    interface "IKnowledgeArticleRepository" as Backend_support_IKnowledgeArticleRepository <<Repository Port>>
+  }
+}
+
+Backend_support_SupportTicket ||..o{ Backend_support_SupportMessage : ticketId
+Backend_support_SupportTicket ||..o{ Backend_support_SupportConversation : ticketId
+Backend_support_SupportTicket ..> Backend_support_SupportAgent : assignedAgentId
+
+@enduml

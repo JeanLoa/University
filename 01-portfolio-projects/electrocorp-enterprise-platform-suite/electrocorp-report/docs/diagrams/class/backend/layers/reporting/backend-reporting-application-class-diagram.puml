@@ -1,0 +1,114 @@
+@startuml
+title ElectroCorp Platform - Reporting Backend Application Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Reporting / Application" {
+  package "Application / Command Services" {
+    interface "ReportingCommandService" as Backend_reporting_ReportingCommandService <<interface>> {
+    }
+  }
+  package "Application / Command Services Impl" {
+    class "ReportingCommandServiceImpl" as Backend_reporting_ReportingCommandServiceImpl <<Command Service>> {
+      - applicationService: ReportingApplicationService
+      + handle(CreateConsumptionReportCommand command) : ConsumptionReport
+      + handle(GenerateConsumptionReportCommand command) : ConsumptionReport
+      + handle(RecordReportingEventCommand command) : ReportingEvent
+      + deleteReport(Long userId, Long reportId) : void
+      + handle(CreateEnergyGoalCommand command) : EnergyGoal
+      + handle(UpdateEnergyGoalCommand command) : EnergyGoal
+      + deleteGoal(Long userId, Long goalId) : void
+    }
+  }
+  package "Application / Query Services" {
+    interface "ReportingQueryService" as Backend_reporting_ReportingQueryService <<interface>> {
+    }
+  }
+  package "Application / Query Services Impl" {
+    class "ReportingQueryServiceImpl" as Backend_reporting_ReportingQueryServiceImpl <<Query Service>> {
+      - applicationService: ReportingApplicationService
+      + handle(GetConsumptionReportsByUserQuery query) : List<ConsumptionReport>
+      + handle(GetEnergyGoalsByUserQuery query) : List<EnergyGoal>
+      + handle(GetReportingEventsByUserQuery query) : List<ReportingEvent>
+    }
+  }
+  package "Application / Event Handlers" {
+    class "ReportingIntegrationEventHandler" as Backend_reporting_ReportingIntegrationEventHandler <<Event Handler>> {
+      - reportingCommandService: ReportingCommandService
+      + on(UserRegisteredIntegrationEvent event) : void
+      + on(SubscriptionActivatedIntegrationEvent event) : void
+      + on(PaymentRegisteredIntegrationEvent event) : void
+      + on(DeviceCreatedIntegrationEvent event) : void
+      + on(OperationModeActivatedIntegrationEvent event) : void
+      + on(DeviceAssignedToRoomIntegrationEvent event) : void
+      + on(EnergyThresholdExceededIntegrationEvent event) : void
+      + on(SupportTicketCreatedIntegrationEvent event) : void
+      + on(MaintenanceTicketCreatedIntegrationEvent event) : void
+      - activity(Long userId, String eventName, String sourceContext, String subjectType, Long subjectId, String summary, String detail, LocalDateTime occurredOn) : RecordReportingEventCommand
+    }
+  }
+  package "Application / Services" {
+    class "PlatformInsightApplicationService" as Backend_reporting_PlatformInsightApplicationService <<Application Service>> {
+      - subscriptionRepository: SubscriptionRepository
+      - deviceRepository: DeviceRepository
+      - routineRepository: RoutineRepository
+      - deviceGroupRepository: DeviceGroupRepository
+      - energyReadingRepository: EnergyReadingRepository
+      - locationRepository: LocationRepository
+      - roomRepository: RoomRepository
+      - deviceAssignmentRepository: DeviceAssignmentRepository
+      - alertRepository: AlertRepository
+      - alertRuleRepository: AlertRuleRepository
+      - supportTicketRepository: SupportTicketRepository
+      - maintenanceTicketRepository: MaintenanceTicketRepository
+      + getPlatformSummary(Long userId) : UserPlatformSummary
+      - buildBillingSnapshot(Long userId) : UserPlatformSummary.BillingSnapshot
+      - buildEnergySnapshot(List<EnergyReading> readings) : UserPlatformSummary.EnergySnapshot
+      - findRoomsFromLocations(List<Location> locations) : List<Room>
+      - findAssignmentsFromLocations(List<Location> locations) : List<DeviceAssignment>
+    }
+    class "ReportingApplicationService" as Backend_reporting_ReportingApplicationService <<Application Service>> {
+      - reportRepository: ConsumptionReportRepository
+      - goalRepository: EnergyGoalRepository
+      - energyReadingRepository: EnergyReadingRepository
+      - deviceGroupDeviceRepository: DeviceGroupDeviceRepository
+      - deviceAssignmentRepository: DeviceAssignmentRepository
+      - deviceRepository: DeviceRepository
+      - deviceGroupRepository: DeviceGroupRepository
+      - locationRepository: LocationRepository
+      - roomRepository: RoomRepository
+      - reportPolicyService: ConsumptionReportPolicyService
+      - reportingEventRepository: ReportingEventRepository
+      + getReports(Long userId) : List<ConsumptionReport>
+      + getEvents(Long userId) : List<ReportingEvent>
+      + createReport(CreateConsumptionReportCommand command) : ConsumptionReport
+      + recordEvent(RecordReportingEventCommand command) : ReportingEvent
+      - isClosedReportCycle(LocalDate endDate) : boolean
+      - reportCycleKey(ConsumptionReport report) : String
+      + deleteReport(Long userId, Long reportId) : void
+      + getGoals(Long userId) : List<EnergyGoal>
+      + createGoal(CreateEnergyGoalCommand command) : EnergyGoal
+      + updateGoal(UpdateEnergyGoalCommand command) : EnergyGoal
+      + deleteGoal(Long userId, Long goalId) : void
+      - refreshGoalProgress(EnergyGoal goal) : EnergyGoal
+      - matchesGoalScope(EnergyReading reading, EnergyGoal goal, Set<Long> scopedDeviceIds) : boolean
+      - matchesActiveWindow(EnergyReading reading, EnergyGoal goal) : boolean
+      - getScopedDeviceIds(EnergyGoal goal) : Set<Long>
+      - validateGoalScope(Long userId, String scopeType, Long scopeId) : void
+    }
+  }
+}
+
+Backend_reporting_ReportingCommandServiceImpl ..> Backend_reporting_ReportingApplicationService
+Backend_reporting_ReportingCommandServiceImpl ..> Backend_reporting_ReportingCommandService
+Backend_reporting_ReportingQueryServiceImpl ..> Backend_reporting_ReportingApplicationService
+Backend_reporting_ReportingQueryServiceImpl ..> Backend_reporting_ReportingQueryService
+Backend_reporting_ReportingIntegrationEventHandler ..> Backend_reporting_ReportingCommandService
+
+' Layer relationship completion: every declared type participates in this layer diagram.
+Backend_reporting_ReportingCommandServiceImpl ..> Backend_reporting_PlatformInsightApplicationService
+
+@enduml

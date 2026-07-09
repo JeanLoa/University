@@ -1,0 +1,32 @@
+@startuml
+title ElectroCorp Web App - Frontend Bounded Contexts
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+class "IAM" as FrontendIAM <<Bounded Context>> {}
+class "Billing" as FrontendBilling <<Bounded Context>> {}
+class "Workplace" as FrontendWorkplace <<Bounded Context>> {}
+class "Device Control" as FrontendDeviceControl <<Bounded Context>> {}
+class "Energy Monitoring" as FrontendEnergyMonitoring <<Bounded Context>> {}
+class "Notifications" as FrontendNotifications <<Bounded Context>> {}
+class "Reporting" as FrontendReporting <<Bounded Context>> {}
+class "Service Management" as FrontendServiceManagement <<Bounded Context>> {}
+class "Shared UI / Kernel" as FrontendSharedKernel <<Bounded Context>> {}
+
+FrontendIAM ..> FrontendSharedKernel : guards / session / layout
+FrontendBilling ..> FrontendIAM : authenticated customer
+FrontendBilling ..> FrontendSharedKernel : plan access guard
+FrontendWorkplace ..> FrontendSharedKernel : layout and state
+FrontendWorkplace ..> FrontendDeviceControl : device assignment views
+FrontendDeviceControl ..> FrontendEnergyMonitoring : device consumption context
+FrontendDeviceControl ..> FrontendNotifications : alert rule targets
+FrontendEnergyMonitoring ..> FrontendReporting : metrics for reports and goals
+FrontendNotifications ..> FrontendSharedKernel : badges / toast feedback
+FrontendReporting ..> FrontendSharedKernel : charts and cards
+FrontendServiceManagement ..> FrontendWorkplace : location and device incidents
+FrontendServiceManagement ..> FrontendSharedKernel : ticket UI primitives
+
+@enduml

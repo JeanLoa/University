@@ -1,0 +1,114 @@
+@startuml
+title ElectroCorp Platform - Energy Monitoring Backend Application Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Energy Monitoring / Application" {
+  package "Application / Command Services" {
+    interface "EnergyMonitoringCommandService" as Backend_energymonitoring_EnergyMonitoringCommandService <<interface>> {
+    }
+  }
+  package "Application / Command Services Impl" {
+    class "EnergyMonitoringCommandServiceImpl" as Backend_energymonitoring_EnergyMonitoringCommandServiceImpl <<Command Service>> {
+      - applicationService: EnergyMonitoringApplicationService
+      - settingsService: EnergySamplingSettingsService
+      + handle(CreateEnergyReadingCommand command) : EnergyReading
+      + handle(UpdateEnergySamplingSettingsCommand command) : Integer
+    }
+  }
+  package "Application / Query Services" {
+    interface "EnergyMonitoringQueryService" as Backend_energymonitoring_EnergyMonitoringQueryService <<interface>> {
+    }
+  }
+  package "Application / Query Services Impl" {
+    class "EnergyMonitoringQueryServiceImpl" as Backend_energymonitoring_EnergyMonitoringQueryServiceImpl <<Query Service>> {
+      - applicationService: EnergyMonitoringApplicationService
+      - settingsService: EnergySamplingSettingsService
+      + handle(GetEnergyReadingsByUserQuery query) : List<EnergyReading>
+      + handle(GetEnergyDashboardSummaryQuery query) : EnergyDashboardSummaryResource
+      + handle(GetEnergySamplingSettingsQuery query) : Integer
+    }
+  }
+  package "Application / Event Handlers" {
+    class "EnergyThresholdExceededEventHandler" as Backend_energymonitoring_EnergyThresholdExceededEventHandler <<Event Handler>> {
+      - integrationEventPublisher: IntegrationEventPublisher
+      + on(EnergyThresholdExceededEvent event) : void
+    }
+  }
+  package "Application / Services" {
+    class "EnergyMonitoringApplicationService" as Backend_energymonitoring_EnergyMonitoringApplicationService <<Application Service>> {
+      - TARIFF_PER_KWH: BigDecimal
+      - energyReadingRepository: EnergyReadingRepository
+      - deviceRepository: DeviceRepository
+      - alertRepository: AlertRepository
+      - energyReadingRecorderService: EnergyReadingRecorderService
+      - energySamplingSettingsService: EnergySamplingSettingsService
+      - domainEventPublisher: DomainEventPublisher
+      + getReadings(Long userId) : List<EnergyReading>
+      + getReadings(Long userId, LocalDateTime start, LocalDateTime end) : List<EnergyReading>
+      + getDashboardSummary(Long userId) : EnergyDashboardSummaryResource
+      + createReading(CreateEnergyReadingCommand command) : EnergyReading
+      - calculateAverageWatts(List<EnergyReading> readings) : BigDecimal
+      - calculateCostPerHour(BigDecimal watts) : BigDecimal
+      - projectMonthlyCost(BigDecimal todayEstimatedCost) : BigDecimal
+      - calculateEfficiencyScore(int totalReadings, int highReadings) : int
+      - resolveOperationalStatus(int efficiencyScore) : String
+      - buildTrend(List<EnergyReading> readings) : List<EnergyDashboardSummaryResource.TrendPoint>
+      - buildActiveDeviceDetails(List<Device> activeDevices) : List<EnergyDashboardSummaryResource.ActiveDevice>
+      - resolveRoom(Device device) : String
+      - alertLastTriggeredAt(Alert alert) : LocalDateTime
+      - safeKilowattHours(EnergyReading reading) : BigDecimal
+      - safeEstimatedCost(EnergyReading reading) : BigDecimal
+      - recordDueActiveDeviceIntervals(Long userId) : List<Device>
+    }
+    class "EnergyReadingRecorderService" as Backend_energymonitoring_EnergyReadingRecorderService <<Application Service>> {
+      - DEFAULT_TARIFF_PER_KWH: BigDecimal
+      - MAX_SAMPLE_SECONDS: int
+      - usageStateRepository: EnergyDeviceUsageStateRepository
+      - energyReadingRepository: EnergyReadingRepository
+      - simulatorService: EnergyConsumptionSimulatorService
+      - domainEventPublisher: DomainEventPublisher
+      + recordStatusTransition(Device device, DeviceStatus previousStatus) : void
+      + recordActiveDeviceInterval(Device device) : EnergyReading
+      + recordActiveDeviceIntervalIfDue(Device device, int minimumSeconds) : EnergyReading
+      + closeUsage(Device device) : EnergyReading
+      - startUsage(Device device, LocalDateTime now) : EnergyDeviceUsageState
+      - closeUsage(Device device, LocalDateTime now) : EnergyReading
+      - calculateWatts(Device device) : BigDecimal
+      - calculateKilowattHours(BigDecimal watts, int sampleSeconds) : BigDecimal
+      - calculateEstimatedCost(BigDecimal kilowattHours) : BigDecimal
+      - publishRuleEvaluation(Device device, EnergyReading reading) : void
+    }
+    class "EnergyReadingSchedulerService" as Backend_energymonitoring_EnergyReadingSchedulerService <<Application Service>> {
+      - deviceRepository: DeviceRepository
+      - recorderService: EnergyReadingRecorderService
+      - settingsService: EnergySamplingSettingsService
+      + recordActiveDevicesConsumption() : void
+      + configureTasks(ScheduledTaskRegistrar taskRegistrar) : void
+    }
+    class "EnergySamplingSettingsService" as Backend_energymonitoring_EnergySamplingSettingsService <<Application Service>> {
+      - DEFAULT_SECONDS: int
+      - MIN_SECONDS: int
+      - MAX_SECONDS: int
+      + getSampleSeconds() : int
+      + updateSampleSeconds(int seconds) : int
+    }
+  }
+}
+
+Backend_energymonitoring_EnergyMonitoringCommandServiceImpl ..> Backend_energymonitoring_EnergyMonitoringApplicationService
+Backend_energymonitoring_EnergyMonitoringCommandServiceImpl ..> Backend_energymonitoring_EnergyMonitoringCommandService
+Backend_energymonitoring_EnergyMonitoringCommandServiceImpl ..> Backend_energymonitoring_EnergySamplingSettingsService
+Backend_energymonitoring_EnergyMonitoringQueryServiceImpl ..> Backend_energymonitoring_EnergyMonitoringApplicationService
+Backend_energymonitoring_EnergyMonitoringQueryServiceImpl ..> Backend_energymonitoring_EnergyMonitoringQueryService
+Backend_energymonitoring_EnergyMonitoringQueryServiceImpl ..> Backend_energymonitoring_EnergySamplingSettingsService
+
+' Layer relationship completion: every declared type participates in this layer diagram.
+Backend_energymonitoring_EnergyMonitoringCommandServiceImpl ..> Backend_energymonitoring_EnergyReadingRecorderService
+Backend_energymonitoring_EnergyMonitoringCommandServiceImpl ..> Backend_energymonitoring_EnergyReadingSchedulerService
+Backend_energymonitoring_EnergyThresholdExceededEventHandler ..> Backend_energymonitoring_EnergyMonitoringApplicationService : after commit
+
+@enduml

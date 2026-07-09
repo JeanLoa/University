@@ -1,0 +1,63 @@
+@startuml
+title LowCortisol WebApp - Support Frontend Application Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Support / Application" {
+  package "Application Commands" {
+    class "CreateSupportTicketDto" as Frontend_support_CreateSupportTicketDto <<Command DTO>> {
+      + title
+      + description
+      + category
+      + siteId
+    }
+
+    class "UpdateSupportTicketDto" as Frontend_support_UpdateSupportTicketDto <<Command DTO>> {
+      + ticketId
+      + status
+    }
+
+    class "SendSupportMessageDto" as Frontend_support_SendSupportMessageDto <<Command DTO>> {
+      + ticketId
+      + content
+    }
+  }
+
+  package "Facade and Store" {
+    class "SupportFacade" as Frontend_support_SupportFacade <<Facade>> {
+      - supportApiService
+      + getTickets()
+      + createTicket(payload)
+      + updateTicket(payload)
+      + sendMessage(payload)
+      + getAgents()
+      + getArticles()
+      + getConversations()
+      + getConversationByTicket(ticketId)
+      + getSummary()
+    }
+
+    class "SupportStore" as Frontend_support_SupportStore <<Store>> {
+      + tickets
+      + agents
+      + articles
+      + conversations
+      + summary
+      + loadSupport()
+      + createTicket(payload)
+      + resolveTicket(ticket)
+      + closeTicket(ticket)
+      + sendMessage(ticket, content)
+    }
+  }
+}
+
+Frontend_support_SupportStore --> Frontend_support_SupportFacade
+Frontend_support_SupportFacade ..> Frontend_support_CreateSupportTicketDto
+Frontend_support_SupportFacade ..> Frontend_support_UpdateSupportTicketDto
+Frontend_support_SupportFacade ..> Frontend_support_SendSupportMessageDto
+
+@enduml

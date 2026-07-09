@@ -1,0 +1,49 @@
+@startuml
+title LowCortisol WebApp - IAM Frontend Domain Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "IAM / Domain" {
+  package "Domain / Model" {
+    class "AccessProfile" as Frontend_iam_AccessProfile <<Entity>> {
+      - _name: AccessProfileName
+      - _description: string
+      + constructor: (props:
+      + get: name(): AccessProfileName
+      + get: description(): string
+      + get: isOwner(): boolean
+      + get: isAdmin(): boolean
+      + get: isMember(): boolean
+      + get: isGuest(): boolean
+    }
+    class "AccessProfileName" as Frontend_iam_AccessProfileName <<type>> {
+      + 'OWNER' | 'ADMIN' | 'MEMBER' | 'GUEST'
+    }
+    class "User" as Frontend_iam_User <<Entity>> {
+      - _fullName: string
+      - _email: string
+      - _accessProfileId: number
+      - _accessProfileName: string
+      - _createdAt: string
+      + constructor: (props:
+      + get: fullName(): string
+      + get: email(): string
+      + get: accessProfileId(): number
+      + get: accessProfileName(): string
+      + get: createdAt(): string
+      + get: initials(): string
+    }
+  }
+}
+
+
+
+' Layer relationship completion: every declared type participates in this layer diagram.
+Frontend_iam_AccessProfile ..> Frontend_iam_AccessProfileName
+Frontend_iam_AccessProfile ..> Frontend_iam_AccessProfileName
+Frontend_iam_AccessProfile ..> Frontend_iam_User
+
+@enduml

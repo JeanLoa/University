@@ -1,0 +1,45 @@
+@startuml
+title ElectroCorp Platform - Energy Monitoring Backend Infrastructure Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Energy Monitoring / Infrastructure" {
+  package "Infrastructure / Export" {
+    class "EnergyReadingsCsvExporter" as Backend_energymonitoring_EnergyReadingsCsvExporter <<Class>> {
+      + export(List<EnergyReading> readings) : byte[]
+      - sanitize(String value) : String
+    }
+  }
+  package "Infrastructure / JPA" {
+    class "EnergyMonitoringJpaTableNames" as Backend_energymonitoring_EnergyMonitoringJpaTableNames <<Class>> {
+      + ENERGY_READINGS: String
+      - EnergyMonitoringJpaTableNames()
+    }
+    class "EnergyMonitoringQueryHints" as Backend_energymonitoring_EnergyMonitoringQueryHints <<Class>> {
+      + FIND_BY_USER: String
+      + FIND_BY_DEVICE: String
+      + FIND_BY_DATE_RANGE: String
+      - EnergyMonitoringQueryHints()
+    }
+  }
+  package "Infrastructure / JPA Repositories" {
+    interface "JpaEnergyDeviceUsageStateRepository" as Backend_energymonitoring_JpaEnergyDeviceUsageStateRepository <<interface>> {
+    }
+    interface "JpaEnergyReadingRepository" as Backend_energymonitoring_JpaEnergyReadingRepository <<interface>> {
+    }
+  }
+}
+
+
+
+' Layer relationship completion: every declared type participates in this layer diagram.
+Backend_energymonitoring_JpaEnergyDeviceUsageStateRepository ..> Backend_energymonitoring_EnergyReadingsCsvExporter
+Backend_energymonitoring_JpaEnergyDeviceUsageStateRepository ..> Backend_energymonitoring_EnergyMonitoringJpaTableNames
+Backend_energymonitoring_JpaEnergyDeviceUsageStateRepository ..> Backend_energymonitoring_EnergyMonitoringQueryHints
+Backend_energymonitoring_JpaEnergyDeviceUsageStateRepository ..> Backend_energymonitoring_EnergyReadingsCsvExporter
+Backend_energymonitoring_JpaEnergyDeviceUsageStateRepository ..> Backend_energymonitoring_JpaEnergyReadingRepository
+
+@enduml

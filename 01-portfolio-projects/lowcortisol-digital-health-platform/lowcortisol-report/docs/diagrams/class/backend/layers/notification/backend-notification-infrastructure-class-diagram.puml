@@ -1,0 +1,46 @@
+@startuml
+title LowCortisol Platform - Notification Backend Infrastructure Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Notification / Infrastructure" {
+  package "Infrastructure / EF Core" {
+    class "NotificationJpaTableNames" as Backend_notification_NotificationJpaTableNames <<Class>> {
+      + ALERTS: String
+      + ALERT_RULES: String
+      + NOTIFICATION_PREFERENCES: String
+      - NotificationJpaTableNames()
+    }
+    class "NotificationQueryHints" as Backend_notification_NotificationQueryHints <<Class>> {
+      + FIND_ALERTS_BY_USER: String
+      + FIND_ALERT_RULES_BY_USER: String
+      + FIND_PREFERENCE_BY_USER: String
+      - NotificationQueryHints()
+    }
+  }
+  package "Infrastructure / EF Core Repositories" {
+    interface "JpaAlertRepository" as Backend_notification_JpaAlertRepository <<interface>> {
+    }
+    interface "JpaAlertRuleProfileRepository" as Backend_notification_JpaAlertRuleProfileRepository <<interface>> {
+    }
+    interface "JpaAlertRuleRepository" as Backend_notification_JpaAlertRuleRepository <<interface>> {
+    }
+    interface "JpaNotificationPreferenceRepository" as Backend_notification_JpaNotificationPreferenceRepository <<interface>> {
+    }
+  }
+}
+
+
+
+' Layer relationship completion: every declared type participates in this layer diagram.
+Backend_notification_JpaAlertRepository ..> Backend_notification_NotificationJpaTableNames
+Backend_notification_JpaAlertRepository ..> Backend_notification_NotificationQueryHints
+Backend_notification_JpaAlertRepository ..> Backend_notification_NotificationJpaTableNames
+Backend_notification_JpaAlertRepository ..> Backend_notification_JpaAlertRuleProfileRepository
+Backend_notification_JpaAlertRepository ..> Backend_notification_JpaAlertRuleRepository
+Backend_notification_JpaAlertRepository ..> Backend_notification_JpaNotificationPreferenceRepository
+
+@enduml

@@ -1,0 +1,53 @@
+<section class="auth-page">
+  <article class="auth-card">
+    <p class="eyebrow">{{ 'auth.loginEyebrow' | translate }}</p>
+
+    <h1>{{ 'auth.loginTitle' | translate }}</h1>
+
+    <p class="subtitle">
+      {{ 'auth.loginSubtitle' | translate }}
+    </p>
+
+    <form class="auth-form" (ngSubmit)="onSubmit()">
+      <label>
+        {{ 'auth.email' | translate }}
+        <input
+          type="email"
+          name="email"
+          [(ngModel)]="email"
+          autocomplete="email"
+          required
+        />
+      </label>
+
+      <label>
+        {{ 'auth.password' | translate }}
+        <input
+          type="password"
+          name="password"
+          [(ngModel)]="password"
+          autocomplete="current-password"
+          required
+        />
+      </label>
+
+      <app-button type="submit" variant="create" [disabled]="iamFacade.loading()" [block]="true">
+        @if (iamFacade.loading()) {
+          {{ 'common.loading' | translate }}
+        } @else {
+          {{ 'auth.signIn' | translate }}
+        }
+      </app-button>
+    </form>
+
+    <div class="links">
+      <a routerLink="/iam/recover-password">
+        {{ 'auth.forgotPassword' | translate }}
+      </a>
+
+      <a routerLink="/iam/register">
+        {{ 'auth.createAccount' | translate }}
+      </a>
+    </div>
+  </article>
+</section>

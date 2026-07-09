@@ -1,0 +1,237 @@
+@startuml
+title LowCortisol WebApp - Device Control Frontend Infrastructure Layer
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Device Control / Infrastructure" {
+  package "Infrastructure / API Services" {
+    class "DeviceGroupsApiService" as Frontend_device_control_DeviceGroupsApiService <<API Service>> {
+      - resourcePath: string
+      + constructor: (
+      - http: HttpClient
+      + apiBaseUrl: string
+      + findAllForCurrentUser() : Observable<DeviceGroupResponse[]>
+      + create(resource: DeviceGroupResource) : Observable<DeviceGroupResponse>
+      + patch: (
+      + groupId: number
+      + resource: Partial<DeviceGroupResource>
+      + executeAction: (payload:
+      + delete(id: number) : Observable<void>
+    }
+    class "DevicesApiService" as Frontend_device_control_DevicesApiService <<API Service>> {
+      + constructor: (
+      + http: HttpClient
+      + apiBaseUrl: string
+      + findAllForCurrentUser() : Observable<DeviceResponse[]>
+      + toggle: (payload:
+      + updateStatus: (payload:
+    }
+    class "OperationModesApiService" as Frontend_device_control_OperationModesApiService <<API Service>> {
+      - endpoint: string
+      + constructor: (
+      - http: HttpClient
+      + apiBaseUrl: string
+      + findAllForCurrentUser() : Observable<OperationModeResponse[]>
+      + create(resource: OperationModeResource) : Observable<OperationModeResponse>
+      + preview(modeId: number) : Observable<OperationModePreviewResponse>
+      + activate(modeId: number) : Observable<OperationModeActivationResponse>
+      + archive(modeId: number) : Observable<void>
+    }
+    class "RoutinesApiService" as Frontend_device_control_RoutinesApiService <<API Service>> {
+      - resourcePath: string
+      + constructor: (
+      - http: HttpClient
+      + apiBaseUrl: string
+      + findAllForCurrentUser() : Observable<RoutineResponse[]>
+      + create(resource: RoutineResource) : Observable<RoutineResponse>
+      + updateStatus: (payload:
+      + execute(routineId: number) : Observable<RoutineResponse>
+      + delete(routineId: number) : Observable<void>
+    }
+  }
+  package "Infrastructure / Assemblers" {
+    class "DeviceAssembler" as Frontend_device_control_DeviceAssembler <<Assembler>> {
+      + override: toEntity(response: DeviceResponse): Device
+      + override: toResource(entity: Device): DeviceResource
+    }
+    class "DeviceGroupAssembler" as Frontend_device_control_DeviceGroupAssembler <<Assembler>> {
+      + override: toEntity(response: DeviceGroupResponse): DeviceGroup
+      + override: toResource(entity: DeviceGroup): DeviceGroupResource
+    }
+    class "OperationModeAssembler" as Frontend_device_control_OperationModeAssembler <<Assembler>> {
+      + toEntity(response: OperationModeResponse) : OperationMode
+      + toPreview(response: OperationModePreviewResponse) : OperationModePreview
+      + toActivation(response: OperationModeActivationResponse) : OperationModeActivation
+    }
+    class "RoutineAssembler" as Frontend_device_control_RoutineAssembler <<Assembler>> {
+      + override: toEntity(response: RoutineResponse): Routine
+      + override: toResource(entity: Routine): RoutineResource
+    }
+  }
+  package "Infrastructure / Resources" {
+    interface "DeviceGroupResource" as Frontend_device_control_DeviceGroupResource <<interface>> {
+      + userId?: number
+      + name: string
+      + description: string
+      + deviceIds: number[]
+      + createdAt: string
+    }
+    interface "DeviceResource" as Frontend_device_control_DeviceResource <<interface>> {
+      + userId?: number
+      + name: string
+      + room?: string | null
+      + type: DeviceType
+      + powerWatts: number
+      + status: DeviceStatus
+      + createdAt: string
+    }
+    interface "OperationModeResource" as Frontend_device_control_OperationModeResource <<interface>> {
+      + userId?: number
+      + locationId: number
+      + name: string
+      + description: string
+      + roomIds: number[]
+      + groupIds: number[]
+      + deviceIds: number[]
+      + turnOnDeviceIds: number[]
+      + turnOffDeviceIds: number[]
+      + keepOnDeviceIds: number[]
+      + routineIds: number[]
+      + routinesToEnableIds: number[]
+      + routinesToDisableIds: number[]
+      + goalIds: number[]
+      + internalRoutines: OperationModeRoutine[]
+      + allDay: boolean
+      + startsAt: string
+      + endsAt: string
+    }
+    interface "RoutineResource" as Frontend_device_control_RoutineResource <<interface>> {
+      + userId?: number
+      + deviceId?: number | null
+      + groupId?: number | null
+      + targetType: RoutineTargetType
+      + targetId: number
+      + name: string
+      + action: RoutineAction
+      + time: string
+      + repeatType?: RoutineRepeatType
+      + daysOfWeek?: string | null
+      + intervalDays?: number | null
+      + startsOn?: string | null
+      + enabled?: boolean
+    }
+  }
+  package "Infrastructure / Responses" {
+    interface "DeviceGroupResponse" as Frontend_device_control_DeviceGroupResponse <<interface>> {
+      + userId: number
+      + name: string
+      + description?: string | null
+      + deviceIds?: number[] | null
+      + createdAt?: string | null
+    }
+    interface "DeviceResponse" as Frontend_device_control_DeviceResponse <<interface>> {
+      + userId: number
+      + name: string
+      + room?: string | null
+      + type: DeviceType
+      + powerWatts: number
+      + status: DeviceStatus
+      + createdAt: string
+    }
+    interface "OperationModeActivationResponse" as Frontend_device_control_OperationModeActivationResponse <<interface>> {
+      + mode: OperationModeResponse
+      + turnedOnDeviceIds: number[]
+      + turnedOffDeviceIds: number[]
+      + ignoredRemovedDeviceIds: number[]
+      + ignoredMaintenanceDeviceIds: number[]
+      + enabledRoutineIds: number[]
+      + disabledRoutineIds: number[]
+      + evidence: string
+      + explanation: string
+      + recommendedAction: string
+    }
+    interface "OperationModePreviewResponse" as Frontend_device_control_OperationModePreviewResponse <<interface>> {
+      + modeId: number
+      + locationId: number
+      + locationName: string
+      + affectedDeviceIds: number[]
+      + ignoredRemovedDeviceIds: number[]
+      + ignoredMaintenanceDeviceIds: number[]
+      + roomIds: number[]
+      + groupIds: number[]
+      + routineIds: number[]
+      + internalRoutineCount?: number
+      + goalIds: number[]
+      + ruleProfileId: number | null
+      + preferenceId: number | null
+      + evidence: string
+      + explanation: string
+      + recommendedAction: string
+    }
+    interface "OperationModeResponse" as Frontend_device_control_OperationModeResponse <<interface>> {
+      + id: number
+      + userId: number
+      + locationId: number
+      + name: string
+      + description: string
+      + status: OperationModeStatus
+      + roomIds: number[]
+      + groupIds: number[]
+      + deviceIds: number[]
+      + turnOnDeviceIds: number[]
+      + turnOffDeviceIds: number[]
+      + keepOnDeviceIds: number[]
+      + routineIds: number[]
+      + routinesToEnableIds: number[]
+      + routinesToDisableIds: number[]
+      + goalIds: number[]
+      + internalRoutines: OperationModeRoutine[]
+      + allDay: boolean
+    }
+    interface "RoutineResponse" as Frontend_device_control_RoutineResponse <<interface>> {
+      + userId: number
+      + deviceId?: number | null
+      + groupId?: number | null
+      + targetType?: RoutineTargetType | null
+      + targetId?: number | null
+      + targetName?: string | null
+      + name: string
+      + action: RoutineAction
+      + time: string
+      + repeatType?: RoutineRepeatType | null
+      + daysOfWeek?: string | null
+      + intervalDays?: number | null
+      + startsOn?: string | null
+      + applicableDeviceCount?: number | null
+      + blockedDeviceCount?: number | null
+      + enabled: boolean
+    }
+  }
+}
+
+Frontend_device_control_DeviceAssembler ..> Frontend_device_control_DeviceResource
+Frontend_device_control_DeviceAssembler ..> Frontend_device_control_DeviceResponse
+Frontend_device_control_DeviceGroupAssembler ..> Frontend_device_control_DeviceGroupResource
+Frontend_device_control_DeviceGroupAssembler ..> Frontend_device_control_DeviceGroupResponse
+Frontend_device_control_DeviceGroupsApiService ..> Frontend_device_control_DeviceGroupResource
+Frontend_device_control_DeviceGroupsApiService ..> Frontend_device_control_DeviceGroupResponse
+Frontend_device_control_DevicesApiService ..> Frontend_device_control_DeviceAssembler
+Frontend_device_control_DevicesApiService ..> Frontend_device_control_DeviceResource
+Frontend_device_control_DevicesApiService ..> Frontend_device_control_DeviceResponse
+Frontend_device_control_OperationModeAssembler ..> Frontend_device_control_OperationModeActivationResponse
+Frontend_device_control_OperationModeAssembler ..> Frontend_device_control_OperationModePreviewResponse
+Frontend_device_control_OperationModeAssembler ..> Frontend_device_control_OperationModeResponse
+Frontend_device_control_OperationModesApiService ..> Frontend_device_control_OperationModeActivationResponse
+Frontend_device_control_OperationModesApiService ..> Frontend_device_control_OperationModePreviewResponse
+Frontend_device_control_OperationModesApiService ..> Frontend_device_control_OperationModeResource
+Frontend_device_control_OperationModesApiService ..> Frontend_device_control_OperationModeResponse
+Frontend_device_control_RoutineAssembler ..> Frontend_device_control_RoutineResource
+Frontend_device_control_RoutineAssembler ..> Frontend_device_control_RoutineResponse
+Frontend_device_control_RoutinesApiService ..> Frontend_device_control_RoutineResource
+Frontend_device_control_RoutinesApiService ..> Frontend_device_control_RoutineResponse
+
+
+@enduml

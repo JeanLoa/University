@@ -1,0 +1,89 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+skinparam wrapWidth 135
+skinparam maxMessageSize 70
+skinparam nodesep 35
+skinparam ranksep 45
+skinparam ArrowColor #8A8A8A
+skinparam ArrowFontColor #666666
+skinparam ArrowFontStyle bold
+skinparam ArrowThickness 1
+skinparam rectangleRoundCorner 0
+skinparam rectangleBorderThickness 0
+skinparam rectangleFontColor #FFFFFF
+skinparam rectangleFontStyle plain
+skinparam rectangle {
+  BorderThickness 0
+  MinimumWidth 155
+  Padding 8
+}
+skinparam database {
+  MinimumWidth 165
+  Padding 8
+}
+skinparam rectangle<<SystemBoundary>> {
+  BackgroundColor transparent
+  BorderColor #4A4A4A
+  BorderThickness 2
+  BorderStyle dashed
+  FontColor #333333
+  FontStyle bold
+  MinimumWidth 640
+  Padding 12
+}
+skinparam databaseBackgroundColor #C9332B
+skinparam databaseBorderColor #C9332B
+skinparam databaseFontColor #FFFFFF
+skinparam databaseFontStyle plain
+hide stereotype
+top to bottom direction
+
+title ElectroCorp - C4 Container Diagram
+
+rectangle "<b>ElectroCorp User</b>\n<i>[Person]</i>\n\nUses public and authenticated product flows." as User #0B5593
+
+rectangle "<b>ElectroCorp Product Boundary</b>\n<i>[Software System]</i>" <<SystemBoundary>> {
+  rectangle "<b>Landing Page</b>\n<i>[Static Website]</i>\n\nPublic value proposition, plans and call-to-action flows." as Website #3498DB
+  rectangle "<b>ElectroCorp WebApp</b>\n<i>[Angular Source App]</i>\n\nSource project with routes, views, facades, stores and API clients." as WebApp #3498DB
+  rectangle "<b>ElectroCorp SPA</b>\n<i>[Compiled Angular SPA]</i>\n\nBrowser runtime built from the WebApp and served as static files." as Spa #3498DB
+
+  rectangle "<b>Backend API</b>\n<i>[Spring Boot Container]</i>\n\nModular monolith organized by DDD bounded contexts." as Api #3498DB
+  database "<b>ElectroCorp Database</b>\n<i>[PostgreSQL Container]</i>\n\nPersists users, plans, workplaces, devices, readings, reports and tickets." as Db
+}
+
+rectangle "<b>Hosting Platform</b>\n<i>[External Platform]</i>\n\nGitHub Pages hosts the landing page; Render serves the SPA and backend service." as Hosting #7F8C8D
+rectangle "<b>Payment Provider</b>\n<i>[External System]</i>\n\nSupports subscription payment flow." as Payment #7F8C8D
+rectangle "<b>Email Provider</b>\n<i>[External System]</i>\n\nSupports alert and report delivery." as Mail #7F8C8D
+
+User --> Website : browses plans\n[Browser]
+Website --> Spa : selected plan\n[CTA Link]
+User --> Spa : opens app\n[Browser]
+WebApp --> Spa : builds into\n[Angular build]
+Spa --> Api : REST\n[JSON / HTTPS]
+Api --> Db : data access\n[JPA / SQL]
+
+Website --> Hosting : hosted on
+Spa --> Hosting : served by
+Api --> Hosting : runs on
+Api --> Payment : payment status
+Api --> Mail : messages
+
+Website -[hidden]right- WebApp
+WebApp -[hidden]right- Spa
+Spa -[hidden]down- Api
+Api -[hidden]right- Db
+Hosting -[hidden]right- Payment
+Payment -[hidden]right- Mail
+
+legend right
+  <b>Legend</b>
+  |<#0B5593> person |
+  |<#3498DB> container |
+  |<#C9332B> database |
+  |<#7F8C8D> external container |
+endlegend
+
+@enduml
