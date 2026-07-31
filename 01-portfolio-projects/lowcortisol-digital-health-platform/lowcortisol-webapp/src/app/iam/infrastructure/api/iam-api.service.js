@@ -1,10 +1,19 @@
 import { AuthSessionService } from "../../../shared/application/services/auth-session.service";
 import { LocalPlatformDataService } from "../../../shared/infrastructure/data/local-platform-data.service";
+import { SignInResource } from "../resource/sign-in.resource";
+import { IamApiEndpoint } from "./iam-api.endpoint";
 
 function normalizeUser(user) {
     if (!user) return null;
 
-    const names = String(user.fullName || "")
+    const fullName = String(
+        user.fullName ||
+        [user.firstName, user.lastName].filter(Boolean).join(" ")
+    ).trim();
+    const status = user.status || (user.isActive === false ? "inactive" : "active");
+    const role = String(user.role || "operator").toLowerCase();
+    const accessProfileId = user.accessProfileId || `PROFILE-${role.toUpperCase()}`;
+    const names = fullName
         .split(" ")
         .filter(Boolean);
 
@@ -16,8 +25,11 @@ function normalizeUser(user) {
 
     return {
         ...user,
+        fullName,
+        status,
+        accessProfileId,
         initials: initials || "U",
-        statusLabel: user.status === "active" ? "Activo" : "Inactivo",
+        statusLabel: status === "active" ? "Activo" : "Inactivo",
     };
 }
 
@@ -39,40 +51,36 @@ function normalizeAccessProfile(profile) {
 }
 
 export class IamApiService {
+    constructor() {
+        this.iamApiEndpoint = new IamApiEndpoint();
+    }
+
     async signIn(credentials) {
-        const users = LocalPlatformDataService.list("users", {
-            email: credentials.email,
-            password: credentials.password,
+        const response = await this.iamApiEndpoint.signIn(
+            new SignInResource(credentials)
+        );
+        const user = normalizeUser(response?.user);
+        const role = String(response?.user?.role || "operator").toLowerCase();
+        const accessProfile = normalizeAccessProfile({
+            id: user.accessProfileId,
+            role,
+            permissions: [],
         });
 
-        const user = users[0];
-
-        if (!user) {
-            throw new Error("Correo o contrasena incorrectos.");
-        }
-
-        if (user.status !== "active") {
-            throw new Error("La cuenta no esta activa.");
-        }
-
-        const accessProfile = LocalPlatformDataService.getById(
-            "accessProfiles",
-            user.accessProfileId
-        );
-
         const session = {
-            id: `SESSION-${Date.now()}`,
+            id: `SESSION-${user.id}`,
             userId: user.id,
-            token: `session-token-${Date.now()}`,
+            token: response.token,
+            expiresAt: response.expiresAt,
             isActive: true,
             createdAt: new Date().toISOString(),
         };
 
-        AuthSessionService.signIn(normalizeUser(user));
+        AuthSessionService.signIn(user);
 
         return {
-            user: normalizeUser(user),
-            accessProfile: normalizeAccessProfile(accessProfile),
+            user,
+            accessProfile,
             session,
             message: "Inicio de sesion correcto.",
         };

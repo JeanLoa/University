@@ -3,7 +3,7 @@ import { UserAssembler } from "../assembler/user.assembler";
 
 export class IamApiEndpoint extends BaseApiEndpoint {
     constructor() {
-        super("/iam", new UserAssembler());
+        super("/api/v1/authentication", new UserAssembler());
     }
 
     async signIn(resource) {

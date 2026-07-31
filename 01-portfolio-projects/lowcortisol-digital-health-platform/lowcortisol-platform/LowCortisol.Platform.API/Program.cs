@@ -119,6 +119,7 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
 
 builder.Services.AddControllers();
 builder.Services.AddProblemDetails();
+builder.Services.AddHealthChecks();
 builder.Services.AddLocalization();
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"));
 builder.Services.Configure<RouteOptions>(options => options.LowercaseUrls = true);
@@ -311,5 +312,6 @@ if (!useInMemory && (applyMigrationsOnStartup || seedOnStartup))
 app.UseHttpsRedirection();
 app.UseCors(frontendCorsPolicy);
 app.UseAuthorization();
+app.MapHealthChecks("/health");
 app.MapControllers();
 app.Run();

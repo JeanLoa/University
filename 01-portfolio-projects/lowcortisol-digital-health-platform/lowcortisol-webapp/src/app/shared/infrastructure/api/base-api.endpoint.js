@@ -72,6 +72,17 @@ export class BaseApiEndpoint {
         });
     }
 
+    async getFromPath(path) {
+        return this.request(path);
+    }
+
+    async postToPath(path, resource) {
+        return this.request(path, {
+            method: "POST",
+            body: resource === undefined ? undefined : JSON.stringify(resource),
+        });
+    }
+
     async request(path = "", options = {}) {
         const requestUrl = `${this.url}${path}`;
 
@@ -86,7 +97,12 @@ export class BaseApiEndpoint {
         const data = await this.parseResponse(response);
 
         if (!response.ok) {
-            throw new Error(data?.message || `Error HTTP ${response.status}`);
+            throw new Error(
+                data?.detail ||
+                data?.message ||
+                data?.title ||
+                `Error HTTP ${response.status}`
+            );
         }
 
         return data;
