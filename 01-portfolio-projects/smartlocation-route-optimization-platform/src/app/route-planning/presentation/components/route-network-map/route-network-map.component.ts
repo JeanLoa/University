@@ -65,6 +65,7 @@ export class RouteNetworkMapComponent implements AfterViewInit, OnChanges, OnDes
 
   private map: MapLibreMap | null = null;
   private mapLoaded = false;
+  private mapLoadTimeoutId: number | null = null;
   private lastFittedTerritoryId = '';
 
   constructor(
@@ -92,6 +93,7 @@ export class RouteNetworkMapComponent implements AfterViewInit, OnChanges, OnDes
   }
 
   ngOnDestroy(): void {
+    this.clearMapLoadTimeout();
     this.map?.remove();
     this.map = null;
   }
@@ -237,7 +239,7 @@ export class RouteNetworkMapComponent implements AfterViewInit, OnChanges, OnDes
     const x = viewBoxX + ((event.clientX - bounds.left) / bounds.width) * viewBoxWidth;
     const y = viewBoxY + ((event.clientY - bounds.top) / bounds.height) * viewBoxHeight;
 
-    this.mapPointSelected.emit(this.geoForPosition({ x, y }));
+    this.emitMapPointIfInsideSelection(this.geoForPosition({ x, y }));
   }
 
   protected mapRendererLabel(): string {
@@ -282,8 +284,20 @@ export class RouteNetworkMapComponent implements AfterViewInit, OnChanges, OnDes
         });
 
         this.map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
-        this.map.on('load', () => {
+        this.map.on('click', this.handleMapClick);
+        this.mapLoadTimeoutId = window.setTimeout(() => {
           this.zone.run(() => {
+            if (!this.mapLoaded) {
+              this.mapRendererStatus.set('fallback');
+            }
+          });
+        }, 15000);
+        this.map.on('error', (event) => {
+          console.error('MapLibre could not render the real map.', event.error ?? event);
+        });
+        this.map.on('style.load', () => {
+          this.zone.run(() => {
+            this.clearMapLoadTimeout();
             this.mapLoaded = true;
             this.mapRendererStatus.set('ready');
             this.addMapLibreLayers();
@@ -291,22 +305,69 @@ export class RouteNetworkMapComponent implements AfterViewInit, OnChanges, OnDes
           });
         });
       });
-    } catch {
+    } catch (error) {
+      console.error('MapLibre could not initialize.', error);
       this.mapRendererStatus.set('fallback');
     }
   }
 
-  private createBaseMapStyle(): string {
-    return 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json';
-  }
-
-  private addMapLibreLayers(): void {
-    if (!this.map || !this.geoJsonLayers) {
+  private clearMapLoadTimeout(): void {
+    if (this.mapLoadTimeoutId === null) {
       return;
     }
 
+    window.clearTimeout(this.mapLoadTimeoutId);
+    this.mapLoadTimeoutId = null;
+  }
+
+  private createBaseMapStyle(): Record<string, unknown> {
+    return {
+      version: 8,
+      sources: {
+        'carto-positron': {
+          type: 'raster',
+          tiles: [
+            'https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png',
+            'https://b.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png',
+            'https://c.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png',
+            'https://d.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png',
+          ],
+          tileSize: 256,
+          minzoom: 0,
+          maxzoom: 20,
+          attribution:
+            '&copy; OpenStreetMap contributors &copy; CARTO',
+        },
+      },
+      layers: [
+        {
+          id: 'carto-background',
+          type: 'background',
+          paint: {
+            'background-color': '#f4f2ec',
+          },
+        },
+        {
+          id: 'carto-positron',
+          type: 'raster',
+          source: 'carto-positron',
+          minzoom: 0,
+          maxzoom: 22,
+        },
+      ],
+    };
+  }
+
+  private addMapLibreLayers(): void {
+    if (!this.map) {
+      return;
+    }
+
+    const routeLayer =
+      this.geoJsonLayers?.route ?? this.emptyFeatureCollection();
+
     this.upsertSource('sl-territory-source', this.selectedTerritoryFeatureCollection());
-    this.upsertSource('sl-route-source', this.geoJsonLayers.route);
+    this.upsertSource('sl-route-source', routeLayer);
     this.upsertSource('sl-picked-points-source', this.pickedPointFeatureCollection());
 
     this.addLayerOnce({
@@ -315,7 +376,7 @@ export class RouteNetworkMapComponent implements AfterViewInit, OnChanges, OnDes
       source: 'sl-territory-source',
       paint: {
         'fill-color': '#4ee6c1',
-        'fill-opacity': 0.085,
+        'fill-opacity': 0.26,
       },
     });
     this.addLayerOnce({
@@ -323,10 +384,10 @@ export class RouteNetworkMapComponent implements AfterViewInit, OnChanges, OnDes
       type: 'line',
       source: 'sl-territory-source',
       paint: {
-        'line-color': '#4ee6c1',
+        'line-color': '#159f85',
         'line-dasharray': [2, 2],
-        'line-opacity': 0.88,
-        'line-width': 1.9,
+        'line-opacity': 1,
+        'line-width': 3,
       },
     });
     this.addLayerOnce({
@@ -351,25 +412,6 @@ export class RouteNetworkMapComponent implements AfterViewInit, OnChanges, OnDes
       },
     });
     this.addLayerOnce({
-      id: 'sl-route-label',
-      type: 'symbol',
-      source: 'sl-route-source',
-      layout: {
-        'symbol-placement': 'line',
-        'symbol-spacing': 520,
-        'text-field': ['get', 'label'],
-        'text-font': ['Open Sans Regular'],
-        'text-size': 11.5,
-        'text-rotation-alignment': 'map',
-      },
-      paint: {
-        'text-color': '#073c37',
-        'text-halo-color': '#ffffff',
-        'text-halo-width': 2,
-        'text-opacity': 0.86,
-      },
-    });
-    this.addLayerOnce({
       id: 'sl-picked-points-halo',
       type: 'circle',
       source: 'sl-picked-points-source',
@@ -391,33 +433,19 @@ export class RouteNetworkMapComponent implements AfterViewInit, OnChanges, OnDes
         'circle-stroke-width': 2,
       },
     });
-    this.addLayerOnce({
-      id: 'sl-picked-points-label',
-      type: 'symbol',
-      source: 'sl-picked-points-source',
-      layout: {
-        'text-field': ['get', 'label'],
-        'text-font': ['Open Sans Regular'],
-        'text-offset': [1.15, 0],
-        'text-size': 12,
-      },
-      paint: {
-        'text-color': '#0d2f2b',
-        'text-halo-color': '#ffffff',
-        'text-halo-width': 1.8,
-      },
-    });
-
-    this.map.on('click', this.handleMapClick);
   }
 
   private syncMapLibre(): void {
-    if (!this.map || !this.mapLoaded || !this.geoJsonLayers) {
+    if (!this.map || !this.mapLoaded) {
       return;
     }
 
+    const routeLayer =
+      this.geoJsonLayers?.route ?? this.emptyFeatureCollection();
+
+    this.addMapLibreLayers();
     this.upsertSource('sl-territory-source', this.selectedTerritoryFeatureCollection());
-    this.upsertSource('sl-route-source', this.geoJsonLayers.route);
+    this.upsertSource('sl-route-source', routeLayer);
     this.upsertSource('sl-picked-points-source', this.pickedPointFeatureCollection());
     this.fitSelectedTerritory();
     this.map.resize();
@@ -451,10 +479,15 @@ export class RouteNetworkMapComponent implements AfterViewInit, OnChanges, OnDes
     });
   }
 
+  private emptyFeatureCollection(): GeoJsonFeatureCollection {
+    return {
+      type: 'FeatureCollection',
+      features: [],
+    };
+  }
+
   private selectedTerritoryFeatureCollection(): GeoJsonFeatureCollection {
-    const territories = this.focusTerritories.filter((territory) =>
-      this.hasRealBoundary(territory),
-    );
+    const territories = this.activeBoundaryTerritories();
 
     if (territories.length === 0) {
       return { type: 'FeatureCollection', features: [] };
@@ -553,13 +586,39 @@ export class RouteNetworkMapComponent implements AfterViewInit, OnChanges, OnDes
       return;
     }
 
-    this.zone.run(() =>
-      this.mapPointSelected.emit({
+    this.zone.run(() => {
+      this.emitMapPointIfInsideSelection({
         latitude: event.lngLat!.lat,
         longitude: event.lngLat!.lng,
-      }),
-    );
+      });
+    });
   };
+
+  private emitMapPointIfInsideSelection(point: GeoPoint): void {
+    const territories = this.activeBoundaryTerritories();
+
+    if (
+      territories.length === 0 ||
+      !territories.some((territory) =>
+        isPointInsidePolygon(point, territory.polygon ?? []),
+      )
+    ) {
+      return;
+    }
+
+    this.mapPointSelected.emit(point);
+  }
+
+  private activeBoundaryTerritories(): readonly MapTerritory[] {
+    const territories =
+      this.focusTerritories.length > 0
+        ? this.focusTerritories
+        : this.selectedTerritory
+          ? [this.selectedTerritory]
+          : [];
+
+    return territories.filter((territory) => this.hasRealBoundary(territory));
+  }
 
   private readonly handleNodeMouseEnter = (): void => {
     if (this.map) {
