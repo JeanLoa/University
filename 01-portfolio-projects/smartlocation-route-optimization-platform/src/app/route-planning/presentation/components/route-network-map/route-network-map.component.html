@@ -1,11 +1,9 @@
 <section class="network-map" aria-label="Mapa de red vial">
   <div class="map-toolbar">
     <div>
-      <span>{{
-        territoryRestricted ? (selectedTerritory?.label ?? 'Zona Lima') : 'Cobertura mundial'
-      }}</span>
+      <span>Cobertura mundial</span>
       <strong>Global Route Intelligence</strong>
-      <small>{{ territoryTrail }}</small>
+      <small>OpenStreetMap / seleccion libre</small>
     </div>
     <div class="map-legend" aria-label="Leyenda del mapa">
       <span><i class="legend-route"></i>Ruta</span>
@@ -26,9 +24,7 @@
         class="map-canvas"
         [attr.viewBox]="mapViewBox()"
         role="img"
-        [attr.aria-label]="
-          territoryRestricted ? 'Mapa vial de la zona seleccionada' : 'Mapa vial mundial'
-        "
+        aria-label="Mapa vial mundial"
         (click)="onFallbackMapClick($event)"
       >
         <defs>
@@ -56,25 +52,6 @@
           class="city-ridge city-ridge--east"
           d="M654 44 C700 174 736 232 773 340 C805 437 864 516 934 660"
         />
-
-        <g class="urban-block-layer">
-          @for (block of urbanBlocks(); track block.id) {
-            <rect
-              class="urban-block"
-              [attr.x]="block.x"
-              [attr.y]="block.y"
-              [attr.width]="block.width"
-              [attr.height]="block.height"
-              [attr.opacity]="block.intensity"
-            />
-          }
-        </g>
-
-        <g class="district-layer">
-          @for (territory of selectedTerritories(); track territory.id) {
-            <polygon class="district-bounds" [attr.points]="territoryPolygonPoints(territory)" />
-          }
-        </g>
 
         @if (routeHasPoints()) {
           <polyline class="route-glow" [attr.points]="routePoints()" filter="url(#routeGlow)" />
@@ -118,6 +95,6 @@
       {{ pickerMode === 'origin' ? 'origen' : 'destino' }}</span
     >
     <span>{{ roadRouteFooterLabel() }}</span>
-    <span>{{ territoryRestricted ? 'Limite territorial activo' : 'Seleccion libre global' }}</span>
+    <span>Seleccion libre global</span>
   </div>
 </section>

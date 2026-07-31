@@ -5,25 +5,6 @@
     <p>Busca dos lugares o marcalos directamente sobre el mapa.</p>
   </div>
 
-  <div class="scope-control" aria-label="Cobertura del mapa">
-    <button
-      type="button"
-      [class.is-active]="mapScope === 'global'"
-      (click)="mapScopeChanged.emit('global')"
-    >
-      <span>Mundo</span>
-      <small>Sin limites</small>
-    </button>
-    <button
-      type="button"
-      [class.is-active]="mapScope === 'territory'"
-      (click)="mapScopeChanged.emit('territory')"
-    >
-      <span>Zona Lima</span>
-      <small>Con contorno</small>
-    </button>
-  </div>
-
   <div class="search-stack" aria-label="Buscar ubicaciones">
     @for (role of searchRoles; track role) {
       <label
@@ -72,36 +53,6 @@
     }
   </div>
 
-  @if (mapScope === 'territory') {
-    <div class="territory-filter">
-      <div class="territory-filter__heading">
-        <span>Limitar interaccion</span>
-        <small>Los clics fuera del contorno se ignoran</small>
-      </div>
-      <div class="field-stack">
-        <label class="field">
-          <span>Provincia</span>
-          <app-ui-select
-            ariaLabel="Provincia"
-            [options]="provinceSelectOptions()"
-            [value]="selectedProvinceId"
-            (valueChanged)="provinceChanged.emit($event)"
-          />
-        </label>
-
-        <label class="field">
-          <span>Distrito</span>
-          <app-ui-select
-            ariaLabel="Distrito"
-            [options]="districtSelectOptions()"
-            [value]="selectedDistrictId"
-            (valueChanged)="districtChanged.emit($event)"
-          />
-        </label>
-      </div>
-    </div>
-  }
-
   <div class="free-point-grid" aria-label="Puntos seleccionados">
     <div class="free-point-card">
       <span>Origen marcado</span>
@@ -117,10 +68,7 @@
     </div>
   </div>
 
-  <p
-    class="route-status"
-    [class.is-alert]="roadRouteStatus === 'outside-territory' || roadRouteStatus === 'unavailable'"
-  >
+  <p class="route-status" [class.is-alert]="roadRouteStatus === 'unavailable'">
     {{ roadRouteStatusLabel() }}
   </p>
 

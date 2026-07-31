@@ -148,21 +148,6 @@
   stroke: rgba(154, 115, 41, 0.18);
 }
 
-.urban-block {
-  fill: #334155;
-  rx: 3;
-  stroke: rgba(43, 67, 57, 0.16);
-  stroke-width: 1;
-  vector-effect: non-scaling-stroke;
-}
-
-.district-bounds {
-  fill: rgba(34, 197, 94, 0.18);
-  stroke: rgba(134, 239, 172, 0.88);
-  stroke-width: 2;
-  vector-effect: non-scaling-stroke;
-}
-
 .route-glow,
 .route-line {
   fill: none;

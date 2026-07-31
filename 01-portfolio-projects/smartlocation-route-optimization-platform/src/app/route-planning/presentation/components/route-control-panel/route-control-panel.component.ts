@@ -2,7 +2,6 @@ import { Component, EventEmitter, Input, OnDestroy, Output } from '@angular/core
 import {
   AlgorithmOption,
   RouteAlgorithm,
-  RouteMapScope,
   RoutePointRole,
 } from '../../../domain/models/route-planning.model';
 import { GeoPoint } from '../../../domain/models/geo-point.model';
@@ -12,7 +11,6 @@ import {
   MapPlaceSearchStatus,
 } from '../../../domain/models/map-place.model';
 import { RoadRouteStatus } from '../../../domain/models/road-route.model';
-import { MapTerritory } from '../../../domain/models/map-territory.model';
 import {
   UiSelectComponent,
   UiSelectOption,
@@ -27,15 +25,10 @@ import {
 export class RouteControlPanelComponent implements OnDestroy {
   protected readonly searchRoles: readonly RoutePointRole[] = ['origin', 'destination'];
 
-  @Input() mapScope: RouteMapScope = 'global';
   @Input() selectedAlgorithm: RouteAlgorithm = 'astar';
   @Input() autoCalculateRoute = false;
   @Input() pickerMode: RoutePointRole = 'destination';
   @Input() algorithmOptions: readonly AlgorithmOption[] = [];
-  @Input() provinceOptions: readonly MapTerritory[] = [];
-  @Input() districtOptions: readonly MapTerritory[] = [];
-  @Input() selectedProvinceId = '';
-  @Input() selectedDistrictId = '';
   @Input() freeOriginPoint: GeoPoint | null = null;
   @Input() freeDestinationPoint: GeoPoint | null = null;
   @Input() originPlace: MapPlace | null = null;
@@ -49,9 +42,6 @@ export class RouteControlPanelComponent implements OnDestroy {
   @Input() roadRouteStatus: RoadRouteStatus = 'waiting-for-points';
   @Input() roadRouteError = '';
 
-  @Output() mapScopeChanged = new EventEmitter<RouteMapScope>();
-  @Output() provinceChanged = new EventEmitter<string>();
-  @Output() districtChanged = new EventEmitter<string>();
   @Output() algorithmChanged = new EventEmitter<RouteAlgorithm>();
   @Output() autoCalculateChanged = new EventEmitter<boolean>();
   @Output() pickerModeChanged = new EventEmitter<RoutePointRole>();
@@ -205,10 +195,7 @@ export class RouteControlPanelComponent implements OnDestroy {
 
   protected canCalculateRoadRoute(): boolean {
     return Boolean(
-      this.freeOriginPoint &&
-      this.freeDestinationPoint &&
-      this.roadRouteStatus !== 'loading' &&
-      this.roadRouteStatus !== 'outside-territory',
+      this.freeOriginPoint && this.freeDestinationPoint && this.roadRouteStatus !== 'loading',
     );
   }
 
@@ -224,30 +211,11 @@ export class RouteControlPanelComponent implements OnDestroy {
         return 'Ruta vial lista';
       case 'waiting-for-calculation':
         return 'Listo para calcular ruta';
-      case 'outside-territory':
-        return 'Marca puntos dentro del contorno';
       case 'unavailable':
         return 'Ruta no disponible';
       case 'waiting-for-points':
         return 'Marca origen y destino en el mapa';
     }
-  }
-
-  protected provinceSelectOptions(): readonly UiSelectOption[] {
-    return this.provinceOptions.map((province) => ({
-      id: province.id,
-      label: province.label,
-    }));
-  }
-
-  protected districtSelectOptions(): readonly UiSelectOption[] {
-    return [
-      { id: '', label: 'Todos los distritos' },
-      ...this.districtOptions.map((district) => ({
-        id: district.id,
-        label: district.label,
-      })),
-    ];
   }
 
   protected algorithmSelectOptions(): readonly UiSelectOption[] {

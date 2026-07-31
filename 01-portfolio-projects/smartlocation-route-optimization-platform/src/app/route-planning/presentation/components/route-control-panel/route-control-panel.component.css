@@ -16,9 +16,7 @@
 }
 
 .panel-heading__eyebrow,
-.control-group__label,
-.field > span,
-.territory-filter__heading > span {
+.control-group__label {
   color: var(--sl-text-muted);
   font-size: 0.68rem;
   font-weight: 650;
@@ -43,59 +41,7 @@ h1 {
   margin: 0.15rem 0 0;
 }
 
-.scope-control {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.35rem;
-  padding: 0.3rem;
-  border: 1px solid var(--sl-border);
-  border-radius: var(--sl-radius-md);
-  background: rgba(2, 6, 23, 0.52);
-}
-
-.scope-control button {
-  display: grid;
-  gap: 0.12rem;
-  min-height: 3.3rem;
-  padding: 0.5rem 0.65rem;
-  border: 1px solid transparent;
-  border-radius: var(--sl-radius-sm);
-  background: transparent;
-  color: var(--sl-text-muted);
-  cursor: pointer;
-  text-align: left;
-  transition:
-    border-color 180ms ease,
-    background 180ms ease,
-    color 180ms ease;
-}
-
-.scope-control button:hover {
-  color: var(--sl-text);
-}
-
-.scope-control button.is-active {
-  border-color: rgba(74, 222, 128, 0.32);
-  background: var(--sl-primary-soft);
-  color: var(--sl-text);
-}
-
-.scope-control span {
-  font-size: 0.82rem;
-  font-weight: 680;
-}
-
-.scope-control small {
-  color: var(--sl-text-subtle);
-  font-size: 0.68rem;
-}
-
-.scope-control button.is-active small {
-  color: #86efac;
-}
-
 .search-stack,
-.field-stack,
 .control-group {
   display: grid;
   gap: 0.7rem;
@@ -230,31 +176,6 @@ h1 {
 .place-search__results span {
   color: var(--sl-text-muted);
   font-size: 0.68rem;
-}
-
-.territory-filter {
-  display: grid;
-  gap: 0.8rem;
-  padding: 0.85rem;
-  border: 1px solid rgba(74, 222, 128, 0.2);
-  border-radius: var(--sl-radius-md);
-  background: rgba(34, 197, 94, 0.05);
-}
-
-.territory-filter__heading {
-  display: grid;
-  gap: 0.2rem;
-}
-
-.territory-filter__heading small {
-  color: var(--sl-text-subtle);
-  font-size: 0.69rem;
-  line-height: 1.3;
-}
-
-.field {
-  display: grid;
-  gap: 0.4rem;
 }
 
 .free-point-grid {
@@ -477,7 +398,6 @@ button:focus-visible {
 }
 
 @media (max-width: 480px) {
-  .scope-control,
   .free-point-grid {
     grid-template-columns: 1fr;
   }

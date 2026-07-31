@@ -6,7 +6,6 @@ export type RoadRouteStatus =
   | 'waiting-for-calculation'
   | 'loading'
   | 'ready'
-  | 'outside-territory'
   | 'unavailable';
 
 export interface RoadRouteRequest {

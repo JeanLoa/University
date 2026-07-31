@@ -13,10 +13,9 @@ import {
   signal,
 } from '@angular/core';
 import { GeoPoint } from '../../../domain/models/geo-point.model';
-import { GeoBounds, MapTerritory } from '../../../domain/models/map-territory.model';
+import { GeoBounds } from '../../../domain/models/map-territory.model';
 import { RoadRoute, RoadRouteStatus } from '../../../domain/models/road-route.model';
 import { RoutePointRole } from '../../../domain/models/route-planning.model';
-import { isPointInsidePolygon, polygonBounds } from '../../../domain/services/geo-polygon.service';
 import { RouteMapLayerViewModel } from '../../../application/view-models/route-map-layer.view-model';
 import {
   MapLibreMap,
@@ -30,15 +29,6 @@ interface MapPoint {
   readonly y: number;
 }
 
-interface UrbanBlock {
-  readonly id: string;
-  readonly x: number;
-  readonly y: number;
-  readonly width: number;
-  readonly height: number;
-  readonly intensity: number;
-}
-
 type MapRendererStatus = 'loading' | 'ready' | 'fallback';
 
 @Component({
@@ -50,10 +40,6 @@ export class RouteNetworkMapComponent implements AfterViewInit, OnChanges, OnDes
   @ViewChild('maplibreCanvas') private maplibreCanvas?: ElementRef<HTMLDivElement>;
 
   @Input() pickerMode: RoutePointRole = 'destination';
-  @Input() territoryRestricted = false;
-  @Input() selectedTerritory: MapTerritory | null = null;
-  @Input() focusTerritories: readonly MapTerritory[] = [];
-  @Input() territoryTrail = '';
   @Input() freeOriginPoint: GeoPoint | null = null;
   @Input() freeDestinationPoint: GeoPoint | null = null;
   @Input() roadRoute: RoadRoute | null = null;
@@ -68,7 +54,6 @@ export class RouteNetworkMapComponent implements AfterViewInit, OnChanges, OnDes
   private map: MapLibreMap | null = null;
   private mapLoaded = false;
   private mapLoadTimeoutId: number | null = null;
-  private lastFittedTerritoryId = '';
   private lastFittedRouteKey = '';
   private lastFocusPointKey = '';
   private globalViewportApplied = false;
@@ -83,24 +68,6 @@ export class RouteNetworkMapComponent implements AfterViewInit, OnChanges, OnDes
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (
-      changes['selectedTerritory'] &&
-      !changes['selectedTerritory'].firstChange &&
-      (changes['selectedTerritory'].previousValue?.id !==
-        changes['selectedTerritory'].currentValue?.id ||
-        this.boundaryPointCount(changes['selectedTerritory'].previousValue) !==
-          this.boundaryPointCount(changes['selectedTerritory'].currentValue))
-    ) {
-      this.lastFittedTerritoryId = '';
-    }
-
-    if (changes['territoryRestricted']) {
-      this.lastFittedTerritoryId = '';
-      this.lastFittedRouteKey = '';
-      this.lastFocusPointKey = '';
-      this.globalViewportApplied = false;
-    }
-
     if (changes['roadRoute']) {
       this.lastFittedRouteKey = '';
     }
@@ -119,90 +86,7 @@ export class RouteNetworkMapComponent implements AfterViewInit, OnChanges, OnDes
   }
 
   protected mapViewBox(): string {
-    if (!this.territoryRestricted || !this.selectedTerritory) {
-      return '0 0 1000 680';
-    }
-
-    const bounds = this.selectedTerritoryBounds(this.selectedTerritory);
-    const topLeft = this.positionForGeo({
-      latitude: bounds.north,
-      longitude: bounds.west,
-    });
-    const bottomRight = this.positionForGeo({
-      latitude: bounds.south,
-      longitude: bounds.east,
-    });
-    const padding = this.selectedTerritory.kind === 'district' ? 68 : 34;
-    const x = Math.max(0, topLeft.x - padding);
-    const y = Math.max(0, topLeft.y - padding);
-    const width = Math.min(1000 - x, bottomRight.x - topLeft.x + padding * 2);
-    const height = Math.min(680 - y, bottomRight.y - topLeft.y + padding * 2);
-
-    return `${x} ${y} ${Math.max(width, 260)} ${Math.max(height, 220)}`;
-  }
-
-  protected selectedTerritories(): readonly MapTerritory[] {
-    return this.focusTerritories.filter((territory) => this.hasRealBoundary(territory));
-  }
-
-  protected urbanBlocks(): readonly UrbanBlock[] {
-    if (!this.territoryRestricted) {
-      return [];
-    }
-
-    const bounds =
-      this.selectedTerritory && this.hasRealBoundary(this.selectedTerritory)
-        ? polygonBounds(this.selectedTerritory.polygon ?? [])
-        : this.baseBounds();
-    const topLeft = this.positionForGeo({ latitude: bounds.north, longitude: bounds.west });
-    const bottomRight = this.positionForGeo({ latitude: bounds.south, longitude: bounds.east });
-    const columns = this.selectedTerritory?.kind === 'district' ? 8 : 12;
-    const rows = this.selectedTerritory?.kind === 'district' ? 7 : 9;
-    const cellWidth = (bottomRight.x - topLeft.x) / columns;
-    const cellHeight = (bottomRight.y - topLeft.y) / rows;
-    const blocks: UrbanBlock[] = [];
-
-    for (let row = 0; row < rows; row += 1) {
-      for (let column = 0; column < columns; column += 1) {
-        if ((row + column) % 5 === 0) {
-          continue;
-        }
-
-        blocks.push({
-          id: `block-${row}-${column}`,
-          x: topLeft.x + column * cellWidth + cellWidth * 0.2,
-          y: topLeft.y + row * cellHeight + cellHeight * 0.22,
-          width: cellWidth * 0.58,
-          height: cellHeight * 0.52,
-          intensity: 0.08 + ((row + column) % 4) * 0.025,
-        });
-      }
-    }
-
-    return blocks;
-  }
-
-  protected territoryPolygonPoints(territory: MapTerritory): string {
-    return (territory.polygon ?? [])
-      .map((geoPoint) => {
-        const point = this.positionForGeo(geoPoint);
-
-        return `${point.x},${point.y}`;
-      })
-      .join(' ');
-  }
-
-  protected geoJsonFeatureCount(): number {
-    if (!this.geoJsonLayers) {
-      return 0;
-    }
-
-    return (
-      this.selectedTerritories().length +
-      this.geoJsonLayers.route.features.length +
-      (this.freeOriginPoint ? 1 : 0) +
-      (this.freeDestinationPoint ? 1 : 0)
-    );
+    return '0 0 1000 680';
   }
 
   protected routePoints(): string {
@@ -388,29 +272,9 @@ export class RouteNetworkMapComponent implements AfterViewInit, OnChanges, OnDes
 
     const routeLayer = this.geoJsonLayers?.route ?? this.emptyFeatureCollection();
 
-    this.upsertSource('sl-territory-source', this.selectedTerritoryFeatureCollection());
     this.upsertSource('sl-route-source', routeLayer);
     this.upsertSource('sl-picked-points-source', this.pickedPointFeatureCollection());
 
-    this.addLayerOnce({
-      id: 'sl-territory-fill',
-      type: 'fill',
-      source: 'sl-territory-source',
-      paint: {
-        'fill-color': '#22c55e',
-        'fill-opacity': 0.3,
-      },
-    });
-    this.addLayerOnce({
-      id: 'sl-territory-line',
-      type: 'line',
-      source: 'sl-territory-source',
-      paint: {
-        'line-color': '#86efac',
-        'line-opacity': 1,
-        'line-width': 2.5,
-      },
-    });
     this.addLayerOnce({
       id: 'sl-route-glow',
       type: 'line',
@@ -463,7 +327,6 @@ export class RouteNetworkMapComponent implements AfterViewInit, OnChanges, OnDes
     const routeLayer = this.geoJsonLayers?.route ?? this.emptyFeatureCollection();
 
     this.addMapLibreLayers();
-    this.upsertSource('sl-territory-source', this.selectedTerritoryFeatureCollection());
     this.upsertSource('sl-route-source', routeLayer);
     this.upsertSource('sl-picked-points-source', this.pickedPointFeatureCollection());
     this.syncViewport();
@@ -502,34 +365,6 @@ export class RouteNetworkMapComponent implements AfterViewInit, OnChanges, OnDes
     return {
       type: 'FeatureCollection',
       features: [],
-    };
-  }
-
-  private selectedTerritoryFeatureCollection(): GeoJsonFeatureCollection {
-    if (!this.territoryRestricted) {
-      return { type: 'FeatureCollection', features: [] };
-    }
-
-    const territories = this.activeBoundaryTerritories();
-
-    if (territories.length === 0) {
-      return { type: 'FeatureCollection', features: [] };
-    }
-
-    return {
-      type: 'FeatureCollection',
-      features: territories.map((territory) => ({
-        type: 'Feature',
-        id: territory.id,
-        geometry: {
-          type: 'Polygon',
-          coordinates: [this.polygonCoordinates(territory.polygon ?? [])],
-        },
-        properties: {
-          label: territory.label,
-          kind: territory.kind,
-        },
-      })),
     };
   }
 
@@ -579,32 +414,6 @@ export class RouteNetworkMapComponent implements AfterViewInit, OnChanges, OnDes
     };
   }
 
-  private fitSelectedTerritory(): void {
-    if (
-      !this.map ||
-      !this.territoryRestricted ||
-      !this.selectedTerritory ||
-      this.lastFittedTerritoryId === this.selectedTerritory.id
-    ) {
-      return;
-    }
-
-    this.lastFittedTerritoryId = this.selectedTerritory.id;
-    const bounds = this.selectedTerritoryBounds(this.selectedTerritory);
-
-    this.map.fitBounds(
-      [
-        [bounds.west, bounds.south],
-        [bounds.east, bounds.north],
-      ],
-      {
-        duration: 900,
-        maxZoom: this.selectedTerritory.kind === 'district' ? 14.35 : 12.35,
-        padding: this.selectedTerritory.kind === 'district' ? 92 : 56,
-      },
-    );
-  }
-
   private readonly handleMapClick = (event: MapLibreMapEvent): void => {
     if (!event.lngLat) {
       return;
@@ -619,36 +428,7 @@ export class RouteNetworkMapComponent implements AfterViewInit, OnChanges, OnDes
   };
 
   private emitMapPointIfInsideSelection(point: GeoPoint): void {
-    if (!this.territoryRestricted) {
-      this.mapPointSelected.emit(point);
-      return;
-    }
-
-    const territories = this.activeBoundaryTerritories();
-
-    if (
-      territories.length === 0 ||
-      !territories.some((territory) => isPointInsidePolygon(point, territory.polygon ?? []))
-    ) {
-      return;
-    }
-
     this.mapPointSelected.emit(point);
-  }
-
-  private activeBoundaryTerritories(): readonly MapTerritory[] {
-    if (!this.territoryRestricted) {
-      return [];
-    }
-
-    const territories =
-      this.focusTerritories.length > 0
-        ? this.focusTerritories
-        : this.selectedTerritory
-          ? [this.selectedTerritory]
-          : [];
-
-    return territories.filter((territory) => this.hasRealBoundary(territory));
   }
 
   private readonly handleNodeMouseEnter = (): void => {
@@ -684,19 +464,11 @@ export class RouteNetworkMapComponent implements AfterViewInit, OnChanges, OnDes
   }
 
   private baseBounds(): GeoBounds {
-    const territoryPoints = this.territoryRestricted ? (this.selectedTerritory?.polygon ?? []) : [];
-    const fallbackBounds = this.territoryRestricted ? this.selectedTerritory?.bounds : undefined;
-    const fallbackPoints = fallbackBounds
-      ? [
-          { latitude: fallbackBounds.north, longitude: fallbackBounds.west },
-          { latitude: fallbackBounds.south, longitude: fallbackBounds.east },
-        ]
-      : [];
     const pickedPoints = [this.freeOriginPoint, this.freeDestinationPoint].filter(
       (point): point is GeoPoint => Boolean(point),
     );
     const routePoints = this.roadRoute?.geometry ?? [];
-    const points = [...territoryPoints, ...fallbackPoints, ...pickedPoints, ...routePoints];
+    const points = [...pickedPoints, ...routePoints];
 
     if (points.length === 0) {
       return {
@@ -724,32 +496,6 @@ export class RouteNetworkMapComponent implements AfterViewInit, OnChanges, OnDes
     };
   }
 
-  private polygonCoordinates(points: readonly GeoPoint[]): readonly (readonly number[])[] {
-    const coordinates = points.map((point) => [point.longitude, point.latitude]);
-    const first = coordinates[0];
-    const last = coordinates.at(-1);
-
-    if (!first || !last || (first[0] === last[0] && first[1] === last[1])) {
-      return coordinates;
-    }
-
-    return [...coordinates, first];
-  }
-
-  private selectedTerritoryBounds(territory: MapTerritory): GeoBounds {
-    return this.hasRealBoundary(territory)
-      ? polygonBounds(territory.polygon ?? [])
-      : territory.bounds;
-  }
-
-  private hasRealBoundary(territory: MapTerritory): boolean {
-    return Boolean(territory.polygon && territory.polygon.length >= 3);
-  }
-
-  private boundaryPointCount(territory: MapTerritory | null | undefined): number {
-    return territory?.polygon?.length ?? 0;
-  }
-
   private syncViewport(): void {
     if (!this.map) {
       return;
@@ -760,11 +506,6 @@ export class RouteNetworkMapComponent implements AfterViewInit, OnChanges, OnDes
     }
 
     if (this.focusMapPoint()) {
-      return;
-    }
-
-    if (this.territoryRestricted) {
-      this.fitSelectedTerritory();
       return;
     }
 

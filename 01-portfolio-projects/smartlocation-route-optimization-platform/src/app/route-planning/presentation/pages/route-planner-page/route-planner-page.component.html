@@ -34,14 +34,9 @@
     <aside class="surface surface--control">
       <app-route-control-panel
         [pickerMode]="facade.pickerMode()"
-        [mapScope]="facade.mapScope()"
         [selectedAlgorithm]="facade.selectedAlgorithm()"
         [autoCalculateRoute]="facade.autoCalculateRoute()"
         [algorithmOptions]="facade.algorithmOptions"
-        [provinceOptions]="facade.provinceOptions()"
-        [districtOptions]="facade.districtOptions()"
-        [selectedProvinceId]="facade.selectedProvinceId()"
-        [selectedDistrictId]="facade.selectedDistrictId()"
         [freeOriginPoint]="facade.freeOriginPoint()"
         [freeDestinationPoint]="facade.freeDestinationPoint()"
         [originPlace]="facade.originPlace()"
@@ -54,9 +49,6 @@
         [destinationSearchStatus]="facade.destinationSearchStatus()"
         [roadRouteStatus]="facade.roadRouteStatus()"
         [roadRouteError]="facade.roadRouteError()"
-        (mapScopeChanged)="facade.setMapScope($event)"
-        (provinceChanged)="facade.selectProvince($event)"
-        (districtChanged)="facade.selectDistrict($event)"
         (algorithmChanged)="facade.selectAlgorithm($event)"
         (autoCalculateChanged)="facade.setAutoCalculateRoute($event)"
         (pickerModeChanged)="facade.setPickerMode($event)"
@@ -69,10 +61,6 @@
     <section class="surface surface--map">
       <app-route-network-map
         [pickerMode]="facade.pickerMode()"
-        [territoryRestricted]="facade.isTerritoryRestricted()"
-        [selectedTerritory]="facade.selectedMapTerritory()"
-        [focusTerritories]="facade.focusMapTerritories()"
-        [territoryTrail]="facade.selectedMapTrail()"
         [freeOriginPoint]="facade.freeOriginPoint()"
         [freeDestinationPoint]="facade.freeDestinationPoint()"
         [roadRoute]="facade.roadRoute()"
