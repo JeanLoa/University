@@ -1,8 +1,10 @@
 <section class="network-map" aria-label="Mapa de red vial">
   <div class="map-toolbar">
     <div>
-      <span>{{ selectedTerritory?.label ?? 'Lima urbana' }}</span>
-      <strong>Route Intelligence Console</strong>
+      <span>{{
+        territoryRestricted ? (selectedTerritory?.label ?? 'Zona Lima') : 'Cobertura mundial'
+      }}</span>
+      <strong>Global Route Intelligence</strong>
       <small>{{ territoryTrail }}</small>
     </div>
     <div class="map-legend" aria-label="Leyenda del mapa">
@@ -13,13 +15,30 @@
   </div>
 
   <div class="map-viewport">
-    <div #maplibreCanvas class="maplibre-canvas" [class.is-ready]="mapRendererStatus() === 'ready'"></div>
+    <div
+      #maplibreCanvas
+      class="maplibre-canvas"
+      [class.is-ready]="mapRendererStatus() === 'ready'"
+    ></div>
 
     @if (mapRendererStatus() !== 'ready') {
-      <svg class="map-canvas" [attr.viewBox]="mapViewBox()" role="img" aria-label="Mapa vial de Lima" (click)="onFallbackMapClick($event)">
+      <svg
+        class="map-canvas"
+        [attr.viewBox]="mapViewBox()"
+        role="img"
+        [attr.aria-label]="
+          territoryRestricted ? 'Mapa vial de la zona seleccionada' : 'Mapa vial mundial'
+        "
+        (click)="onFallbackMapClick($event)"
+      >
         <defs>
           <pattern id="networkGrid" width="42" height="42" patternUnits="userSpaceOnUse">
-            <path d="M 42 0 L 0 0 0 42" fill="none" stroke="rgba(44, 67, 58, 0.11)" stroke-width="1" />
+            <path
+              d="M 42 0 L 0 0 0 42"
+              fill="none"
+              stroke="rgba(44, 67, 58, 0.11)"
+              stroke-width="1"
+            />
           </pattern>
           <filter id="routeGlow" x="-20%" y="-20%" width="140%" height="140%">
             <feGaussianBlur stdDeviation="5" result="blur" />
@@ -33,7 +52,10 @@
         <rect width="1000" height="680" fill="url(#networkGrid)"></rect>
         <path class="coastline" d="M62 16 C42 132 86 202 61 318 C38 421 80 515 53 666" />
         <path class="city-ridge" d="M268 48 C334 142 352 256 431 330 C518 411 558 514 660 626" />
-        <path class="city-ridge city-ridge--east" d="M654 44 C700 174 736 232 773 340 C805 437 864 516 934 660" />
+        <path
+          class="city-ridge city-ridge--east"
+          d="M654 44 C700 174 736 232 773 340 C805 437 864 516 934 660"
+        />
 
         <g class="urban-block-layer">
           @for (block of urbanBlocks(); track block.id) {
@@ -57,26 +79,33 @@
         @if (routeHasPoints()) {
           <polyline class="route-glow" [attr.points]="routePoints()" filter="url(#routeGlow)" />
           <polyline class="route-line" [attr.points]="routePoints()" />
-          <text class="route-name-label" [attr.transform]="routeLabelTransform()">{{ routeLabel() }}</text>
+          <text class="route-name-label" [attr.transform]="routeLabelTransform()">
+            {{ routeLabel() }}
+          </text>
         }
 
         <g class="free-points-layer">
           @if (freeOriginPoint) {
-            <g class="free-point-marker is-origin" [attr.transform]="freePointTransform(freeOriginPoint)">
+            <g
+              class="free-point-marker is-origin"
+              [attr.transform]="freePointTransform(freeOriginPoint)"
+            >
               <circle class="free-point-marker__halo" r="18"></circle>
               <circle class="free-point-marker__dot" r="7"></circle>
               <text class="free-point-marker__label" x="14" y="4">Origen</text>
             </g>
           }
           @if (freeDestinationPoint) {
-            <g class="free-point-marker is-destination" [attr.transform]="freePointTransform(freeDestinationPoint)">
+            <g
+              class="free-point-marker is-destination"
+              [attr.transform]="freePointTransform(freeDestinationPoint)"
+            >
               <circle class="free-point-marker__halo" r="18"></circle>
               <circle class="free-point-marker__dot" r="7"></circle>
               <text class="free-point-marker__label" x="14" y="4">Destino</text>
             </g>
           }
         </g>
-
       </svg>
     }
 
@@ -84,8 +113,11 @@
   </div>
 
   <div class="map-footer">
-    <span>Click activo: {{ pickerMode === 'origin' ? 'origen' : 'destino' }}</span>
+    <span
+      ><i class="footer-status" aria-hidden="true"></i> Click activo:
+      {{ pickerMode === 'origin' ? 'origen' : 'destino' }}</span
+    >
     <span>{{ roadRouteFooterLabel() }}</span>
-    <span>{{ geoJsonFeatureCount() }} capas activas</span>
+    <span>{{ territoryRestricted ? 'Limite territorial activo' : 'Seleccion libre global' }}</span>
   </div>
 </section>

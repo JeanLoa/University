@@ -1,32 +1,108 @@
 <section class="control-panel" aria-label="Panel de rutas">
   <div class="panel-heading">
-    <span class="panel-heading__eyebrow">Red Lima urbana</span>
-    <h2>Ruta activa</h2>
+    <span class="panel-heading__eyebrow">Planificacion geoespacial</span>
+    <h1>Traza una ruta global</h1>
+    <p>Busca dos lugares o marcalos directamente sobre el mapa.</p>
   </div>
 
-  <div class="field-stack">
-    <label class="field">
-      <span>Provincia</span>
-      <app-ui-select
-        ariaLabel="Provincia"
-        [options]="provinceSelectOptions()"
-        [value]="selectedProvinceId"
-        (valueChanged)="provinceChanged.emit($event)"
-      />
-    </label>
-
-    <label class="field">
-      <span>Distrito</span>
-      <app-ui-select
-        ariaLabel="Distrito"
-        [options]="districtSelectOptions()"
-        [value]="selectedDistrictId"
-        (valueChanged)="districtChanged.emit($event)"
-      />
-    </label>
+  <div class="scope-control" aria-label="Cobertura del mapa">
+    <button
+      type="button"
+      [class.is-active]="mapScope === 'global'"
+      (click)="mapScopeChanged.emit('global')"
+    >
+      <span>Mundo</span>
+      <small>Sin limites</small>
+    </button>
+    <button
+      type="button"
+      [class.is-active]="mapScope === 'territory'"
+      (click)="mapScopeChanged.emit('territory')"
+    >
+      <span>Zona Lima</span>
+      <small>Con contorno</small>
+    </button>
   </div>
 
-  <div class="free-point-grid" aria-label="Puntos marcados">
+  <div class="search-stack" aria-label="Buscar ubicaciones">
+    @for (role of searchRoles; track role) {
+      <label
+        class="place-search"
+        [class.is-origin]="role === 'origin'"
+        [class.is-destination]="role === 'destination'"
+      >
+        <span class="place-search__label">
+          <i aria-hidden="true"></i>
+          {{ role === 'origin' ? 'Origen' : 'Destino' }}
+        </span>
+        <input
+          type="search"
+          autocomplete="off"
+          [attr.aria-label]="'Buscar ' + (role === 'origin' ? 'origen' : 'destino')"
+          [placeholder]="role === 'origin' ? 'Ciudad, direccion o lugar' : '¿A donde quieres ir?'"
+          [value]="role === 'origin' ? originSearchQuery : destinationSearchQuery"
+          (input)="onSearchInput(role, $event)"
+          (focus)="onSearchFocus(role)"
+          (blur)="onSearchBlur()"
+        />
+
+        @if (searchStatusLabel(role)) {
+          <small class="place-search__status">{{ searchStatusLabel(role) }}</small>
+        }
+
+        @if (showSearchResults(role)) {
+          <div class="place-search__results" role="listbox">
+            @for (
+              place of searchResults(role);
+              track place.label + place.point.latitude + place.point.longitude
+            ) {
+              <button
+                type="button"
+                role="option"
+                (mousedown)="$event.preventDefault()"
+                (click)="choosePlace(role, place)"
+              >
+                <strong>{{ compactSearchLabel(place) }}</strong>
+                <span>{{ place.label }}</span>
+              </button>
+            }
+          </div>
+        }
+      </label>
+    }
+  </div>
+
+  @if (mapScope === 'territory') {
+    <div class="territory-filter">
+      <div class="territory-filter__heading">
+        <span>Limitar interaccion</span>
+        <small>Los clics fuera del contorno se ignoran</small>
+      </div>
+      <div class="field-stack">
+        <label class="field">
+          <span>Provincia</span>
+          <app-ui-select
+            ariaLabel="Provincia"
+            [options]="provinceSelectOptions()"
+            [value]="selectedProvinceId"
+            (valueChanged)="provinceChanged.emit($event)"
+          />
+        </label>
+
+        <label class="field">
+          <span>Distrito</span>
+          <app-ui-select
+            ariaLabel="Distrito"
+            [options]="districtSelectOptions()"
+            [value]="selectedDistrictId"
+            (valueChanged)="districtChanged.emit($event)"
+          />
+        </label>
+      </div>
+    </div>
+  }
+
+  <div class="free-point-grid" aria-label="Puntos seleccionados">
     <div class="free-point-card">
       <span>Origen marcado</span>
       <strong>{{ placeLabel(freeOriginPoint, originPlace, originPlaceStatus) }}</strong>
@@ -34,17 +110,22 @@
     </div>
     <div class="free-point-card">
       <span>Destino marcado</span>
-      <strong>{{ placeLabel(freeDestinationPoint, destinationPlace, destinationPlaceStatus) }}</strong>
+      <strong>{{
+        placeLabel(freeDestinationPoint, destinationPlace, destinationPlaceStatus)
+      }}</strong>
       <small>{{ zoneLabel(destinationPlace) }}</small>
     </div>
   </div>
 
-  <p class="route-status" [class.is-alert]="roadRouteStatus === 'outside-territory' || roadRouteStatus === 'unavailable'">
+  <p
+    class="route-status"
+    [class.is-alert]="roadRouteStatus === 'outside-territory' || roadRouteStatus === 'unavailable'"
+  >
     {{ roadRouteStatusLabel() }}
   </p>
 
   <div class="control-group">
-    <span class="control-group__label">Editar desde mapa</span>
+    <span class="control-group__label">Siguiente clic en el mapa</span>
     <div class="segmented-control">
       <button
         type="button"
@@ -64,7 +145,7 @@
   </div>
 
   <div class="control-group">
-    <span class="control-group__label">Estrategia</span>
+    <span class="control-group__label">Criterio de optimizacion</span>
     <app-ui-select
       ariaLabel="Estrategia de recorrido"
       [options]="algorithmSelectOptions()"
@@ -85,8 +166,13 @@
     <span>Auto calcular</span>
   </label>
 
-  <button type="button" class="run-button" [disabled]="!canCalculateRoadRoute()" (click)="routeRequested.emit()">
+  <button
+    type="button"
+    class="run-button"
+    [disabled]="!canCalculateRoadRoute()"
+    (click)="routeRequested.emit()"
+  >
     <span class="run-button__icon" aria-hidden="true"></span>
-    Calcular ruta
+    Calcular ruta global
   </button>
 </section>

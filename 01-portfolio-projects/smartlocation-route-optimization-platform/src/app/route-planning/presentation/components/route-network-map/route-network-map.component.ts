@@ -50,6 +50,7 @@ export class RouteNetworkMapComponent implements AfterViewInit, OnChanges, OnDes
   @ViewChild('maplibreCanvas') private maplibreCanvas?: ElementRef<HTMLDivElement>;
 
   @Input() pickerMode: RoutePointRole = 'destination';
+  @Input() territoryRestricted = false;
   @Input() selectedTerritory: MapTerritory | null = null;
   @Input() focusTerritories: readonly MapTerritory[] = [];
   @Input() territoryTrail = '';
@@ -57,6 +58,7 @@ export class RouteNetworkMapComponent implements AfterViewInit, OnChanges, OnDes
   @Input() freeDestinationPoint: GeoPoint | null = null;
   @Input() roadRoute: RoadRoute | null = null;
   @Input() roadRouteStatus: RoadRouteStatus = 'waiting-for-points';
+  @Input() focusPoint: GeoPoint | null = null;
   @Input() geoJsonLayers: RouteMapLayerViewModel | null = null;
 
   @Output() mapPointSelected = new EventEmitter<GeoPoint>();
@@ -67,6 +69,9 @@ export class RouteNetworkMapComponent implements AfterViewInit, OnChanges, OnDes
   private mapLoaded = false;
   private mapLoadTimeoutId: number | null = null;
   private lastFittedTerritoryId = '';
+  private lastFittedRouteKey = '';
+  private lastFocusPointKey = '';
+  private globalViewportApplied = false;
 
   constructor(
     private readonly mapLibreLoader: MapLibreRuntimeLoaderService,
@@ -89,6 +94,21 @@ export class RouteNetworkMapComponent implements AfterViewInit, OnChanges, OnDes
       this.lastFittedTerritoryId = '';
     }
 
+    if (changes['territoryRestricted']) {
+      this.lastFittedTerritoryId = '';
+      this.lastFittedRouteKey = '';
+      this.lastFocusPointKey = '';
+      this.globalViewportApplied = false;
+    }
+
+    if (changes['roadRoute']) {
+      this.lastFittedRouteKey = '';
+    }
+
+    if (changes['focusPoint']) {
+      this.lastFocusPointKey = '';
+    }
+
     this.syncMapLibre();
   }
 
@@ -99,7 +119,7 @@ export class RouteNetworkMapComponent implements AfterViewInit, OnChanges, OnDes
   }
 
   protected mapViewBox(): string {
-    if (!this.selectedTerritory) {
+    if (!this.territoryRestricted || !this.selectedTerritory) {
       return '0 0 1000 680';
     }
 
@@ -126,6 +146,10 @@ export class RouteNetworkMapComponent implements AfterViewInit, OnChanges, OnDes
   }
 
   protected urbanBlocks(): readonly UrbanBlock[] {
+    if (!this.territoryRestricted) {
+      return [];
+    }
+
     const bounds =
       this.selectedTerritory && this.hasRealBoundary(this.selectedTerritory)
         ? polygonBounds(this.selectedTerritory.polygon ?? [])
@@ -247,7 +271,7 @@ export class RouteNetworkMapComponent implements AfterViewInit, OnChanges, OnDes
       case 'loading':
         return 'Cargando mapa real';
       case 'ready':
-        return 'MapLibre activo';
+        return 'Mapa mundial activo';
       case 'fallback':
         return 'Mapa vector local';
     }
@@ -276,10 +300,10 @@ export class RouteNetworkMapComponent implements AfterViewInit, OnChanges, OnDes
         this.map = new maplibregl.Map({
           container: this.maplibreCanvas!.nativeElement,
           style: this.createBaseMapStyle(),
-          center: [-77.0675, -12.0758],
-          zoom: 12.3,
-          pitch: 42,
-          bearing: -11,
+          center: [0, 20],
+          zoom: 1.55,
+          pitch: 0,
+          bearing: 0,
           attributionControl: false,
         });
 
@@ -324,19 +348,18 @@ export class RouteNetworkMapComponent implements AfterViewInit, OnChanges, OnDes
     return {
       version: 8,
       sources: {
-        'carto-positron': {
+        'carto-dark': {
           type: 'raster',
           tiles: [
-            'https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png',
-            'https://b.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png',
-            'https://c.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png',
-            'https://d.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png',
+            'https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png',
+            'https://b.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png',
+            'https://c.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png',
+            'https://d.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png',
           ],
           tileSize: 256,
           minzoom: 0,
           maxzoom: 20,
-          attribution:
-            '&copy; OpenStreetMap contributors &copy; CARTO',
+          attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
         },
       },
       layers: [
@@ -344,13 +367,13 @@ export class RouteNetworkMapComponent implements AfterViewInit, OnChanges, OnDes
           id: 'carto-background',
           type: 'background',
           paint: {
-            'background-color': '#f4f2ec',
+            'background-color': '#07101f',
           },
         },
         {
-          id: 'carto-positron',
+          id: 'carto-dark',
           type: 'raster',
-          source: 'carto-positron',
+          source: 'carto-dark',
           minzoom: 0,
           maxzoom: 22,
         },
@@ -363,8 +386,7 @@ export class RouteNetworkMapComponent implements AfterViewInit, OnChanges, OnDes
       return;
     }
 
-    const routeLayer =
-      this.geoJsonLayers?.route ?? this.emptyFeatureCollection();
+    const routeLayer = this.geoJsonLayers?.route ?? this.emptyFeatureCollection();
 
     this.upsertSource('sl-territory-source', this.selectedTerritoryFeatureCollection());
     this.upsertSource('sl-route-source', routeLayer);
@@ -375,8 +397,8 @@ export class RouteNetworkMapComponent implements AfterViewInit, OnChanges, OnDes
       type: 'fill',
       source: 'sl-territory-source',
       paint: {
-        'fill-color': '#4ee6c1',
-        'fill-opacity': 0.26,
+        'fill-color': '#22c55e',
+        'fill-opacity': 0.3,
       },
     });
     this.addLayerOnce({
@@ -384,10 +406,9 @@ export class RouteNetworkMapComponent implements AfterViewInit, OnChanges, OnDes
       type: 'line',
       source: 'sl-territory-source',
       paint: {
-        'line-color': '#159f85',
-        'line-dasharray': [2, 2],
+        'line-color': '#86efac',
         'line-opacity': 1,
-        'line-width': 3,
+        'line-width': 2.5,
       },
     });
     this.addLayerOnce({
@@ -396,7 +417,7 @@ export class RouteNetworkMapComponent implements AfterViewInit, OnChanges, OnDes
       source: 'sl-route-source',
       paint: {
         'line-blur': 5,
-        'line-color': '#19a98f',
+        'line-color': '#22c55e',
         'line-opacity': 0.42,
         'line-width': 13,
       },
@@ -406,8 +427,7 @@ export class RouteNetworkMapComponent implements AfterViewInit, OnChanges, OnDes
       type: 'line',
       source: 'sl-route-source',
       paint: {
-        'line-color': '#063f39',
-        'line-dasharray': [1.6, 1.2],
+        'line-color': '#4ade80',
         'line-width': 4.6,
       },
     });
@@ -417,7 +437,7 @@ export class RouteNetworkMapComponent implements AfterViewInit, OnChanges, OnDes
       source: 'sl-picked-points-source',
       paint: {
         'circle-blur': 0.35,
-        'circle-color': ['match', ['get', 'role'], 'origin', '#4ee6c1', '#f6c85f'],
+        'circle-color': ['match', ['get', 'role'], 'origin', '#38bdf8', '#fbbf24'],
         'circle-opacity': 0.34,
         'circle-radius': 20,
       },
@@ -427,7 +447,7 @@ export class RouteNetworkMapComponent implements AfterViewInit, OnChanges, OnDes
       type: 'circle',
       source: 'sl-picked-points-source',
       paint: {
-        'circle-color': ['match', ['get', 'role'], 'origin', '#4ee6c1', '#f6c85f'],
+        'circle-color': ['match', ['get', 'role'], 'origin', '#38bdf8', '#fbbf24'],
         'circle-radius': 8,
         'circle-stroke-color': '#ffffff',
         'circle-stroke-width': 2,
@@ -440,14 +460,13 @@ export class RouteNetworkMapComponent implements AfterViewInit, OnChanges, OnDes
       return;
     }
 
-    const routeLayer =
-      this.geoJsonLayers?.route ?? this.emptyFeatureCollection();
+    const routeLayer = this.geoJsonLayers?.route ?? this.emptyFeatureCollection();
 
     this.addMapLibreLayers();
     this.upsertSource('sl-territory-source', this.selectedTerritoryFeatureCollection());
     this.upsertSource('sl-route-source', routeLayer);
     this.upsertSource('sl-picked-points-source', this.pickedPointFeatureCollection());
-    this.fitSelectedTerritory();
+    this.syncViewport();
     this.map.resize();
   }
 
@@ -487,6 +506,10 @@ export class RouteNetworkMapComponent implements AfterViewInit, OnChanges, OnDes
   }
 
   private selectedTerritoryFeatureCollection(): GeoJsonFeatureCollection {
+    if (!this.territoryRestricted) {
+      return { type: 'FeatureCollection', features: [] };
+    }
+
     const territories = this.activeBoundaryTerritories();
 
     if (territories.length === 0) {
@@ -559,6 +582,7 @@ export class RouteNetworkMapComponent implements AfterViewInit, OnChanges, OnDes
   private fitSelectedTerritory(): void {
     if (
       !this.map ||
+      !this.territoryRestricted ||
       !this.selectedTerritory ||
       this.lastFittedTerritoryId === this.selectedTerritory.id
     ) {
@@ -595,13 +619,16 @@ export class RouteNetworkMapComponent implements AfterViewInit, OnChanges, OnDes
   };
 
   private emitMapPointIfInsideSelection(point: GeoPoint): void {
+    if (!this.territoryRestricted) {
+      this.mapPointSelected.emit(point);
+      return;
+    }
+
     const territories = this.activeBoundaryTerritories();
 
     if (
       territories.length === 0 ||
-      !territories.some((territory) =>
-        isPointInsidePolygon(point, territory.polygon ?? []),
-      )
+      !territories.some((territory) => isPointInsidePolygon(point, territory.polygon ?? []))
     ) {
       return;
     }
@@ -610,6 +637,10 @@ export class RouteNetworkMapComponent implements AfterViewInit, OnChanges, OnDes
   }
 
   private activeBoundaryTerritories(): readonly MapTerritory[] {
+    if (!this.territoryRestricted) {
+      return [];
+    }
+
     const territories =
       this.focusTerritories.length > 0
         ? this.focusTerritories
@@ -653,8 +684,8 @@ export class RouteNetworkMapComponent implements AfterViewInit, OnChanges, OnDes
   }
 
   private baseBounds(): GeoBounds {
-    const territoryPoints = this.selectedTerritory?.polygon ?? [];
-    const fallbackBounds = this.selectedTerritory?.bounds;
+    const territoryPoints = this.territoryRestricted ? (this.selectedTerritory?.polygon ?? []) : [];
+    const fallbackBounds = this.territoryRestricted ? this.selectedTerritory?.bounds : undefined;
     const fallbackPoints = fallbackBounds
       ? [
           { latitude: fallbackBounds.north, longitude: fallbackBounds.west },
@@ -666,6 +697,16 @@ export class RouteNetworkMapComponent implements AfterViewInit, OnChanges, OnDes
     );
     const routePoints = this.roadRoute?.geometry ?? [];
     const points = [...territoryPoints, ...fallbackPoints, ...pickedPoints, ...routePoints];
+
+    if (points.length === 0) {
+      return {
+        north: 82,
+        south: -60,
+        east: 180,
+        west: -180,
+      };
+    }
+
     const latitudes = points.map((point) => point.latitude);
     const longitudes = points.map((point) => point.longitude);
     const north = Math.max(...latitudes);
@@ -707,5 +748,96 @@ export class RouteNetworkMapComponent implements AfterViewInit, OnChanges, OnDes
 
   private boundaryPointCount(territory: MapTerritory | null | undefined): number {
     return territory?.polygon?.length ?? 0;
+  }
+
+  private syncViewport(): void {
+    if (!this.map) {
+      return;
+    }
+
+    if (this.fitRoadRoute()) {
+      return;
+    }
+
+    if (this.focusMapPoint()) {
+      return;
+    }
+
+    if (this.territoryRestricted) {
+      this.fitSelectedTerritory();
+      return;
+    }
+
+    if (!this.globalViewportApplied) {
+      this.globalViewportApplied = true;
+      this.map.flyTo({
+        center: [0, 20],
+        zoom: 1.55,
+        pitch: 0,
+        bearing: 0,
+        duration: 900,
+        essential: false,
+      });
+    }
+  }
+
+  private fitRoadRoute(): boolean {
+    const points = this.roadRoute?.geometry ?? [];
+
+    if (!this.map || points.length < 2) {
+      return false;
+    }
+
+    const first = points[0];
+    const last = points.at(-1);
+    const routeKey = `${first.latitude}:${first.longitude}:${last?.latitude}:${last?.longitude}:${points.length}`;
+
+    if (routeKey === this.lastFittedRouteKey) {
+      return true;
+    }
+
+    this.lastFittedRouteKey = routeKey;
+    const latitudes = points.map((point) => point.latitude);
+    const longitudes = points.map((point) => point.longitude);
+
+    this.map.fitBounds(
+      [
+        [Math.min(...longitudes), Math.min(...latitudes)],
+        [Math.max(...longitudes), Math.max(...latitudes)],
+      ],
+      {
+        duration: 1100,
+        maxZoom: 13.5,
+        padding: 84,
+        essential: false,
+      },
+    );
+
+    return true;
+  }
+
+  private focusMapPoint(): boolean {
+    if (!this.map || !this.focusPoint) {
+      return false;
+    }
+
+    const focusKey = `${this.focusPoint.latitude}:${this.focusPoint.longitude}`;
+
+    if (focusKey === this.lastFocusPointKey) {
+      return true;
+    }
+
+    this.lastFocusPointKey = focusKey;
+    this.globalViewportApplied = true;
+    this.map.flyTo({
+      center: [this.focusPoint.longitude, this.focusPoint.latitude],
+      zoom: 13.2,
+      pitch: 0,
+      bearing: 0,
+      duration: 900,
+      essential: false,
+    });
+
+    return true;
   }
 }

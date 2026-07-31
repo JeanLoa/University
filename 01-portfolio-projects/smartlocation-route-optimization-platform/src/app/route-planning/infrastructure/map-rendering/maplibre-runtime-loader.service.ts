@@ -20,11 +20,19 @@ export interface MapLibreMap {
   addControl(control: unknown, position?: string): void;
   addLayer(layer: Record<string, unknown>, beforeId?: string): void;
   addSource(id: string, source: Record<string, unknown>): void;
-  fitBounds(bounds: readonly [readonly [number, number], readonly [number, number]], options?: Record<string, unknown>): void;
+  fitBounds(
+    bounds: readonly [readonly [number, number], readonly [number, number]],
+    options?: Record<string, unknown>,
+  ): void;
+  flyTo(options: Record<string, unknown>): void;
   getCanvas(): HTMLCanvasElement;
   getLayer(id: string): unknown;
   getSource(id: string): MapLibreGeoJsonSource | undefined;
-  off(event: string, layerOrListener: string | ((event: MapLibreMapEvent) => void), listener?: (event: MapLibreMapEvent) => void): void;
+  off(
+    event: string,
+    layerOrListener: string | ((event: MapLibreMapEvent) => void),
+    listener?: (event: MapLibreMapEvent) => void,
+  ): void;
   on(event: string, listener: (event: MapLibreMapEvent) => void): void;
   on(event: string, layerId: string, listener: (event: MapLibreMapEvent) => void): void;
   remove(): void;

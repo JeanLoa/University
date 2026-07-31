@@ -9,14 +9,12 @@
   min-height: 6.25rem;
   padding: 0.9rem;
   border: 1px solid color-mix(in srgb, var(--metric-color) 38%, transparent);
-  border-radius: 8px;
-  background:
-    linear-gradient(150deg, color-mix(in srgb, var(--metric-color) 11%, transparent), transparent 64%),
-    rgba(15, 18, 16, 0.76);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--metric-color) 7%, rgba(2, 6, 23, 0.72));
 }
 
 .metric-card--cyan {
-  --metric-color: #4ee6c1;
+  --metric-color: #38bdf8;
 }
 
 .metric-card--violet {
@@ -24,16 +22,16 @@
 }
 
 .metric-card--amber {
-  --metric-color: #f6c85f;
+  --metric-color: #fbbf24;
 }
 
 .metric-card--green {
-  --metric-color: #88d66c;
+  --metric-color: #4ade80;
 }
 
 .metric-card__label,
 .metric-card__supporting {
-  color: #8d998f;
+  color: var(--sl-text-muted);
   font-size: 0.72rem;
   line-height: 1.2;
 }
@@ -44,7 +42,7 @@
 }
 
 .metric-card__value {
-  color: #f4f7f1;
+  color: var(--sl-text);
   font-size: clamp(1.3rem, 1.1rem + 0.6vw, 1.95rem);
   line-height: 1;
 }
@@ -52,4 +50,3 @@
 .metric-card__supporting {
   min-height: 1rem;
 }
-

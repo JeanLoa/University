@@ -2,10 +2,15 @@ import { computed, inject, Injectable, signal } from '@angular/core';
 import {
   AlgorithmOption,
   RouteAlgorithm,
+  RouteMapScope,
   RoutePointRole,
 } from '../../domain/models/route-planning.model';
 import { GeoPoint } from '../../domain/models/geo-point.model';
-import { MapPlace, MapPlaceLookupStatus } from '../../domain/models/map-place.model';
+import {
+  MapPlace,
+  MapPlaceLookupStatus,
+  MapPlaceSearchStatus,
+} from '../../domain/models/map-place.model';
 import { RoadRoute, RoadRouteStatus } from '../../domain/models/road-route.model';
 import {
   MapBoundarySource,
@@ -17,6 +22,7 @@ import { isPointInsidePolygon } from '../../domain/services/geo-polygon.service'
 import { LIMA_MAP_LAYERS } from '../../infrastructure/data-sources/map-layers/lima-map-layers.data-source';
 import { CalculateRoadRouteUseCase } from '../use-cases/calculate-road-route.use-case';
 import { ResolveMapPlaceUseCase } from '../use-cases/resolve-map-place.use-case';
+import { SearchMapPlacesUseCase } from '../use-cases/search-map-places.use-case';
 import {
   buildRouteMapLayerViewModel,
   RouteMapLayerViewModel,
@@ -27,10 +33,13 @@ export class RoutePlanningFacade {
   private readonly boundaryRepository = inject(MAP_BOUNDARY_REPOSITORY);
   private readonly calculateRoadRoute = inject(CalculateRoadRouteUseCase);
   private readonly resolveMapPlace = inject(ResolveMapPlaceUseCase);
+  private readonly searchMapPlaces = inject(SearchMapPlacesUseCase);
   private readonly boundaryLoadQueue = new Set<string>();
   private roadRouteRequestVersion = 0;
   private originPlaceRequestVersion = 0;
   private destinationPlaceRequestVersion = 0;
+  private originSearchRequestVersion = 0;
+  private destinationSearchRequestVersion = 0;
 
   readonly algorithmOptions: readonly AlgorithmOption[] = [
     {
@@ -51,6 +60,7 @@ export class RoutePlanningFacade {
   ];
 
   readonly mapLayers = signal<MapLayerCatalog>(LIMA_MAP_LAYERS);
+  readonly mapScope = signal<RouteMapScope>('global');
   readonly selectedProvinceId = signal('lima-province');
   readonly selectedDistrictId = signal('');
   readonly selectedAlgorithm = signal<RouteAlgorithm>('astar');
@@ -65,6 +75,12 @@ export class RoutePlanningFacade {
   readonly destinationPlace = signal<MapPlace | null>(null);
   readonly originPlaceStatus = signal<MapPlaceLookupStatus>('idle');
   readonly destinationPlaceStatus = signal<MapPlaceLookupStatus>('idle');
+  readonly originSearchResults = signal<readonly MapPlace[]>([]);
+  readonly destinationSearchResults = signal<readonly MapPlace[]>([]);
+  readonly originSearchStatus = signal<MapPlaceSearchStatus>('idle');
+  readonly destinationSearchStatus = signal<MapPlaceSearchStatus>('idle');
+  readonly mapFocusPoint = signal<GeoPoint | null>(null);
+  readonly isTerritoryRestricted = computed(() => this.mapScope() === 'territory');
 
   readonly provinceOptions = computed(() =>
     this.mapLayers().territories.filter((territory) => territory.kind === 'province'),
@@ -97,6 +113,10 @@ export class RoutePlanningFacade {
   );
 
   readonly selectedMapTrail = computed(() => {
+    if (!this.isTerritoryRestricted()) {
+      return 'Cobertura mundial / OpenStreetMap';
+    }
+
     const territory = this.selectedMapTerritory();
     const territories = this.mapLayers().territories;
     const parent = territory.parentId
@@ -110,6 +130,10 @@ export class RoutePlanningFacade {
   });
 
   readonly focusMapTerritories = computed(() => {
+    if (!this.isTerritoryRestricted()) {
+      return [];
+    }
+
     const territory = this.selectedMapTerritory();
 
     if (this.isAllDistrictsSelected()) {
@@ -133,10 +157,23 @@ export class RoutePlanningFacade {
     );
   });
 
-  constructor() {
-    void this.loadSelectedBoundaryScope().then(() => {
-      void this.ensureRoadPointsInsideSelectedTerritory();
-    });
+  setMapScope(scope: RouteMapScope): void {
+    if (scope === this.mapScope()) {
+      return;
+    }
+
+    this.mapScope.set(scope);
+    this.mapFocusPoint.set(null);
+
+    if (scope === 'territory') {
+      void this.loadSelectedBoundaryScope().then(() => {
+        void this.ensureRoadPointsInsideSelectedTerritory();
+      });
+      return;
+    }
+
+    this.roadRouteError.set('');
+    this.handleRoadRouteInputChange();
   }
 
   selectProvince(provinceId: string): void {
@@ -194,6 +231,70 @@ export class RoutePlanningFacade {
       void this.resolveSelectedPlace('destination', point);
     }
 
+    this.roadRouteError.set('');
+    this.handleRoadRouteInputChange();
+  }
+
+  async searchPlaces(role: RoutePointRole, query: string): Promise<void> {
+    const normalizedQuery = query.trim();
+    const requestVersion =
+      role === 'origin'
+        ? this.originSearchRequestVersion + 1
+        : this.destinationSearchRequestVersion + 1;
+
+    if (role === 'origin') {
+      this.originSearchRequestVersion = requestVersion;
+    } else {
+      this.destinationSearchRequestVersion = requestVersion;
+    }
+
+    if (normalizedQuery.length < 3) {
+      this.setSearchState(role, [], 'idle');
+      return;
+    }
+
+    this.setSearchState(role, [], 'loading');
+
+    try {
+      const places = await this.searchMapPlaces.execute(normalizedQuery);
+
+      if (!this.isCurrentSearchRequest(role, requestVersion)) {
+        return;
+      }
+
+      this.setSearchState(role, places, places.length > 0 ? 'ready' : 'empty');
+    } catch {
+      if (this.isCurrentSearchRequest(role, requestVersion)) {
+        this.setSearchState(role, [], 'unavailable');
+      }
+    }
+  }
+
+  selectSearchPlace(role: RoutePointRole, place: MapPlace): void {
+    if (!this.isPointInsideSelectedTerritory(place.point)) {
+      this.invalidateRoadRoute(
+        'outside-territory',
+        'Ese lugar esta fuera del contorno activo. Cambia a cobertura mundial para usarlo.',
+      );
+      return;
+    }
+
+    if (role === 'origin') {
+      this.freeOriginPoint.set(place.point);
+      this.originPlace.set(place);
+      this.originPlaceStatus.set('ready');
+      this.originSearchResults.set([]);
+      this.originSearchStatus.set('idle');
+      this.pickerMode.set('destination');
+    } else {
+      this.freeDestinationPoint.set(place.point);
+      this.destinationPlace.set(place);
+      this.destinationPlaceStatus.set('ready');
+      this.destinationSearchResults.set([]);
+      this.destinationSearchStatus.set('idle');
+    }
+
+    this.mapFocusPoint.set({ ...place.point });
     this.roadRouteError.set('');
     this.handleRoadRouteInputChange();
   }
@@ -264,6 +365,10 @@ export class RoutePlanningFacade {
   }
 
   private isPointInsideSelectedTerritory(point: GeoPoint): boolean {
+    if (!this.isTerritoryRestricted()) {
+      return true;
+    }
+
     const territory = this.selectedMapTerritory();
 
     if (this.isAllDistrictsSelected()) {
@@ -278,10 +383,19 @@ export class RoutePlanningFacade {
   }
 
   private isRouteInsideSelectedTerritory(points: readonly GeoPoint[]): boolean {
+    if (!this.isTerritoryRestricted()) {
+      return true;
+    }
+
     return points.every((point) => this.isPointInsideSelectedTerritory(point));
   }
 
   private async ensureRoadPointsInsideSelectedTerritory(): Promise<void> {
+    if (!this.isTerritoryRestricted()) {
+      this.handleRoadRouteInputChange();
+      return;
+    }
+
     const origin = this.freeOriginPoint();
     const destination = this.freeDestinationPoint();
     const originIsValid = !origin || this.isPointInsideSelectedTerritory(origin);
@@ -425,6 +539,14 @@ export class RoutePlanningFacade {
   }
 
   private fallbackPlace(point: GeoPoint): MapPlace {
+    if (!this.isTerritoryRestricted()) {
+      return {
+        label: `${point.latitude.toFixed(5)}, ${point.longitude.toFixed(5)}`,
+        country: 'Ubicacion global',
+        point,
+      };
+    }
+
     const territory = this.selectedMapTerritory();
 
     return {
@@ -492,5 +614,26 @@ export class RoutePlanningFacade {
 
   private hasRealBoundary(territory: MapTerritory): boolean {
     return Boolean(territory.polygon && territory.polygon.length >= 3);
+  }
+
+  private setSearchState(
+    role: RoutePointRole,
+    results: readonly MapPlace[],
+    status: MapPlaceSearchStatus,
+  ): void {
+    if (role === 'origin') {
+      this.originSearchResults.set(results);
+      this.originSearchStatus.set(status);
+      return;
+    }
+
+    this.destinationSearchResults.set(results);
+    this.destinationSearchStatus.set(status);
+  }
+
+  private isCurrentSearchRequest(role: RoutePointRole, requestVersion: number): boolean {
+    return role === 'origin'
+      ? requestVersion === this.originSearchRequestVersion
+      : requestVersion === this.destinationSearchRequestVersion;
   }
 }

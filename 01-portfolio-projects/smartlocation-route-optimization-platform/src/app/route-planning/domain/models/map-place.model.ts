@@ -2,6 +2,8 @@ import { GeoPoint } from './geo-point.model';
 
 export type MapPlaceLookupStatus = 'idle' | 'loading' | 'ready' | 'unavailable';
 
+export type MapPlaceSearchStatus = 'idle' | 'loading' | 'ready' | 'empty' | 'unavailable';
+
 export interface MapPlace {
   readonly label: string;
   readonly road?: string;

@@ -11,6 +11,14 @@ interface NominatimReverseResponse {
   readonly address?: NominatimAddress;
 }
 
+interface NominatimSearchResponse {
+  readonly display_name?: string;
+  readonly name?: string;
+  readonly lat?: string;
+  readonly lon?: string;
+  readonly address?: NominatimAddress;
+}
+
 interface NominatimAddress {
   readonly road?: string;
   readonly pedestrian?: string;
@@ -31,6 +39,7 @@ interface NominatimAddress {
 @Injectable()
 export class NominatimMapPlaceRepository implements MapPlaceRepository {
   private readonly reverseUrl = 'https://nominatim.openstreetmap.org/reverse';
+  private readonly searchUrl = 'https://nominatim.openstreetmap.org/search';
 
   async findPlace(point: GeoPoint): Promise<MapPlace | null> {
     const url = this.buildReverseUrl(point);
@@ -73,6 +82,32 @@ export class NominatimMapPlaceRepository implements MapPlaceRepository {
     };
   }
 
+  async searchPlaces(query: string, limit = 6): Promise<readonly MapPlace[]> {
+    const params = new URLSearchParams({
+      format: 'jsonv2',
+      q: query.trim(),
+      limit: String(limit),
+      addressdetails: '1',
+      dedupe: '1',
+      'accept-language': 'es',
+    });
+    const response = await fetch(`${this.searchUrl}?${params.toString()}`, {
+      headers: {
+        Accept: 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      return [];
+    }
+
+    const payload = (await response.json()) as readonly NominatimSearchResponse[];
+
+    return payload
+      .map((result) => this.mapSearchResult(result))
+      .filter((place): place is MapPlace => place !== null);
+  }
+
   private buildReverseUrl(point: GeoPoint): string {
     const params = new URLSearchParams({
       format: 'jsonv2',
@@ -99,5 +134,41 @@ export class NominatimMapPlaceRepository implements MapPlaceRepository {
       payload.display_name ||
       ''
     );
+  }
+
+  private mapSearchResult(payload: NominatimSearchResponse): MapPlace | null {
+    const latitude = Number(payload.lat);
+    const longitude = Number(payload.lon);
+
+    if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
+      return null;
+    }
+
+    const address = payload.address ?? {};
+    const road = address.road ?? address.pedestrian ?? address.footway ?? address.cycleway;
+    const district =
+      address.city_district ?? address.district ?? address.suburb ?? address.neighbourhood;
+    const city = address.city ?? address.town;
+    const province = address.county;
+    const region = address.state ?? address.region;
+    const label =
+      payload.display_name ||
+      payload.name ||
+      [road, district, city, region, address.country].filter(Boolean).join(', ');
+
+    if (!label) {
+      return null;
+    }
+
+    return {
+      label,
+      road,
+      district,
+      city,
+      province,
+      region,
+      country: address.country,
+      point: { latitude, longitude },
+    };
   }
 }

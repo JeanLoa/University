@@ -10,26 +10,26 @@
   padding: 0 0.7rem;
   border: 1px solid color-mix(in srgb, var(--badge-color) 36%, transparent);
   border-radius: 999px;
-  background: color-mix(in srgb, var(--badge-color) 8%, transparent);
-  color: #dbe6dd;
-  font-size: 0.78rem;
+  background: color-mix(in srgb, var(--badge-color) 9%, transparent);
+  color: #e2e8f0;
+  font-size: 0.74rem;
   white-space: nowrap;
 }
 
 .status-badge--neutral {
-  --badge-color: #95a29a;
+  --badge-color: #94a3b8;
 }
 
 .status-badge--ready {
-  --badge-color: #4ee6c1;
+  --badge-color: #4ade80;
 }
 
 .status-badge--alert {
-  --badge-color: #f6c85f;
+  --badge-color: #fbbf24;
 }
 
 .status-badge--accent {
-  --badge-color: #a78bfa;
+  --badge-color: #38bdf8;
 }
 
 .status-badge__dot {
@@ -39,4 +39,3 @@
   background: var(--badge-color);
   box-shadow: 0 0 12px color-mix(in srgb, var(--badge-color) 70%, transparent);
 }
-

@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { CalculateRoadRouteUseCase } from './application/use-cases/calculate-road-route.use-case';
 import { ResolveMapPlaceUseCase } from './application/use-cases/resolve-map-place.use-case';
+import { SearchMapPlacesUseCase } from './application/use-cases/search-map-places.use-case';
 import { RoutePlanningFacade } from './application/facades/route-planning.facade';
 import { MAP_BOUNDARY_REPOSITORY } from './domain/repositories/map-boundary.repository';
 import { MAP_PLACE_REPOSITORY } from './domain/repositories/map-place.repository';
@@ -16,6 +17,7 @@ export const ROUTE_PLANNING_ROUTES: Routes = [
       RoutePlanningFacade,
       CalculateRoadRouteUseCase,
       ResolveMapPlaceUseCase,
+      SearchMapPlacesUseCase,
       {
         provide: MAP_BOUNDARY_REPOSITORY,
         useClass: OpenStreetMapBoundaryRepository,

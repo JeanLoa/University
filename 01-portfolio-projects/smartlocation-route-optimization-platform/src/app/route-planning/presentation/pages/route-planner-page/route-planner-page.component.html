@@ -1,24 +1,40 @@
 <main class="route-planner-page">
+  <a class="skip-link" href="#route-console">Saltar al planificador</a>
+
   <header class="topbar">
     <div class="brand-lockup">
-      <span class="brand-mark" aria-hidden="true"></span>
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="8.25"></circle>
+          <path
+            d="M3.75 12h16.5M12 3.75c2.3 2.3 3.45 5.05 3.45 8.25S14.3 17.95 12 20.25M12 3.75C9.7 6.05 8.55 8.8 8.55 12S9.7 17.95 12 20.25"
+          ></path>
+        </svg>
+      </span>
       <div>
         <strong>SmartLocation</strong>
-        <span>Route Intelligence Console</span>
+        <span>Global Route Intelligence</span>
       </div>
     </div>
 
     <div class="topbar__status">
-      <app-status-badge label="Mapa real" tone="ready" />
-      <app-status-badge [label]="facade.originPlace()?.district ?? 'Origen'" tone="accent" />
-      <app-status-badge [label]="facade.destinationPlace()?.district ?? 'Destino'" tone="alert" />
+      <app-status-badge label="Red OSM conectada" tone="ready" />
+      <app-status-badge
+        [label]="facade.originPlace()?.city ?? facade.originPlace()?.country ?? 'Origen'"
+        tone="accent"
+      />
+      <app-status-badge
+        [label]="facade.destinationPlace()?.city ?? facade.destinationPlace()?.country ?? 'Destino'"
+        tone="alert"
+      />
     </div>
   </header>
 
-  <section class="console-grid">
+  <section id="route-console" class="console-grid">
     <aside class="surface surface--control">
       <app-route-control-panel
         [pickerMode]="facade.pickerMode()"
+        [mapScope]="facade.mapScope()"
         [selectedAlgorithm]="facade.selectedAlgorithm()"
         [autoCalculateRoute]="facade.autoCalculateRoute()"
         [algorithmOptions]="facade.algorithmOptions"
@@ -32,13 +48,20 @@
         [destinationPlace]="facade.destinationPlace()"
         [originPlaceStatus]="facade.originPlaceStatus()"
         [destinationPlaceStatus]="facade.destinationPlaceStatus()"
+        [originSearchResults]="facade.originSearchResults()"
+        [destinationSearchResults]="facade.destinationSearchResults()"
+        [originSearchStatus]="facade.originSearchStatus()"
+        [destinationSearchStatus]="facade.destinationSearchStatus()"
         [roadRouteStatus]="facade.roadRouteStatus()"
         [roadRouteError]="facade.roadRouteError()"
+        (mapScopeChanged)="facade.setMapScope($event)"
         (provinceChanged)="facade.selectProvince($event)"
         (districtChanged)="facade.selectDistrict($event)"
         (algorithmChanged)="facade.selectAlgorithm($event)"
         (autoCalculateChanged)="facade.setAutoCalculateRoute($event)"
         (pickerModeChanged)="facade.setPickerMode($event)"
+        (placeSearchRequested)="facade.searchPlaces($event.role, $event.query)"
+        (placeSelected)="facade.selectSearchPlace($event.role, $event.place)"
         (routeRequested)="facade.refreshRoadRoute()"
       />
     </aside>
@@ -46,6 +69,7 @@
     <section class="surface surface--map">
       <app-route-network-map
         [pickerMode]="facade.pickerMode()"
+        [territoryRestricted]="facade.isTerritoryRestricted()"
         [selectedTerritory]="facade.selectedMapTerritory()"
         [focusTerritories]="facade.focusMapTerritories()"
         [territoryTrail]="facade.selectedMapTrail()"
@@ -53,6 +77,7 @@
         [freeDestinationPoint]="facade.freeDestinationPoint()"
         [roadRoute]="facade.roadRoute()"
         [roadRouteStatus]="facade.roadRouteStatus()"
+        [focusPoint]="facade.mapFocusPoint()"
         [geoJsonLayers]="facade.mapLayerViewModel()"
         (mapPointSelected)="facade.selectMapPoint($event)"
       />

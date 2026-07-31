@@ -16,7 +16,7 @@
 .panel-heading__eyebrow,
 .route-stack__item span,
 .route-path span {
-  color: #8d998f;
+  color: var(--sl-text-muted);
   font-size: 0.72rem;
   letter-spacing: 0.08em;
   line-height: 1.2;
@@ -31,7 +31,7 @@
 }
 
 h2 {
-  color: #f4f7f1;
+  color: var(--sl-text);
   font-size: 1.35rem;
   font-weight: 650;
   line-height: 1.1;
@@ -55,13 +55,13 @@ h2 {
   gap: 0.25rem;
   min-height: 4.2rem;
   padding: 0.8rem;
-  border: 1px solid rgba(197, 214, 199, 0.12);
-  border-radius: 8px;
-  background: rgba(15, 18, 16, 0.72);
+  border: 1px solid var(--sl-border);
+  border-radius: 10px;
+  background: rgba(2, 6, 23, 0.52);
 }
 
 .route-stack__item strong {
-  color: #f4f7f1;
+  color: var(--sl-text);
   font-size: 1.45rem;
 }
 
@@ -69,13 +69,13 @@ h2 {
   display: grid;
   gap: 0.5rem;
   padding: 0.9rem;
-  border: 1px solid rgba(197, 214, 199, 0.12);
-  border-radius: 8px;
-  background: rgba(15, 18, 16, 0.72);
+  border: 1px solid var(--sl-border);
+  border-radius: 10px;
+  background: rgba(2, 6, 23, 0.52);
 }
 
 .route-path p {
-  color: #dbe6dd;
+  color: #e2e8f0;
   font-size: 0.85rem;
   line-height: 1.55;
   margin: 0;
@@ -87,4 +87,3 @@ h2 {
     grid-template-columns: 1fr;
   }
 }
-
